@@ -59,6 +59,8 @@ def cmd_check(args) -> int:
 
     level, text = verdict(result, FLAGGED)
     print(f"\nVERDICT: {text}\n")
+    for err in result.get("errors", []):
+        print(f"CHECKER PROBLEM: {err}")
     for c in result["claims"]:
         mark = "!!" if c["status"] in FLAGGED else "  "
         print(f'{mark} {c["id"]:<4} {c["status"]:<15} "{c["quote"]}"' + (f'  -- {c["note"]}' if c.get("note") else ""))

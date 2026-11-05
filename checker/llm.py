@@ -47,6 +47,10 @@ class CacheMiss(LLMError):
     """Offline mode and the answer is not in the cache."""
 
 
+class BadOutput(LLMError):
+    """The model answered, but not with usable JSON (never cached)."""
+
+
 class QuotaExhausted(LLMError):
     """The daily free-tier quota is used up; retrying today is pointless."""
 
@@ -137,7 +141,12 @@ def ask_json(prompt: str, retries: int = 5) -> dict:
             time.sleep(15 * (attempt + 1))
             continue
         r.raise_for_status()
-        result = json.loads(_answer_text(r))
+        try:
+            result = json.loads(_answer_text(r))
+        except (ValueError, KeyError, IndexError, TypeError) as e:
+            raise BadOutput(f"{PROVIDER} did not return usable JSON ({type(e).__name__}: {str(e)[:80]})") from e
+        if not isinstance(result, dict):
+            raise BadOutput(f"{PROVIDER} returned JSON {type(result).__name__}, expected an object")
         cached.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
         return result
     raise LLMError(f"{PROVIDER} kept failing: {r.status_code} {r.text[:200]}")

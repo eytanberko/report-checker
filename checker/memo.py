@@ -71,9 +71,10 @@ def review_memo(result: dict, title: str = "the report") -> str:
             lines += [f"## {i}. {name} ({len(items)})", "", *items, ""]
 
     mismatches = [c for c in claims if c.get("status") == "query_mismatch"]
-    if mismatches:
+    if mismatches or result.get("errors"):
         lines += ["## Checker notes (not errors in the report)", "",
-                  *[f'- “{c["quote"]}”: not checked, {c.get("note", "")}' for c in mismatches], ""]
+                  *[f'- “{c["quote"]}”: not checked, {c.get("note", "")}' for c in mismatches],
+                  *[f"- {e}" for e in result.get("errors", [])], ""]
     if n_issues:
         lines += ["Please send the revised version when these are fixed."]
     return "\n".join(lines).rstrip() + "\n"

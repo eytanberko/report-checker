@@ -46,6 +46,8 @@ def show_answer_key(rep: dict):
 def show_result(result: dict, report: str, name: str):
     level, text = verdict(result, FLAGGED)
     {"ok": st.success, "warn": st.warning, "error": st.error}[level](f"**{text}**")
+    for err in result.get("errors", []):
+        st.warning(f"Checker problem: {err}")
     memo = review_memo(result, name)
     st.download_button("Download review memo (.md)", memo, file_name=f"review_{name.split(' ')[0]}.md",
                        mime="text/markdown")
