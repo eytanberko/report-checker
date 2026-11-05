@@ -1,9 +1,22 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
 .pytest_cache/
 .ruff_cache/
+*.egg-info/
+
+# Virtual environments
 .venv/
 venv/
 env/
+
+# Secrets: never commit keys
 .env
 .env.*
+.streamlit/secrets.toml
+
+# Review memos written by the CLI next to the report (generated output)
+*.review.md
+
+# NOTE: .llm_cache/ and results/ are committed on purpose: the demo and the benchmark
+# scores work from a fresh clone without an API key.
