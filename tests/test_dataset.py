@@ -39,7 +39,8 @@ def fake_llm(prompt: str) -> dict:
     if "Split the REPORT" in prompt:
         assert "over table `cafes`" in prompt and "Use the city and year the claim refers to" in prompt
         assert "city (text): 3 distinct values" in prompt
-        claim = lambda i, quote, v, sql: {"id": i, "quote": quote, "kind": "numeric", "stated_value": v, "sql": sql}
+        def claim(i, quote, v, sql):
+            return {"id": i, "quote": quote, "kind": "numeric", "stated_value": v, "sql": sql}
         return {"claims": [
             claim("C1", "Haifa sold 412 thousand cups in 2024", 412, q("cups_sold_k", "Haifa", 2024)),
             claim("C2", "up from 350 thousand in 2022", 350, q("cups_sold_k", "Haifa", 2022)),

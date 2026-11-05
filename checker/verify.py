@@ -4,15 +4,7 @@ import re
 
 import duckdb
 
-from .schema import DATA_PATH, TABLE
-
 _FORBIDDEN = re.compile(r"\b(insert|update|delete|drop|create|alter|attach|copy|pragma|install|load)\b", re.I)
-
-
-def connect(path: str = DATA_PATH) -> duckdb.DuckDBPyConnection:
-    con = duckdb.connect()
-    con.execute(f"CREATE TABLE {TABLE} AS SELECT * FROM read_csv_auto('{path}')")
-    return con
 
 
 def is_safe_select(sql: str) -> bool:
@@ -21,7 +13,7 @@ def is_safe_select(sql: str) -> bool:
     return ";" not in s and bool(re.match(r"^\s*(select|with)\b", s, re.I)) and not _FORBIDDEN.search(s)
 
 
-def run_sql(con, sql: str):
+def run_sql(con: duckdb.DuckDBPyConnection, sql: str) -> tuple[float | None, str | None]:
     """Returns (value, error). Only single read-only SELECT statements are allowed."""
     if not is_safe_select(sql):
         return None, "rejected: only a single SELECT is allowed"
@@ -45,7 +37,7 @@ def tolerance(stated: float, actual: float) -> float:
     return max(0.5 * 10 ** -decimals, 0.01 * abs(actual))
 
 
-def verify_claim(con, claim: dict) -> dict:
+def verify_claim(con: duckdb.DuckDBPyConnection, claim: dict) -> dict:
     """Adds status/actual/note to a numeric claim."""
     out = dict(claim)
     if claim.get("sql") is None or claim.get("stated_value") is None:

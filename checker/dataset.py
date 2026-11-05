@@ -34,7 +34,8 @@ class Dataset:
         con.execute(f'CREATE TABLE "{self.table}" AS SELECT * FROM read_csv_auto(\'{path}\')')
         return con
 
-    def catalog(self, con) -> Catalog:
+    def catalog(self, con: duckdb.DuckDBPyConnection) -> Catalog:
+        """Columns, category values and ranges of this dataset's table, for the guardrails."""
         return Catalog.from_connection(con, self.table, self.entity_col, self.time_col)
 
 
@@ -49,7 +50,7 @@ def _fmt(x: float) -> str:
     return f"{x:,.0f}" if x.is_integer() or abs(x) >= 1000 else f"{x:.4g}"
 
 
-def describe(con, table: str, source: str = "") -> tuple[str, str | None, str | None]:
+def describe(con: duckdb.DuckDBPyConnection, table: str, source: str = "") -> tuple[str, str | None, str | None]:
     """Schema description for the LLM, plus the detected entity and time columns."""
     cat = Catalog.from_connection(con, table, entity_col=None, time_col=None)
     n_rows = con.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0]
@@ -99,4 +100,5 @@ def load_dataset(path: str, description: str | None = None, table: str | None = 
 
 
 def default_dataset() -> Dataset:
+    """The benchmark's energy dataset."""
     return load_dataset(DATA_PATH)

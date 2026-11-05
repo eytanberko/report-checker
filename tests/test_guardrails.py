@@ -2,8 +2,8 @@
 import pytest
 
 from checker.core import check_numeric
+from checker.dataset import default_dataset
 from checker.guardrails import Catalog, check_query
-from checker.verify import connect
 
 REPORT = ("Renewables provided 16.9% of Israel's electricity in 2025, up from 1.9% in 2015. "
           "Coal dropped to 3.4% in 2025 from 45.4% ten years earlier. "
@@ -13,7 +13,7 @@ REPORT = ("Renewables provided 16.9% of Israel's electricity in 2025, up from 1.
 
 @pytest.fixture(scope="module")
 def db():
-    con = connect()
+    con = default_dataset().connect()
     return con, Catalog.from_connection(con, "energy")
 
 

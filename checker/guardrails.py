@@ -31,8 +31,9 @@ class Catalog:
     time_col: str | None = "year"
 
     @classmethod
-    def from_connection(cls, con, table: str, entity_col: str | None = "country",
+    def from_connection(cls, con: duckdb.DuckDBPyConnection, table: str, entity_col: str | None = "country",
                         time_col: str | None = "year", max_categories: int = 500) -> "Catalog":
+        """Read columns, text categories (up to `max_categories` values) and numeric ranges from the table."""
         columns = {name: typ for name, typ, *_ in con.execute(f"DESCRIBE {table}").fetchall()}
         cat = cls(table, columns, entity_col=entity_col, time_col=time_col)
         for name, typ in columns.items():
@@ -98,7 +99,7 @@ def _numbers(sql: str, column: str) -> list[float]:
     return out
 
 
-def check_query(con, catalog: Catalog, sql: str, quote: str, report: str) -> str | None:
+def check_query(con: duckdb.DuckDBPyConnection, catalog: Catalog, sql: str, quote: str, report: str) -> str | None:
     """Why this query can't be trusted to check this claim, or None if it passes every guardrail."""
     try:
         con.execute("EXPLAIN " + sql)

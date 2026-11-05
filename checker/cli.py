@@ -39,7 +39,8 @@ def saved_run(report: str, requirements: str, data: str) -> tuple[str, dict] | N
     return None
 
 
-def cmd_check(args) -> int:
+def cmd_check(args: argparse.Namespace) -> int:
+    """`check` command: verdict on stdout, review memo to a file; returns the exit code."""
     report = Path(args.report).read_text(encoding="utf-8")
     requirements = Path(args.requirements).read_text(encoding="utf-8")
     dataset = load_dataset(args.data)

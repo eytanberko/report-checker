@@ -152,8 +152,9 @@ def find_issues(claims: list[dict], columns: list[str], entity_col: str | None =
     return issues
 
 
-def _share_issues(points, known, entity, year, shares, share_total) -> list[Issue]:
-    def val(col):
+def _share_issues(points: dict[tuple, list[dict]], known: dict[tuple, tuple[float, float]], entity: str,
+                  year: int, shares: dict[str, list[str]], share_total: float) -> list[Issue]:
+    def val(col: str) -> tuple[float, float] | None:
         return known.get((col, entity, year))
 
     issues, total_lo, used = [], 0.0, []

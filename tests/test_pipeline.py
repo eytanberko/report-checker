@@ -1,11 +1,13 @@
 """End-to-end pipeline + scoring with a FAKE LLM (so it runs offline, no API key)."""
-import yaml
 from pathlib import Path
+
+import yaml
 
 from checker.core import check_report
 from evaluate import score
 
-REPORTS = {r["id"]: r for r in yaml.safe_load(Path("benchmark/reports.yaml").read_text())["reports"]}
+REPORTS = {r["id"]: r for r in
+           yaml.safe_load(Path("benchmark/reports.yaml").read_text(encoding="utf-8"))["reports"]}
 Q = "SELECT {col} FROM energy WHERE country='{c}' AND year={y}"
 
 
@@ -38,7 +40,8 @@ def test_pipeline_catches_planted_errors():
 
 def test_cascade_flags_are_not_false_alarms():
     rep = REPORTS["report_07"]
-    flagged = lambda i, q: {"id": i, "quote": q, "status": "contradicted"}
+    def flagged(i, q):
+        return {"id": i, "quote": q, "status": "contradicted"}
     result = {"claims": [flagged("C3", "Solar provided 13.1% of electricity in 2025"),
                          flagged("C8", "Egypt reached 24.0% renewables in 2025"),
                          flagged("C9", "ahead of Israel")],

@@ -1,12 +1,13 @@
 """Tests for the deterministic SQL verification (no LLM, no API key needed)."""
 import pytest
 
-from checker.verify import connect, run_sql, verify_claim
+from checker.dataset import default_dataset
+from checker.verify import run_sql, verify_claim
 
 
 @pytest.fixture(scope="module")
 def con():
-    return connect()
+    return default_dataset().connect()
 
 
 def claim(sql, stated):

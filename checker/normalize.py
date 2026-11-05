@@ -11,7 +11,7 @@ REQ_STATUSES = ("covered", "partial", "missing")
 _NUMBER = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?|[-+]?\.\d+")
 
 
-def parse_number(value) -> float | None:
+def parse_number(value: object) -> float | None:
     """16.9, "16.9", "16.9%", "1,480", True -> float; anything else -> None."""
     if isinstance(value, bool):
         return 1.0 if value else 0.0
@@ -33,7 +33,7 @@ def _unusable(cid: str, quote: str, reason: str) -> dict:
     return {"id": cid, "quote": quote, "kind": "numeric", "stated_value": None, "sql": None, "problem": reason}
 
 
-def normalize_claims(raw) -> tuple[list[dict], list[str]]:
+def normalize_claims(raw: object) -> tuple[list[dict], list[str]]:
     """Well-formed claims with ids C1..Cn from the extractor's output, plus problems found."""
     errors: list[str] = []
     items = raw.get("claims") if isinstance(raw, dict) else None
@@ -68,7 +68,7 @@ def normalize_claims(raw) -> tuple[list[dict], list[str]]:
     return claims, errors
 
 
-def normalize_review(raw, judgment_ids: list[str]) -> tuple[dict[str, dict], list[dict], list[str]]:
+def normalize_review(raw: object, judgment_ids: list[str]) -> tuple[dict[str, dict], list[dict], list[str]]:
     """(verdict per known judgment id, well-formed requirements, problems found) from the judge's output."""
     if not isinstance(raw, dict):
         return {}, [], ["judge returned no usable answer"]

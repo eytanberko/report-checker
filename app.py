@@ -24,13 +24,15 @@ by_label = {r["id"] + " · " + r["author"]: r for r in reports}
 default_reqs = Path("benchmark/requirements.md").read_text(encoding="utf-8")
 
 
-def saved_result(rep: dict):
+def saved_result(rep: dict) -> dict | None:
+    """The saved benchmark result for this report, re-checked with the current deterministic stages."""
     path = Path("results") / f"{rep['id']}.json"
     # Deterministic stages are re-run on the saved LLM output, so saved runs get the latest checks.
     return recheck(json.loads(path.read_text(encoding="utf-8")), rep["text"]) if path.exists() else None
 
 
-def show_answer_key(rep: dict):
+def show_answer_key(rep: dict) -> None:
+    """The planted errors (and their cascade errors) for a benchmark report."""
     st.markdown("**Answer key — planted errors**")
     if not rep["planted"]:
         st.markdown("_None: this is a clean report._")
@@ -43,7 +45,8 @@ def show_answer_key(rep: dict):
         st.markdown(line)
 
 
-def show_result(result: dict, report: str, name: str):
+def show_result(result: dict, report: str, name: str) -> None:
+    """Verdict banner, memo download, highlighted report, claim details and requirement coverage."""
     level, text = verdict(result, FLAGGED)
     {"ok": st.success, "warn": st.warning, "error": st.error}[level](f"**{text}**")
     for err in result.get("errors", []):
@@ -118,11 +121,13 @@ with tab_check:
     elif rep:
         st.caption("No saved run for this report yet. Run a live check.")
 
-def pct(x) -> str:
+def pct(x: float | None) -> str:
+    """0.917 -> '92%'; None -> 'n/a'."""
     return "n/a" if x is None else f"{x:.0%}"
 
 
-def show_benchmark():
+def show_benchmark() -> None:
+    """Benchmark tab: headline metrics, caught-% by error type, per-report table, run history."""
     path = Path("results/metrics.json")
     if not path.exists():
         st.info("Run `python evaluate.py` first.")

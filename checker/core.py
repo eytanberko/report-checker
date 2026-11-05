@@ -1,5 +1,8 @@
 """The full check: extract claims (LLM) -> verify numbers (SQL) + internal consistency -> judge (LLM)."""
 import json
+from collections.abc import Callable
+
+import duckdb
 
 from . import llm
 from .consistency import apply_issues, find_issues
@@ -14,7 +17,8 @@ FLAGGED = {"contradicted", "inconsistent", "unsupported", "unverifiable"}
 _RESULT_FIELDS = ("status", "actual", "note")
 
 
-def check_numeric(con, claims: list[dict], report: str, dataset: Dataset | None = None) -> list[dict]:
+def check_numeric(con: duckdb.DuckDBPyConnection, claims: list[dict], report: str,
+                  dataset: Dataset | None = None) -> list[dict]:
     """Deterministic stage: guardrails on each query, verify on the data, then the numbers against each other."""
     ds = dataset or default_dataset()
     catalog = ds.catalog(con)
@@ -36,7 +40,8 @@ def check_numeric(con, claims: list[dict], report: str, dataset: Dataset | None 
     return apply_issues(numeric, issues)
 
 
-def check_report(report: str, requirements: str, ask=llm.ask_json, dataset: Dataset | None = None) -> dict:
+def check_report(report: str, requirements: str, ask: Callable[[str], dict] = llm.ask_json,
+                 dataset: Dataset | None = None) -> dict:
     """Run the whole pipeline on one report. `ask` is the LLM call (injectable for tests)."""
     ds = dataset or default_dataset()
     con = ds.connect()
@@ -73,13 +78,3 @@ def recheck(result: dict, report: str, dataset: Dataset | None = None) -> dict:
     numeric = {c["id"]: c for c in check_numeric(ds.connect(), result["claims"], report, ds)}
     claims = [numeric.get(c["id"], c) for c in result["claims"]]
     return {**result, "claims": claims}
-
-
-def summary(result: dict) -> dict:
-    claims = result["claims"]
-    return {
-        "claims": len(claims),
-        "verified": sum(c["status"] in ("verified", "supported") for c in claims),
-        "flagged": sum(c["status"] in FLAGGED for c in claims),
-        "requirements_missing": sum(r["status"] != "covered" for r in result["requirements"]),
-    }
