@@ -1,4 +1,4 @@
-from .schema import SCHEMA
+from .schema import SCHEMA, TABLE
 
 EXTRACT = """You are a QA reviewer for data-analysis reports.
 
@@ -14,7 +14,7 @@ For each claim return:
 - "stated_value": the number the claim states, in the column's unit (e.g. 16.9 for "16.9%").
           For a comparison ("X is higher than Y") use 1 for true.
           For a percent change use the stated percent. null for judgments.
-- "sql": ONE DuckDB SELECT over table `energy` returning ONE number that measures exactly
+- "sql": ONE DuckDB SELECT over table `{table}` returning ONE number that measures exactly
           what the claim says, so it can be compared to stated_value. null for judgments.
           Percent change = 100.0*(new-old)/old. Percentage-point change = new-old.
           "X% per year on average" over a period = compound annual growth rate:
@@ -23,7 +23,7 @@ For each claim return:
 
 RULES:
 - Encode what the claim SAYS, even if you think it is wrong. Never correct the report.
-- Use the country and year the claim refers to. If a year is implied by context, use it.
+- Use the {entity} and {time} the claim refers to. If a {time} is implied by context, use it.
 - Return JSON: {{"claims": [...]}}
 
 REPORT:
@@ -63,9 +63,13 @@ Return JSON:
                      "reason": "one sentence"}}]}}"""
 
 
-def extract_prompt(report: str) -> str:
-    return EXTRACT.format(schema=SCHEMA, report=report)
+def extract_prompt(report: str, schema: str = SCHEMA, table: str = TABLE,
+                   entity: str | None = "country", time: str | None = "year") -> str:
+    """Prompt that splits a report into claims and writes one SQL query per numeric claim."""
+    return EXTRACT.format(schema=schema, table=table, entity=entity or "entity", time=time or "period",
+                          report=report)
 
 
 def judge_prompt(report: str, requirements: str, facts: str, judgments: str) -> str:
+    """Prompt that judges conclusions against the checked facts and checks requirement coverage."""
     return JUDGE.format(report=report, requirements=requirements, facts=facts, judgments=judgments)

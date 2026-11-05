@@ -58,14 +58,14 @@ def _wording(quote: str) -> str | None:
     return None
 
 
-def parse_key(sql: str | None, columns: list[str], entity_col: str = "country",
-              time_col: str = "year") -> tuple[str, str, tuple[int, ...]] | None:
+def parse_key(sql: str | None, columns: list[str], entity_col: str | None = "country",
+              time_col: str | None = "year") -> tuple[str, str, tuple[int, ...]] | None:
     """(column, entity, years) measured by a simple claim query, or None for comparisons / unclear SQL."""
-    if not sql or re.search(r"\bcase\s+when\b", sql, re.I):
+    if not sql or not time_col or re.search(r"\bcase\s+when\b", sql, re.I):
         return None
     cols = {c for c in columns
             if c not in (entity_col, time_col) and re.search(rf"\b{re.escape(c)}\b", sql)}
-    entities = set(re.findall(rf"\b{entity_col}\s*=\s*'([^']+)'", sql, re.I))
+    entities = set(re.findall(rf"\b{entity_col}\s*=\s*'([^']+)'", sql, re.I)) if entity_col else {""}
     years = tuple(sorted({int(y) for y in re.findall(rf"\b{time_col}\s*=\s*(\d{{4}})\b", sql, re.I)}))
     if len(cols) != 1 or len(entities) != 1 or not 1 <= len(years) <= 2:
         return None
@@ -97,7 +97,8 @@ def _describe_change(a: float, b: float, years: int) -> str:
     return ", ".join(parts)
 
 
-def find_issues(claims: list[dict], columns: list[str], entity_col: str = "country", time_col: str = "year",
+def find_issues(claims: list[dict], columns: list[str], entity_col: str | None = "country",
+                time_col: str | None = "year",
                 shares: dict[str, list[str]] | None = None, share_total: float = 100.0) -> list[Issue]:
     """All internal inconsistencies among numeric claims. Pure function of the stated values."""
     points: dict[tuple, list[dict]] = {}

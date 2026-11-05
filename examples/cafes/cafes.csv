@@ -1,0 +1,9 @@
+city,year,cups_sold_k,revenue_k_usd,avg_price_usd
+Haifa,2022,350,1050,3.0
+Haifa,2023,380,1178,3.1
+Haifa,2024,412,1318,3.2
+Tel Aviv,2022,520,1716,3.3
+Tel Aviv,2023,575,1955,3.4
+Tel Aviv,2024,610,2135,3.5
+Jerusalem,2022,300,870,2.9
+Jerusalem,2023,330,990,3.0

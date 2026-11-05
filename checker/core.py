@@ -2,20 +2,21 @@
 import json
 
 from . import llm
-from .consistency import ENERGY_SHARES, apply_issues, find_issues
-from .guardrails import Catalog, check_query
+from .consistency import apply_issues, find_issues
+from .dataset import Dataset, default_dataset
+from .guardrails import check_query
 from .prompts import extract_prompt, judge_prompt
-from .schema import TABLE
-from .verify import connect, is_safe_select, verify_claim
+from .verify import is_safe_select, verify_claim
 
 # Which statuses count as a finding the reviewer must look at.
 FLAGGED = {"contradicted", "inconsistent", "unsupported", "unverifiable"}
 _RESULT_FIELDS = ("status", "actual", "note")
 
 
-def check_numeric(con, claims: list[dict], report: str) -> list[dict]:
+def check_numeric(con, claims: list[dict], report: str, dataset: Dataset | None = None) -> list[dict]:
     """Deterministic stage: guardrails on each query, verify on the data, then the numbers against each other."""
-    catalog = Catalog.from_connection(con, TABLE)
+    ds = dataset or default_dataset()
+    catalog = ds.catalog(con)
     numeric = []
     for c in claims:
         if c["kind"] != "numeric":
@@ -27,15 +28,17 @@ def check_numeric(con, claims: list[dict], report: str) -> list[dict]:
             numeric.append({**c, "status": "query_mismatch", "actual": None, "note": mismatch})
         else:
             numeric.append(verify_claim(con, c))
-    return apply_issues(numeric, find_issues(numeric, list(catalog.columns), shares=ENERGY_SHARES))
+    issues = find_issues(numeric, list(catalog.columns), ds.entity_col, ds.time_col, shares=ds.shares)
+    return apply_issues(numeric, issues)
 
 
-def check_report(report: str, requirements: str, ask=llm.ask_json) -> dict:
+def check_report(report: str, requirements: str, ask=llm.ask_json, dataset: Dataset | None = None) -> dict:
     """Run the whole pipeline on one report. `ask` is the LLM call (injectable for tests)."""
-    con = connect()
+    ds = dataset or default_dataset()
+    con = ds.connect()
 
-    claims = ask(extract_prompt(report))["claims"]
-    numeric = check_numeric(con, claims, report)
+    claims = ask(extract_prompt(report, ds.description, ds.table, ds.entity_col, ds.time_col))["claims"]
+    numeric = check_numeric(con, claims, report, ds)
     judgments = [c for c in claims if c["kind"] == "judgment"]
 
     facts = "\n".join(f'- "{c["quote"]}" -> {c["status"]}'
@@ -54,9 +57,10 @@ def check_report(report: str, requirements: str, ask=llm.ask_json) -> dict:
     return {"claims": all_claims, "requirements": review.get("requirements", [])}
 
 
-def recheck(result: dict, report: str) -> dict:
+def recheck(result: dict, report: str, dataset: Dataset | None = None) -> dict:
     """Re-run the deterministic stages on a saved result (no LLM): judge verdicts and requirements are kept."""
-    numeric = {c["id"]: c for c in check_numeric(connect(), result["claims"], report)}
+    ds = dataset or default_dataset()
+    numeric = {c["id"]: c for c in check_numeric(ds.connect(), result["claims"], report, ds)}
     claims = [numeric.get(c["id"], c) for c in result["claims"]]
     return {**result, "claims": claims}
 
