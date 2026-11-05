@@ -7,6 +7,7 @@ import yaml
 
 from checker.core import FLAGGED, check_report
 from checker.highlight import render_html, verdict
+from checker.memo import review_memo
 
 st.set_page_config(page_title="Report Checker", page_icon="🔎", layout="wide")
 ICON = {"verified": "✅", "supported": "✅", "contradicted": "❌", "unsupported": "⚠️", "unverifiable": "❔",
@@ -39,9 +40,14 @@ def show_answer_key(rep: dict):
         st.markdown(line)
 
 
-def show_result(result: dict, report: str):
+def show_result(result: dict, report: str, name: str):
     level, text = verdict(result, FLAGGED)
     {"ok": st.success, "warn": st.warning, "error": st.error}[level](f"**{text}**")
+    memo = review_memo(result, name)
+    st.download_button("Download review memo (.md)", memo, file_name=f"review_{name.split(' ')[0]}.md",
+                       mime="text/markdown")
+    with st.expander("Review memo for the analyst"):
+        st.markdown(memo)
 
     st.subheader("Report")
     st.caption(LEGEND)
@@ -98,10 +104,10 @@ with tab_check:
     run = live.get(choice)
     if run and run["report"] == report and run["requirements"] == requirements:
         st.success("Live run")
-        show_result(run["result"], report)
+        show_result(run["result"], report, choice)
     elif saved:
         st.info("Saved run — loaded from `results/" + rep["id"] + ".json` (no API call)")
-        show_result(saved, report)
+        show_result(saved, report, choice)
     elif rep and not unedited:
         st.caption("Text edited — the saved run no longer applies. Run a live check.")
     elif rep:
