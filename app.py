@@ -22,10 +22,10 @@ by_label = {r["id"] + " · " + r["author"]: r for r in reports}
 default_reqs = Path("benchmark/requirements.md").read_text(encoding="utf-8")
 
 
-def saved_result(report_id: str):
-    path = Path("results") / f"{report_id}.json"
+def saved_result(rep: dict):
+    path = Path("results") / f"{rep['id']}.json"
     # Deterministic stages are re-run on the saved LLM output, so saved runs get the latest checks.
-    return recheck(json.loads(path.read_text(encoding="utf-8"))) if path.exists() else None
+    return recheck(json.loads(path.read_text(encoding="utf-8")), rep["text"]) if path.exists() else None
 
 
 def show_answer_key(rep: dict):
@@ -89,7 +89,7 @@ with tab_check:
 
     # A saved run is only valid for the unedited benchmark report and requirements.
     unedited = rep is not None and report == rep["text"] and requirements == default_reqs
-    saved = saved_result(rep["id"]) if unedited else None
+    saved = saved_result(rep) if unedited else None
     live = st.session_state.get("live", {})
 
     label = "Run live check" if saved else "Run check"

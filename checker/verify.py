@@ -15,11 +15,17 @@ def connect(path: str = DATA_PATH) -> duckdb.DuckDBPyConnection:
     return con
 
 
+def is_safe_select(sql: str) -> bool:
+    """True for a single read-only SELECT / WITH statement."""
+    s = sql.strip().rstrip(";")
+    return ";" not in s and bool(re.match(r"^\s*(select|with)\b", s, re.I)) and not _FORBIDDEN.search(s)
+
+
 def run_sql(con, sql: str):
     """Returns (value, error). Only single read-only SELECT statements are allowed."""
-    s = sql.strip().rstrip(";")
-    if ";" in s or not re.match(r"^\s*(select|with)\b", s, re.I) or _FORBIDDEN.search(s):
+    if not is_safe_select(sql):
         return None, "rejected: only a single SELECT is allowed"
+    s = sql.strip().rstrip(";")
     try:
         row = con.execute(s).fetchone()
     except duckdb.Error as e:

@@ -3,9 +3,13 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 from checker.consistency import ENERGY_SHARES, apply_issues, find_issues, parse_key
 from checker.core import recheck
+
+TEXTS = {r["id"]: r["text"] for r in
+         yaml.safe_load(Path("benchmark/reports.yaml").read_text(encoding="utf-8"))["reports"]}
 
 COLS = ["country", "year", "renewables_share_elec", "solar_share_elec", "wind_share_elec", "gas_share_elec",
         "coal_share_elec", "oil_share_elec", "fossil_share_elec", "electricity_generation"]
@@ -115,5 +119,5 @@ def test_without_data_suspects_become_inconsistent():
 @pytest.mark.parametrize("rid", [f"report_0{i}" for i in range(1, 8)])
 def test_recheck_of_saved_results_changes_no_verdicts(rid):
     saved = json.loads(Path(f"results/{rid}.json").read_text(encoding="utf-8"))
-    after = recheck(saved)
+    after = recheck(saved, TEXTS[rid])
     assert [c["status"] for c in after["claims"]] == [c["status"] for c in saved["claims"]]
