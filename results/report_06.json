@@ -46,9 +46,9 @@
       "kind": "judgment",
       "stated_value": null,
       "sql": null,
-      "status": "supported",
+      "status": "unsupported",
       "actual": null,
-      "note": "The data context confirms that solar share grew significantly by 14.4 percentage points while coal fell by 42.0 percentage points, supporting the link between solar growth and the coal phase-out."
+      "note": "The data shows natural gas increased by 28.0 percentage points while solar increased by 14.4 percentage points, indicating gas was the primary driver of the coal reduction."
     },
     {
       "id": "C6",
@@ -96,36 +96,37 @@
       "id": "R1",
       "status": "covered",
       "evidence": "Israel's renewables share went from 1.9% in 2015 to 16.9% in 2025.",
-      "reason": "The report correctly states Israel's renewables share for both 2015 and 2025."
+      "reason": "The report clearly states Israel's 2025 renewable share and how it changed from 2015."
     },
     {
       "id": "R2",
       "status": "covered",
       "evidence": "Coal fell from 45.4% to 3.4% over the same period.",
-      "reason": "The report successfully details the status and change of coal in Israel's electricity mix between 2015 and 2025."
+      "reason": "The report details the status and decline of coal in Israel's electricity mix."
     },
     {
       "id": "R3",
       "status": "covered",
       "evidence": "Compared with peers, Greece (49.7%) and Cyprus (27.8%) are well ahead on renewables in 2025.",
-      "reason": "The report compares Israel with two Mediterranean peers (Greece and Cyprus) using their latest available 2025 data."
+      "reason": "The report compares Israel's performance against two Mediterranean peers for the latest year."
     },
     {
       "id": "R4",
-      "status": "partial",
+      "status": "covered",
       "evidence": "Total generation grew by 17.9% between 2015 and 2025, reaching 82.1 TWh.",
-      "reason": "While it mentions the absolute generation growth of 17.9 TWh as a percentage, the actual percentage growth is 27.82%, meaning the metric was miscalculated."
+      "reason": "The report includes total generation growth between 2015 and 2025."
     },
     {
       "id": "R5",
       "status": "missing",
       "evidence": null,
-      "reason": "The report fails to include any key risk for the coming years grounded in the data."
+      "reason": "The report completely omits any key risk for the coming years."
     }
   ],
   "meta": {
     "model": "gemini-3.5-flash-lite",
-    "prompt_version": "1f18b8c3",
-    "finished": "2026-11-05T09:18:30+00:00"
+    "judge_model": "gemini-3.6-flash",
+    "prompt_version": "38701a08",
+    "finished": "2026-11-05T09:39:18+00:00"
   }
 }

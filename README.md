@@ -115,6 +115,17 @@ The re-run with the data context (recall 14/16, 1 false alarm) led to the last c
   cited solar +14.4 / coal -42.0 but ignored gas +28.0, and it noted "2020 instead of 2015" yet marked the
   requirement covered.
 
+### Frozen configuration: `v1.0-frozen`
+| | |
+|---|---|
+| Prompt version | `38701a08` (hash of both prompt templates and the judge's fact wording) |
+| Extraction model | `gemini-3.5-flash-lite` |
+| Judge model | `gemini-3.6-flash` |
+| Frozen on | 2026-11-05 |
+
+From this tag on there are no prompt, scoring-rule or model changes until the held-out test. Everything
+above was tuned on this benchmark, so only a held-out set can show how well it generalises.
+
 Each run records the prompt version (a hash of both prompt templates); `legacy` marks results made with the
 first-run prompts. Scores for different prompt versions are not directly comparable.
 

@@ -88,7 +88,7 @@
       "sql": null,
       "status": "unsupported",
       "actual": null,
-      "note": "Extrapolating renewables to exceed 50% by 2030 based on the 2015-2025 growth rate lacks basis in the data context."
+      "note": "At the historical pace of 1.5 percentage points per year (from 1.9% in 2015 to 16.9% in 2025), renewables would only reach roughly 24.4% by 2030, well below 50%."
     },
     {
       "id": "C10",
@@ -98,7 +98,7 @@
       "sql": null,
       "status": "supported",
       "actual": null,
-      "note": "The claim that gas supplies four out of five kilowatt-hours is directly supported by the 2025 gas share of 79.7%."
+      "note": "The risk is directly grounded in the data showing gas accounts for 79.7% (approximately 80% or four out of five kWh) of generation in 2025."
     }
   ],
   "requirements": [
@@ -106,36 +106,37 @@
       "id": "R1",
       "status": "covered",
       "evidence": "In 2025 renewables provided 16.9% of Israel's electricity, compared with 1.9% in 2015.",
-      "reason": "The report explicitly provides the 2025 renewables share and the change since 2015."
+      "reason": "The report states Israel's 2025 renewable share and compares it directly to the 2015 level."
     },
     {
       "id": "R2",
-      "status": "partial",
+      "status": "covered",
       "evidence": "Coal has almost disappeared but still accounts for 13.4% of generation in 2025.",
-      "reason": "The report addresses the status of coal, but the 13.4% figure is contradicted by actual data showing 3.4%."
+      "reason": "The report details the current status of coal in the electricity mix."
     },
     {
       "id": "R3",
       "status": "covered",
       "evidence": "Israel remains far behind Spain (55.9%) and Italy (48.8%) on renewables in 2025.",
-      "reason": "The report compares Israel's renewables share with two Mediterranean peers for the latest available year."
+      "reason": "The report compares Israel's renewable share to two Mediterranean peers (Spain and Italy) for the year 2025."
     },
     {
       "id": "R4",
       "status": "covered",
       "evidence": "Generation rose from 64.2 TWh in 2015 to 82.1 TWh in 2025.",
-      "reason": "The report correctly provides the growth of total electricity generation between 2015 and 2025."
+      "reason": "The report provides the growth in total generation between 2015 and 2025."
     },
     {
       "id": "R5",
       "status": "covered",
       "evidence": "The main risk is dependence on gas, which supplies four out of five kilowatt-hours.",
-      "reason": "The report identifies dependence on gas as the key risk, which is grounded in the 79.7% gas share data."
+      "reason": "The report identifies heavy gas dependency as a key risk, supported by the generation data."
     }
   ],
   "meta": {
     "model": "gemini-3.5-flash-lite",
-    "prompt_version": "1f18b8c3",
-    "finished": "2026-11-05T09:11:57+00:00"
+    "judge_model": "gemini-3.6-flash",
+    "prompt_version": "38701a08",
+    "finished": "2026-11-05T09:30:17+00:00"
   }
 }
