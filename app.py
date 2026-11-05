@@ -5,7 +5,7 @@ from pathlib import Path
 import streamlit as st
 import yaml
 
-from checker.core import FLAGGED, check_report
+from checker.core import FLAGGED, check_report, recheck
 from checker.highlight import render_html, verdict
 from checker.memo import review_memo
 
@@ -24,7 +24,8 @@ default_reqs = Path("benchmark/requirements.md").read_text(encoding="utf-8")
 
 def saved_result(report_id: str):
     path = Path("results") / f"{report_id}.json"
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+    # Deterministic stages are re-run on the saved LLM output, so saved runs get the latest checks.
+    return recheck(json.loads(path.read_text(encoding="utf-8"))) if path.exists() else None
 
 
 def show_answer_key(rep: dict):

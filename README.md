@@ -14,9 +14,18 @@ report + client requirements + data
    │
    ├─ 1. Extract   (LLM)    split the report into atomic claims; write one SQL query per numeric claim
    ├─ 2. Verify    (DuckDB) run the SQL on the real data, compare to the stated value  → ✅ / ❌
+   ├─ 2b. Consistency (Python) do the report's own numbers agree with each other?     → 🟧
    ├─ 3. Judge     (LLM)    check conclusions against the verified facts               → ✅ / ⚠️
    └─ 4. Coverage  (LLM)    did the report answer each client requirement?            → ✅ / ❌
 ```
+**Internal consistency** (no data access): every numeric claim is keyed by what it measures
+(column, country, year, read from its SQL text) and compared with the report's *other* numbers:
+a stated change vs its stated endpoints under the claim's own wording ("from 1.9% to 16.9%, an increase
+of 15%" is +15 percentage points, not +15%; "2.8% per year" vs the compound rate), shares of the same
+country/year adding up to more than 100%, and the same metric stated with two values. Each stated number
+is treated as an interval that covers its rounding, so rounding alone never triggers a finding. A claim
+the data already contradicts stays "contradicted" (the inconsistency is added to its note).
+
 **Design principle:** the LLM never decides whether a number is correct. It only translates
 text into SQL. The database decides. Every verdict shows the SQL behind it, so a human can audit it.
 

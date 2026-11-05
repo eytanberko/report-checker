@@ -1,16 +1,31 @@
-"""The full check: extract claims (LLM) -> verify numbers (SQL) -> judge conclusions + coverage (LLM)."""
+"""The full check: extract claims (LLM) -> verify numbers (SQL) + internal consistency -> judge (LLM)."""
 import json
 
 from . import llm
+from .consistency import ENERGY_SHARES, apply_issues, find_issues
 from .prompts import extract_prompt, judge_prompt
+from .schema import TABLE
 from .verify import connect, verify_claim
+
+# Which statuses count as a finding the reviewer must look at.
+FLAGGED = {"contradicted", "inconsistent", "unsupported", "unverifiable"}
+_RESULT_FIELDS = ("status", "actual", "note")
+
+
+def check_numeric(con, claims: list[dict]) -> list[dict]:
+    """Deterministic stage: verify each numeric claim on the data, then check the numbers against each other."""
+    numeric = [verify_claim(con, {k: v for k, v in c.items() if k not in _RESULT_FIELDS})
+               for c in claims if c["kind"] == "numeric"]
+    columns = [row[0] for row in con.execute(f"DESCRIBE {TABLE}").fetchall()]
+    return apply_issues(numeric, find_issues(numeric, columns, shares=ENERGY_SHARES))
 
 
 def check_report(report: str, requirements: str, ask=llm.ask_json) -> dict:
+    """Run the whole pipeline on one report. `ask` is the LLM call (injectable for tests)."""
     con = connect()
 
     claims = ask(extract_prompt(report))["claims"]
-    numeric = [verify_claim(con, c) for c in claims if c["kind"] == "numeric"]
+    numeric = check_numeric(con, claims)
     judgments = [c for c in claims if c["kind"] == "judgment"]
 
     facts = "\n".join(f'- "{c["quote"]}" -> {c["status"]}'
@@ -29,8 +44,11 @@ def check_report(report: str, requirements: str, ask=llm.ask_json) -> dict:
     return {"claims": all_claims, "requirements": review.get("requirements", [])}
 
 
-# Which statuses count as a finding the reviewer must look at.
-FLAGGED = {"contradicted", "unsupported", "unverifiable"}
+def recheck(result: dict) -> dict:
+    """Re-run the deterministic stages on a saved result (no LLM): judge verdicts and requirements are kept."""
+    numeric = {c["id"]: c for c in check_numeric(connect(), result["claims"])}
+    claims = [numeric.get(c["id"], c) for c in result["claims"]]
+    return {**result, "claims": claims}
 
 
 def summary(result: dict) -> dict:
