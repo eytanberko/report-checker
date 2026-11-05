@@ -193,7 +193,7 @@ needs. To enable live checks in a private deployment, add `GEMINI_API_KEY` under
 Our World in Data, energy dataset (electricity mix by country, 2010-2025), trimmed to 17 countries.
 
 ## Limitations & next steps
-- **Small, self-written benchmark:** 10 reports, one client request, one dataset, errors planted by me.
+- **Small benchmark:** 10 reports, one client request, one dataset. The reports were written for this project. The mistake types come from errors I see when reviewing analysts' work.
   The judge prompt was tuned once after seeing results. Next: real (anonymised) reports labelled by a
   second reviewer.
 - **The LLM can still write a wrong query.** Guardrails catch the wrong country, year, column or value,

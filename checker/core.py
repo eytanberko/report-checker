@@ -1,5 +1,6 @@
 """The full check: extract claims (LLM) -> verify numbers (SQL) + internal consistency -> judge (LLM)."""
 import json
+from collections import Counter
 from collections.abc import Callable
 
 import duckdb
@@ -43,15 +44,41 @@ def check_numeric(con: duckdb.DuckDBPyConnection, claims: list[dict], report: st
     return apply_issues(numeric, issues)
 
 
+def majority_review(reviews: list, judgment_ids: list[str]) -> tuple[dict, list[str]]:
+    """Combine several judge answers: each conclusion takes the verdict most votes give, each requirement the
+    most common status (a three-way tie is "partial"). Returns (a single judge-shaped answer, problems)."""
+    parsed = [normalize_review(r, judgment_ids) for r in reviews if r is not None]
+    errors = [e for _, _, errs in parsed for e in errs]
+    judgments = []
+    for jid in judgment_ids:
+        votes = [v[jid] for v, _, _ in parsed if jid in v and v[jid].get("verdict") in ("supported", "unsupported")]
+        if votes:
+            top = Counter(v["verdict"] for v in votes).most_common()
+            verdict = top[0][0] if len(top) == 1 or top[0][1] > top[1][1] else votes[0]["verdict"]
+            judgments.append(next(v for v in votes if v["verdict"] == verdict))
+    requirements = []
+    req_ids = list(dict.fromkeys(r["id"] for _, reqs, _ in parsed for r in reqs))
+    for rid in req_ids:
+        votes = [r for _, reqs, _ in parsed for r in reqs if r["id"] == rid]
+        top = Counter(r["status"] for r in votes).most_common()
+        status = top[0][0] if len(top) == 1 or top[0][1] > top[1][1] else "partial"
+        requirements.append(next((r for r in votes if r["status"] == status), {**votes[0], "status": status}))
+    return {"judgments": judgments, "requirements": requirements}, errors
+
+
 def check_report(report: str, requirements: str, ask: Callable[[str], dict] | None = None,
-                 dataset: Dataset | None = None, judge_ask: Callable[[str], dict] | None = None) -> dict:
+                 dataset: Dataset | None = None, judge_ask: Callable[..., dict] | None = None,
+                 judge_votes: int | None = None) -> dict:
     """Run the whole pipeline on one report.
 
     `ask` is the extraction LLM call and `judge_ask` the judge call (default: the extraction and judge
-    models from llm.py). A test that injects only `ask` gets it for both stages."""
+    models from llm.py). A test that injects only `ask` gets it for both stages. With `judge_votes` > 1
+    (default llm.JUDGE_VOTES when the real LLM is used, else 1) the judge answers that many times, majority wins."""
     if ask is None:
         ask, judge_ask = llm.ask_json, judge_ask or llm.ask_judge
+        judge_votes = judge_votes or llm.JUDGE_VOTES
     judge_ask = judge_ask or ask
+    judge_votes = judge_votes or 1
     ds = dataset or default_dataset()
     con = ds.connect()
 
@@ -65,11 +92,23 @@ def check_report(report: str, requirements: str, ask: Callable[[str], dict] | No
 
     facts = format_facts(numeric)
     j_list = json.dumps([{"id": c["id"], "quote": c["quote"]} for c in judgments], ensure_ascii=False)
-    try:
-        review = judge_ask(judge_prompt(report, requirements, facts, j_list, data_context(con, ds, claims)))
-    except llm.BadOutput as e:
-        review, errors = None, errors + [f"judge failed: {e}"]
-    verdicts, reqs, review_errors = normalize_review(review, [c["id"] for c in judgments])
+    prompt = judge_prompt(report, requirements, facts, j_list, data_context(con, ds, claims))
+    ids = [c["id"] for c in judgments]
+    if judge_votes == 1:
+        try:
+            review = judge_ask(prompt)
+        except llm.BadOutput as e:
+            review, errors = None, errors + [f"judge failed: {e}"]
+    else:
+        reviews = []
+        for vote in range(1, judge_votes + 1):
+            try:
+                reviews.append(judge_ask(prompt, vote=vote))
+            except llm.BadOutput as e:
+                errors = errors + [f"judge vote {vote} failed: {e}"]
+        review, vote_errors = majority_review(reviews, ids) if reviews else (None, [])
+        errors = errors + vote_errors
+    verdicts, reqs, review_errors = normalize_review(review, ids)
     judged = [apply_verdict(c, verdicts.get(c["id"])) for c in judgments]
 
     all_claims = sorted(numeric + judged, key=lambda c: int(c["id"].lstrip("C")))

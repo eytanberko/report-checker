@@ -47,3 +47,12 @@ def test_clean_report_memo():
     result = json.loads(Path("results/report_01.json").read_text(encoding="utf-8"))
     memo = review_memo(result, "report_01")
     assert "Good to send." in memo and "##" not in memo
+
+
+def test_suggested_correction_uses_the_reports_precision():
+    claims = [c("C1", "coal at 14.3%", "contradicted", 3.41, sql="SELECT coal FROM energy WHERE year=2025"),
+              c("C2", "rose by 15%", "contradicted", 791.57, sql=CHANGE_SQL)]
+    claims[0]["stated_value"], claims[1]["stated_value"] = 14.3, 15
+    memo = review_memo({"claims": claims, "requirements": []})
+    assert "The data says **3.41**." in memo and "Correct it to 3.4 (check" in memo       # 14.3 has one decimal
+    assert "Correct it to 792, or reword it" in memo                                       # 15 has none

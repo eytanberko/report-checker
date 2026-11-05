@@ -12,6 +12,16 @@ def _fmt(x: float) -> str:
     return f"{x:,.2f}".rstrip("0").rstrip(".")
 
 
+def _as_written(actual: float, stated: object) -> str:
+    """The data's value at the report's own precision: stated 13.4 and data 3.41 give "3.4"."""
+    try:
+        text = f"{float(stated)}"
+    except (TypeError, ValueError):
+        return _fmt(actual)
+    decimals = len(text.split(".")[1].rstrip("0")) if "." in text else 0
+    return f"{actual:,.{decimals}f}"
+
+
 def _number_item(c: dict) -> str:
     if c["status"] == "inconsistent":
         says = f'The report\'s own numbers don\'t agree: {c.get("note") or "see details"}.'
@@ -19,8 +29,8 @@ def _number_item(c: dict) -> str:
     elif c.get("actual") is None:
         says, fix = c.get("note") or "", "Correct the figure against the data."
     else:
-        actual = _fmt(c["actual"])
-        says = f"The data says **{actual}**."
+        actual = _as_written(c["actual"], c.get("stated_value"))
+        says = f"The data says **{_fmt(c['actual'])}**."
         if len(set(re.findall(r"\b(?:19|20)\d\d\b", c.get("sql") or ""))) >= 2:  # a change between two years
             fix = (f"Correct it to {actual}, or reword it if a different measure was meant "
                    "(percentage points vs %, simple vs compound growth).")

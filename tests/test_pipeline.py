@@ -87,3 +87,42 @@ def test_requirement_cascade_by_overlap_with_a_flagged_claim():
     reqs = [requirement("R3", "partial", "and Egypt 13.0%.")]                  # no planted match; overlaps C9
     s = score(rep, {"claims": flags, "requirements": reqs})
     assert [c["id"] for c in s["cascade"]] == ["R3"] and [a["id"] for a in s["false_alarms"]] == ["C9"]
+
+
+def test_majority_review_takes_the_majority_and_breaks_ties_to_partial():
+    from checker.core import majority_review
+    v = lambda verdict, req: {"judgments": [{"id": "C1", "verdict": verdict, "reason": verdict}],  # noqa: E731
+                              "requirements": [{"id": "R1", "status": req, "reason": req}]}
+    merged, errors = majority_review([v("supported", "covered"), v("unsupported", "covered"),
+                                      v("unsupported", "missing")], ["C1"])
+    assert merged["judgments"][0]["verdict"] == "unsupported" and merged["requirements"][0]["status"] == "covered"
+    merged, _ = majority_review([v("supported", "covered"), v("supported", "partial"),
+                                 v("unsupported", "missing")], ["C1"])
+    assert merged["judgments"][0]["verdict"] == "supported" and merged["requirements"][0]["status"] == "partial"
+
+
+def test_check_report_votes_three_times(monkeypatch):
+    rep = REPORTS["report_04"]
+    seen = []
+
+    def judge(prompt, vote=0):
+        seen.append(vote)
+        return {"judgments": [{"id": "C4", "verdict": "supported" if vote != 2 else "unsupported"}],
+                "requirements": [{"id": f"R{i}", "status": "covered"} for i in range(1, 6)]}
+    result = check_report(rep["text"], "reqs", ask=fake_llm, judge_ask=judge, judge_votes=3)
+    assert seen == [1, 2, 3]
+    assert {c["id"]: c["status"] for c in result["claims"]}["C4"] == "supported"
+
+
+def test_sentence_long_planted_errors_are_scored():
+    tariffs = "The decline in carbon intensity proves that electricity tariffs fell."
+    growth = "On the requested growth measure, per-capita generation rose by 8.2%."
+    report = {"text": f"Coal fell to 3.4%. {tariffs} {growth}",
+              "planted": [{"type": "unsupported_conclusion", "match": tariffs},
+                          {"type": "misread_requirement", "match": growth}]}
+    claims = [{"id": "C2", "quote": tariffs.rstrip("."), "status": "unsupported"}]
+    reqs = [{"id": "R4", "status": "partial", "evidence": "per-capita generation rose by 8.2%"}]
+    s = score(report, {"claims": claims, "requirements": reqs})
+    assert len(s["caught"]) == 2 and not s["false_alarms"]
+    s = score(report, {"claims": claims, "requirements": [{"id": "R4", "status": "covered", "evidence": None}]})
+    assert [e["type"] for e in s["missed"]] == ["misread_requirement"]

@@ -140,6 +140,8 @@
 
     <div class="heldout" id="heldout"></div>
 
+    <div class="repeats-block" id="repeats" hidden></div>
+
     <h3 class="schedule-title" id="history-title">The runs that matter</h3>
     <div class="table-wrap">
       <table class="schedule history stack" aria-labelledby="history-title">
@@ -173,8 +175,8 @@
       <li class="step step-out"><strong>Verdict, marked-up report, review notes</strong><span class="who">Output</span><span>Every flag carries what the data says and the query behind it.</span></li>
     </ol>
     <div class="method-notes">
-      <p><strong>Two models, on purpose.</strong> Extraction is mechanical and fully checked downstream, so it runs on a fast, cheap model (<span id="m-extract"></span>). Judging conclusions needs reasoning nothing downstream can verify, so it runs on a stronger one (<span id="m-judge"></span>).</p>
-      <p><strong>The data.</strong> Our World in Data's energy dataset: electricity mix by country, 2010 to 2025, 17 countries. The ten reports were written by me in the style of my team's work, with mistakes planted from errors I see in real reviews.</p>
+      <p><strong>One model that can finish.</strong> v1.0 used a stronger model as the judge (gemini-3.6-flash), but its free tier allows about 20 calls a day, so the benchmark never finished; its partial result stays in the run history. v1.1 uses one fast model for every step (<span id="m-model"></span>), which the free tier can finish, with the same prompts.</p>
+      <p><strong>The data.</strong> Our World in Data's energy dataset: electricity mix by country, 2010 to 2025, 17 countries. The reports were written for this project. The mistake types come from errors I see when reviewing analysts' work.</p>
     </div>
   </section>
 

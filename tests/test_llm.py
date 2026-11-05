@@ -46,6 +46,7 @@ def http(tmp_path, monkeypatch):
     monkeypatch.setattr(llm, "MODEL", "gemini-test")
     monkeypatch.setattr(llm, "CACHE", tmp_path / "cache")
     monkeypatch.setattr(llm, "OFFLINE", False)
+    monkeypatch.setattr(llm, "_report_overloads", None)
     monkeypatch.setattr(llm.requests, "post", post)
     monkeypatch.setattr(llm.time, "sleep", lambda s: state["sleeps"].append(s))
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
@@ -146,7 +147,31 @@ def test_overload_waits_2_4_8_minutes_then_succeeds(http):
 def test_overload_stops_cleanly_after_three_retries(http):
     busy = Resp(503, {"error": {"code": 503, "message": "high demand"}})
     http["responses"] = [busy] * 4 + [OK]
-    with pytest.raises(llm.Overloaded, match="still overloaded after 3 retries .waited 14 min.; stopping"):
+    with pytest.raises(llm.Overloaded, match="still overloaded after 3 retries; stopping to save quota"):
         llm.ask_json("p")
     assert len(http["requests"]) == 4          # 1 call + 3 retries, never a 5th
     assert isinstance(llm.Overloaded("x"), llm.LLMError)   # so evaluate.py stops cleanly and can resume
+
+
+def test_overload_budget_is_per_report_across_calls(http, monkeypatch):
+    busy = Resp(503, {"error": {"code": 503, "message": "high demand"}})
+    llm.start_report()
+    http["responses"] = [busy, busy, OK, busy, busy]        # call 1 uses 2 retries, call 2 has 1 left
+    assert llm.ask_json("a") == {"answer": 42}
+    with pytest.raises(llm.Overloaded):
+        llm.ask_json("b")
+    assert len(http["requests"]) == 5
+    monkeypatch.setattr(llm, "_report_overloads", None)
+
+
+def test_votes_and_salts_get_their_own_cache_entries(http, monkeypatch):
+    plain = llm.cache_path("p", "m")
+    assert plain == llm.CACHE / (__import__("hashlib").sha256(b"m\np").hexdigest()[:16] + ".json")  # unchanged key
+    assert len({plain, llm.cache_path("p", "m", "vote-1"), llm.cache_path("p", "m", "vote-2"),
+                llm.cache_path("p", "m", "repeat-1")}) == 4
+    monkeypatch.setattr(llm, "JUDGE_MODEL", "judge-test")
+    http["responses"] = [OK, OK]
+    llm.ask_judge("p")
+    llm.ask_judge("p", vote=1)
+    temps = [kw["json"]["generationConfig"]["temperature"] for _, kw in http["requests"]]
+    assert temps == [0.0, llm.VOTE_TEMPERATURE]

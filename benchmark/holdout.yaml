@@ -1,0 +1,32 @@
+reports:
+  - id: holdout_01
+    author: Analyst K
+    text: |
+      - Renewables: Israel generated 16.9% of its electricity from renewables in 2025, up from 1.9% in 2015, a gain of 15.0 percentage points.
+      - Coal: Its share fell from 45.4% in 2015 to 3.4% in 2025; gas rose by 28.0 percentage points, indicating that gas absorbed more of coal's decline than renewables did.
+      - Peers: In 2025, renewables supplied 49.7% in Greece and 27.8% in Cyprus, both above Israel.
+      - Scale: Total generation increased by 17.9 TWh between 2015 and 2025, or 27.8%.
+      - Risk: With gas supplying 79.7% in 2025, dependence on this fuel leaves electricity production exposed to potential gas-supply disruptions.
+    planted: []
+  - id: holdout_02
+    author: Analyst L
+    text: |
+      Israel's renewables share reached 16.8% in 2025, compared with 1.9% in 2015. Coal remained in the mix at 26.1% in 2025. Meanwhile, gas accounted for 79.7%, making it the dominant electricity source. Mediterranean comparisons show renewables at 55.9% in Spain and 43.3% in Turkey in 2025, both above Israel. Total electricity generation increased by 27.8 TWh between 2015 and 2025. The transition therefore combines renewable expansion with continuing fossil dependence. A key risk is concentration in gas: potential interruptions to gas supply could disrupt electricity production.
+    planted:
+      - {type: wrong_number, match: "16.8%", why: "Mistyped Israel's 2025 renewables share; the correct value is 16.9%."}
+      - {type: wrong_period, match: "26.1%", why: "Used Israel's 2020 coal share; the 2025 value is 3.4%."}
+      - {type: wrong_calculation, match: "27.8 TWh", why: "Used the relative increase as an absolute increase; generation grew by 17.9 TWh, or 27.8%."}
+  - id: holdout_03
+    author: Analyst M
+    text: |
+      Executive assessment: Israel's transition has advanced, but fossil fuels still dominate. Renewables reached 16.9% in 2025, gaining 15.0 percentage points from 2015. Coal's share fell to 3.4% in 2025, while gas supplied 79.7%. In the latest peer comparison, Greece recorded a renewables share of 48.8% in 2025. Cyprus recorded 27.8% in the same year. Israel's total electricity generation grew at a compound annual rate of 2.78% between 2015 and 2025. The priority risk is reliance on gas: its dominant share makes supply interruptions a potential vulnerability given the scale of gas dependence.
+    planted:
+      - {type: wrong_entity, match: "48.8%", why: "Used Italy's 2025 renewables share for Greece; Greece's value is 49.7%."}
+      - {type: plausible_calculation, match: "2.78%", why: "Divided the total percentage increase by the period length and called it compound annual growth; the supplied compound annual rate is 2.49%/year."}
+  - id: holdout_04
+    author: Analyst N
+    text: |
+      Scope: electricity generated in Israel and Mediterranean peers. Israel's renewables share increased from 1.9% in 2015 to 16.9% in 2025. Coal remained present at 3.4% in 2025, alongside a gas share of 79.7%. The latest available renewables shares were 24.1% for Jordan in 2024 and 13.0% for Egypt in 2025. On the requested growth measure, per-capita generation rose from 7976 kWh in 2015 to 8627 kWh in 2025, an increase of 8.2%. The decline in carbon intensity proves that electricity tariffs fell. Risk: fossil fuels still supplied 83.1% in 2025, leaving substantial exposure to fossil-fuel supply disruptions.
+    planted:
+      - {type: misread_requirement, match: "On the requested growth measure, per-capita generation rose from 7976 kWh in 2015 to 8627 kWh in 2025, an increase of 8.2%.", why: "Answered R4 using per-capita generation. R4 requires total generation growth, which was 17.9 TWh, or 27.8%, between 2015 and 2025."}
+      - {type: unsupported_conclusion, match: "The decline in carbon intensity proves that electricity tariffs fell.", why: "The sheet contains no tariff data and does not establish a relationship between carbon intensity and electricity prices."}

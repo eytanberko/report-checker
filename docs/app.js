@@ -32,11 +32,14 @@
     ["missing_requirement", "Requirement not answered", "The client asked for a peer comparison; there is none"],
     ["misread_requirement", "Requirement misread", "Change since 2020 when the client asked since 2015"],
   ];
+  const REQ_FLAG = {
+    contradicted: { tick: "t-partial", cls: "tk-partial", label: "Answered, but with a contradicted figure" },
+    unsupported: { tick: "t-partial", cls: "tk-partial", label: "Answered, but with an unsupported conclusion" },
+  };
   const VERSION_NOTES = {
-    legacy: "First run, one model (gemini-3.6-flash). Re-scored later without new calls.",
+    legacy: "One model (gemini-3.6-flash). Re-scored later without new calls.",
     "7a00fa6a": "One fast model for every step. Cascade scoring added; two new mistake types; judge prompt adjusted once.",
     "1f18b8c3": "Judge given a table of the underlying data; one planted error now counts once; requirement cascades scored by a general rule.",
-    "38701a08": "Judge moved to a stronger model; a failed checker query is shown to it as “not checked”. Frozen as v1.0.",
   };
 
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -57,8 +60,11 @@
       const n = (s) => r.claims.filter((c) => c.status === s).length;
       const wrong = n("contradicted") + n("inconsistent");
       const unsupported = n("unsupported");
-      const findings = [wrong ? `${wrong} wrong` : "", unsupported ? `${unsupported} unsupported` : ""]
-        .filter(Boolean).join(" · ") || "clean";
+      const unchecked = n("unverifiable");
+      const total = wrong + unsupported + unchecked;
+      const parts = [wrong ? `${wrong} wrong` : "", unsupported ? `${unsupported} unsupported` : "",
+        unchecked ? `${unchecked} unchecked` : ""].filter(Boolean).join(" · ");
+      const findings = total ? `${total} flag${total > 1 ? "s" : ""}: ${parts}` : "no flags";
       return `<button class="tab" role="tab" id="tab-${r.id}" aria-controls="panel" aria-selected="false" tabindex="-1" data-id="${r.id}">
         <span class="tab-name">Report ${esc(r.number)}</span>
         <span class="tab-tally">${findings}${r.run.frozen ? "" : '<span class="tab-earlier">earlier run</span>'}</span></button>`;
@@ -209,14 +215,14 @@
     const cascade = k.cascade.length ? `<p>${k.cascade.length} more flag${k.cascade.length > 1 ? "s" : ""} followed from a planted error (counted as a consequence, not as a false alarm).</p>` : "";
     const run = r.run.frozen
       ? ""
-      : `<p><em>Shown from an earlier run with older settings (prompt ${esc(r.run.prompt_version)}, ${esc(r.run.model)}). The v1.0 run of this report is pending and will replace it automatically.</em></p>`;
+      : `<p><em>Shown from an earlier run with older settings (prompt ${esc(r.run.prompt_version)}, ${esc(r.run.model)}). The ${esc(SITE.config.label)} run of this report is pending and will replace it automatically.</em></p>`;
     $("#answer-key").innerHTML = `<h3>Answer key for this report</h3>${planted}${fa}${cascade}${run}`;
   }
 
   function renderCoverage(r) {
     const asked = Object.fromEntries(SITE.requirements.map((q) => [q.id, q.text]));
     $("#coverage-body").innerHTML = r.requirements.map((q) => {
-      const m = REQ[q.status] || REQ.partial;
+      const m = q.flag ? REQ_FLAG[q.flag] : (REQ[q.status] || REQ.partial);
       const ev = q.evidence ? `<span class="evidence">Answered by: “${esc(q.evidence)}”</span>` : "";
       return `<tr><td class="ref">${esc(q.id)}</td><td>${esc(asked[q.id] || "")}</td>
         <td><span class="result">${tick(m.tick, m.cls)}${m.label}</span></td><td><div>${esc(q.reason || "")}${ev}</div></td></tr>`;
@@ -263,8 +269,8 @@
     $("#panel").setAttribute("aria-labelledby", `tab-${r.id}`);
     ["#b-ref", "#c-ref", "#d-ref"].forEach((sel) => { $(sel).textContent = `Report ${n}`; });
     const run = r.run.frozen
-      ? `v1.0 (frozen settings)`
-      : `Earlier settings · v1.0 pending`;
+      ? `${SITE.config.label} (frozen settings)`
+      : `Earlier settings · ${SITE.config.label} pending`;
     $("#b-meta").innerHTML = `
       <div><dt>Client</dt><dd>Energy Policy desk</dd></div>
       <div><dt>Period</dt><dd>2015–2025</dd></div>
@@ -286,23 +292,40 @@
   }
 
   /* ---------- benchmark ---------- */
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  // "2026-11-05 09:17 UTC" -> "5 Nov 2026, 09:17"
+  function fmtDate(stamp) {
+    const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}:\d{2})/.exec(stamp || "");
+    return m ? `${+m[3]} ${MONTHS[+m[2] - 1]} ${m[1]}, ${m[4]}` : (stamp || "");
+  }
+  const versionOf = (row) => SITE.versions.find((v) => v.prompt_version === row.prompt_version
+    && v.model === row.model && v.judge_model === row.judge_model && v.judge_votes === (+row.judge_votes || 1));
+  const noteOf = (row) => { const v = versionOf(row); return v ? `${v.label}: ${v.note}` : (VERSION_NOTES[row.prompt_version] || ""); };
+  const describe = (c) => `${c.model} for every step` + (c.judge_votes > 1 ? `, the judge answering ${c.judge_votes} times (majority wins)` : "");
+
   function renderBenchmark() {
     const m = SITE.metrics;
     const cfg = SITE.config;
-    $("#m-extract").textContent = cfg.model;
-    $("#m-judge").textContent = cfg.judge_model;
+    $("#m-model").textContent = cfg.model;
     if (!m) { $("#plain").innerHTML = "<p>No benchmark run yet.</p>"; return; }
     const flags = m.caught + m.false_alarms;
     const partial = m.reports_scored < m.reports_total;
-    $("#e-sub").textContent = `The frozen v1.0 configuration (${cfg.model} for extraction, ${cfg.judge_model} as judge, prompt ${cfg.prompt_version}), on ${m.reports_scored} of ${m.reports_total} benchmark reports so far.`;
+    $("#e-sub").textContent = `Frozen ${cfg.label} settings (${describe(cfg)}, prompt ${cfg.prompt_version}), `
+      + `on ${m.reports_scored} of ${m.reports_total} benchmark reports.`;
     $("#plain").innerHTML = `
-      <p><span class="term">Recall</span>: of the <span class="figure">${m.planted}</span> mistakes planted in the reports scored so far, it caught <span class="figure">${m.caught}</span>.</p>
+      <p><span class="term">Recall</span>: of the <span class="figure">${m.planted}</span> mistakes planted in the reports, it caught <span class="figure">${m.caught}</span>.</p>
       <p><span class="term">Precision</span>: of the <span class="figure">${flags}</span> things it flagged, <span class="figure">${m.caught}</span> were planted mistakes and <span class="figure">${m.false_alarms}</span> ${m.false_alarms === 1 ? "was a false alarm" : "were false alarms"}.</p>
+      <p class="caught-def">A planted mistake counts as caught when the checker flags the claim containing it, or marks the affected requirement as not (fully) answered.</p>
       <p>A further ${m.cascade} flag${m.cascade === 1 ? " was a correct consequence" : "s were correct consequences"} of a planted mistake (a conclusion built on a wrong number), and ${m.query_mismatches} of its own queries ${m.query_mismatches === 1 ? "was" : "were"} caught by the guardrails before they could become false alarms.</p>`;
+    const reps = SITE.repeats.filter((r) => r.complete);
+    const spread = (k) => `${pct(Math.min(...reps.map((r) => r[k])))}–${pct(Math.max(...reps.map((r) => r[k])))}`;
     const caveats = [
-      partial ? `Only ${m.reports_scored} of ${m.reports_total} reports are scored with the frozen configuration; the rest wait for the judge model's free daily quota.` : "",
-      "Ten reports, one client request, one dataset, all written by me. That is a demonstration, not a statistic.",
+      partial ? `Only ${m.reports_scored} of ${m.reports_total} reports are scored with the frozen settings so far.` : "",
+      "Ten reports, one client request, one dataset. The reports were written for this project. The mistake types come from errors I see when reviewing analysts' work. That is a demonstration, not a statistic.",
       "The prompts and scoring rules were tuned on these same reports, so these numbers are optimistic. The held-out test below is the honest measure.",
+      "LLM output varies between runs: the same report can get slightly different flags on another run."
+        + (reps.length >= 2 ? ` Across ${reps.length} repeat runs, recall ranged ${spread("recall")} and precision ${spread("precision")}.` : ""),
+      "Held-out set: 4 reports. One mistake more or less moves its result a lot.",
     ].filter(Boolean);
     $("#caveats").innerHTML = caveats.map((c) => `<li>${esc(c)}</li>`).join("");
 
@@ -325,24 +348,64 @@
     $("#types-foot").innerHTML = `<tr><th scope="row" colspan="3">Total${foots ? `<span class="foot-mark" title="Matches the recall figure above">${tick("t-agreed", "tk-agreed")}</span>` : ""}</th>
       <td class="num">${footCaught} of ${footPlanted}</td></tr>`;
     labelCells("#types-body");
-    const h = SITE.heldout;
-    $("#heldout").innerHTML = h
-      ? `<span class="stamp">Held-out</span><div><h3>Held-out test</h3><p>Recall ${pct(h.recall)}, precision ${pct(h.precision)}, ${h.false_alarms} false alarm${h.false_alarms === 1 ? "" : "s"} on ${h.reports_scored} reports the checker had never seen.</p></div>`
-      : `<span class="stamp">Not yet run</span><div><h3>Held-out test</h3><p>New reports the checker has never seen, scored with the configuration frozen before they were written (tag ${esc(cfg.tag)}, prompt ${esc(cfg.prompt_version)}). This is where the result that matters will appear.</p></div>`;
 
+    renderHeldout(cfg);
+    renderRepeats();
+    renderHistory(cfg);
+  }
+
+  function renderHeldout(cfg) {
+    const h = SITE.heldout;
+    if (!h) {
+      $("#heldout").innerHTML = `<span class="stamp">Not yet run</span><div><h3>Held-out test</h3><p>Four new reports the checker has never seen, scored once with the settings frozen before the test (tag ${esc(cfg.tag)}). This is where the result that matters will appear.</p></div>`;
+      return;
+    }
+    const hm = h.metrics;
+    const labels = Object.fromEntries(TYPES.map(([t, l]) => [t, l]));
+    const items = h.reports.map((r) => {
+      const k = r.answer_key;
+      const planted = k.planted.length
+        ? k.planted.map((p) => `<li>${p.caught ? tick("t-agreed", "key-hit") : tick("t-unverified", "key-miss")}<span><span class="key-type">${esc(labels[p.type] || p.type)}</span>${p.caught ? ": caught." : ": <strong>missed.</strong>"} ${esc(p.why || "")}</span></li>`).join("")
+        : `<li>${tick("t-agreed", "key-hit")}<span>Clean report: nothing planted.</span></li>`;
+      const fa = k.false_alarms.length ? `<p class="ho-fa">${k.false_alarms.length} false alarm${k.false_alarms.length > 1 ? "s" : ""}: ${k.false_alarms.map((a) => esc(a.quote)).join("; ")}</p>` : "";
+      return `<div class="ho-report"><h4>${esc(r.id.replace("holdout_", "Held-out report "))}</h4><ul class="key-list">${planted}</ul>${fa}</div>`;
+    }).join("");
+    $("#heldout").innerHTML = `<span class="stamp">Run once</span><div><h3>Held-out test</h3>
+      <p>Four reports the checker had never seen, scored once with the frozen ${esc(cfg.label)} settings (tag ${esc(cfg.tag)}), published as they came.
+      <strong>Recall ${pct(hm.recall)}</strong> (${hm.caught} of ${hm.planted} planted mistakes caught), <strong>precision ${pct(hm.precision)}</strong>, ${hm.false_alarms} false alarm${hm.false_alarms === 1 ? "" : "s"}.</p>
+      <div class="ho-grid">${items}</div></div>`;
+  }
+
+  function renderRepeats() {
+    const reps = SITE.repeats;
+    const box = $("#repeats");
+    if (!reps.length) { box.hidden = true; return; }
+    box.hidden = false;
+    const rows = reps.map((r) => `<tr><td>${esc(r.run.replace("r", "Repeat "))}</td><td class="num">${r.reports_scored}/${r.reports_total}</td>
+      <td class="num">${pct(r.recall)}</td><td class="num">${pct(r.precision)}</td><td class="num">${r.false_alarms}</td></tr>`).join("");
+    box.innerHTML = `<h3 class="schedule-title" id="repeats-title">How much the results vary between runs</h3>
+      <p class="wp-sub">The frozen settings, run again on the benchmark without the cache. Same reports, same prompts; only the model's answers change.</p>
+      <div class="table-wrap"><table class="schedule repeats stack" aria-labelledby="repeats-title">
+      <thead><tr><th scope="col">Run</th><th scope="col" class="num">Reports</th><th scope="col" class="num">Recall</th><th scope="col" class="num">Precision</th><th scope="col" class="num">False alarms</th></tr></thead>
+      <tbody id="repeats-body">${rows}</tbody></table></div>`;
+    labelCells("#repeats-body");
+  }
+
+  function renderHistory(cfg) {
     const rows = SITE.history;
-    const isFrozen = (row) => row.prompt_version === cfg.prompt_version && row.model === cfg.model && row.judge_model === cfg.judge_model;
+    const isFrozen = (row) => { const v = versionOf(row); return !!v && v.label === cfg.label; };
     const outcomeOf = (row) => (row.status && row.status.startsWith("stopped")
       ? (/quota/i.test(row.status) ? "Stopped early: daily quota." : "Stopped early: server overloaded.")
       : row.status === "partial" ? "Partial." : "Complete.");
 
     function runRow(row, change, cls = "") {
       const frozen = isFrozen(row);
+      const v = versionOf(row);
       const m1 = `<span class="nowrap">${esc(row.model)}</span>`;
+      const votes = +row.judge_votes > 1 ? ` ×${+row.judge_votes}` : "";
       const models = row.judge_model && row.judge_model !== row.model
-        ? `${m1}<br><span class="nowrap">${esc(row.judge_model)} (judge)</span>` : m1;
-      const date = (row.timestamp || "").slice(5, 16).replace("-", "/");
-      return `<tr class="figures ${frozen ? "frozen" : ""}"><td><div>${esc(date)}${frozen ? '<span class="tag">v1.0</span>' : ""}</div></td>
+        ? `${m1}<br><span class="nowrap">${esc(row.judge_model)} (judge${votes})</span>` : m1 + (votes ? `<br>judge${votes}` : "");
+      return `<tr class="figures ${frozen ? "frozen" : ""}"><td><div>${esc(fmtDate(row.timestamp))}${v ? `<span class="tag">${esc(v.label)}</span>` : ""}</div></td>
         <td class="models"><div>${models}</div></td><td class="num">${esc(row.reports_scored)}/${esc(row.reports_total)}</td>
         <td class="num">${row.recall === "" ? "–" : pct(+row.recall)}</td><td class="num">${row.precision === "" ? "–" : pct(+row.precision)}</td>
         <td class="num">${esc(row.false_alarms)}</td></tr>
@@ -354,32 +417,31 @@
       table.querySelectorAll("tbody tr.figures").forEach((tr) => [...tr.children].forEach((td, i) => { td.dataset.label = heads[i] || ""; }));
     }
 
-    // The three runs that matter: the first, the best with one model for every step, and the frozen v1.0 settings.
+    // The runs that matter: the first, the best earlier single-model run, each frozen version's latest run.
     const f1 = (r) => (+r.recall && +r.precision ? (2 * r.recall * r.precision) / (+r.recall + +r.precision) : 0);
-    const single = rows.filter((r) => r.status === "complete" && (!r.judge_model || r.judge_model === r.model));
+    const latest = (pred) => rows.filter(pred).filter((r) => r.status === "complete").pop() || rows.filter(pred).pop();
+    const single = rows.filter((r) => r.status === "complete" && !versionOf(r) && (!r.judge_model || r.judge_model === r.model));
     const bestSingle = single.reduce((best, r) => (!best || f1(r) > f1(best) ? r : best), null);
-    const frozenRuns = rows.filter(isFrozen);
-    const frozenRun = frozenRuns.filter((r) => r.status === "complete").pop() || frozenRuns.pop();
     const key = [];
     const add = (row, role) => { if (row && !key.some((k) => k.row === row)) key.push({ row, role }); };
     add(rows[0], "First run.");
-    add(bestSingle, "Best run with one model for every step.");
-    add(frozenRun, "The frozen v1.0 settings.");
+    add(bestSingle, "Best run before the frozen settings.");
+    for (const v of SITE.versions) add(latest((r) => versionOf(r) === v), v.label === cfg.label ? "The frozen settings." : "Earlier frozen settings, kept as history.");
     $("#history-key").innerHTML = key
       .sort((a, b) => rows.indexOf(a.row) - rows.indexOf(b.row))
-      .map(({ row, role }) => runRow(row, `<strong>${esc(role)}</strong> ${esc(VERSION_NOTES[row.prompt_version] || "")} ${outcomeOf(row)}`))
+      .map(({ row, role }) => runRow(row, `<strong>${esc(role)}</strong> ${esc(noteOf(row))} ${outcomeOf(row)}`))
       .join("");
     labelRuns("#history-key");
 
     // Full history: each change stated once; a run with the same settings as the one above is a re-run (ditto).
     let prevConfig = null;
     $("#history-body").innerHTML = rows.map((row) => {
-      const config = `${row.prompt_version}|${row.model}|${row.judge_model}`;
+      const config = `${row.prompt_version}|${row.model}|${row.judge_model}|${+row.judge_votes || 1}`;
       const rerun = config === prevConfig;
       prevConfig = config;
       const change = rerun
         ? `<span class="ditto" aria-hidden="true">〃</span> Same settings, run again. ${outcomeOf(row)}`
-        : `${esc(VERSION_NOTES[row.prompt_version] || "")} ${outcomeOf(row)}`;
+        : `${esc(noteOf(row))} ${outcomeOf(row)}`;
       return runRow(row, change, rerun ? "rerun" : "");
     }).join("");
     labelRuns("#history-body");

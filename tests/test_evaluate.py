@@ -89,3 +89,12 @@ def test_site_data_refreshes_after_a_real_run_only(monkeypatch, tmp_path):
     monkeypatch.setattr(evaluate, "OUT", evaluate.DEFAULT_OUT)
     evaluate.refresh_site()
     assert calls == [1]                                  # the real results folder rebuilds the site data
+
+
+def test_fmt_time_and_meta_defaults(out):
+    assert evaluate.fmt_time("2026-11-05 09:17 UTC") == "5 Nov 2026, 09:17 UTC"
+    assert evaluate.fmt_time("not a date") == "not a date"
+    meta = {k: v for k, v in evaluate.run_meta().items() if k not in ("judge_votes", "cache_salt")}
+    rep = {"id": "report_01", "text": "x"}
+    (out / "report_01.json").write_text(json.dumps({"claims": [], "requirements": [], "meta": meta}))
+    assert evaluate.load_result(rep)[1] == (llm.JUDGE_VOTES == 1 and llm.SALT == "")  # older results: 1 vote, no salt

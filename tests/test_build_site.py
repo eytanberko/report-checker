@@ -27,8 +27,9 @@ def test_segments_rebuild_the_report_text(data):
 def test_runs_are_labelled_frozen_or_earlier(data):
     cfg = data["config"]
     for r in data["reports"]:
-        assert r["run"]["frozen"] == (r["run"]["prompt_version"] == cfg["prompt_version"])
-    assert cfg["tag"] == "v1.0-frozen"
+        same = all(r["run"][k] == cfg[k] for k in ("prompt_version", "model", "judge_model", "judge_votes"))
+        assert r["run"]["frozen"] == same
+    assert cfg["tag"] == build_site.FROZEN_TAG
 
 
 def test_memo_and_answer_key(data):

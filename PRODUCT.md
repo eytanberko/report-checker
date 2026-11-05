@@ -32,9 +32,9 @@ verdict shows the SQL behind it. Built by someone who does this review by hand t
 
 ## Operating Context
 - The author, Eytan Berkowitz, leads a team of data analysts and reviews every product before it ships.
-- Benchmark: 10 reports the author wrote in the style of his team's work, all answering one client request
-  (Israel's electricity transition 2015-2025), 3 clean and 7 with 16 planted errors drawn from real analyst mistakes
-  (8 error types). Data: Our World in Data energy dataset, electricity mix by country 2010-2025, 17 countries.
+- Benchmark: 10 reports answering one client request (Israel's electricity transition 2015-2025), 3 clean and 7 with
+  16 planted errors of 8 types. The reports were written for this project. The mistake types come from errors I see
+  when reviewing analysts' work. A held-out set of 4 more reports (benchmark/holdout.yaml) is scored once. Data: Our World in Data energy dataset, electricity mix by country 2010-2025, 17 countries.
 - Two-model pipeline: extraction on `gemini-3.5-flash-lite`, judge on `gemini-3.6-flash`.
 - Configuration frozen as `v1.0-frozen` (prompt version `38701a08`) before a held-out test.
 

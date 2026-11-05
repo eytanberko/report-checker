@@ -27,7 +27,8 @@ from checker.prompts import prompt_version
 BENCH = Path(__file__).resolve().parent / "benchmark"
 OUT = Path(__file__).resolve().parent / "results"
 DEFAULT_OUT = OUT
-HISTORY_FIELDS = ["timestamp", "mode", "model", "judge_model", "prompt_version", "reports_scored", "reports_total",
+HISTORY_FIELDS = ["timestamp", "mode", "model", "judge_model", "judge_votes", "prompt_version", "reports_scored",
+                  "reports_total",
                   "recall", "precision", "false_alarms", "cascade", "query_mismatches",
                   "api_calls", "cache_hits", "seconds", "status"]
 
@@ -49,6 +50,35 @@ def _requirement_cascades(report: dict, result: dict, flagged: list[dict], candi
     return out
 
 
+MIN_INSIDE = 12  # a flagged quote this long or longer that sits inside a sentence-long match counts for it
+
+
+def _squash(text: str) -> str:
+    return " ".join(text.lower().split()).strip(" .;:,")
+
+
+def _flags_for(match: str, flagged: list[dict]) -> list[dict]:
+    """Flagged claims that are this planted error: the quote contains the match, or (for a sentence-long match)
+    the quote is a substantial part of it."""
+    m = _squash(match)
+    return [c for c in flagged if m in _squash(c["quote"])
+            or (len(_squash(c["quote"])) >= MIN_INSIDE and _squash(c["quote"]) in m)]
+
+
+def _requirements_at(report: dict, result: dict, match: str, not_covered: set[str]) -> list[str]:
+    """Requirements marked partial/missing whose evidence quote overlaps the given sentence of the report."""
+    target = locate(report["text"], match)
+    out = []
+    for r in result["requirements"]:
+        evidence = r.get("evidence")
+        if r["id"] not in not_covered or not isinstance(evidence, str) or not evidence.strip():
+            continue
+        span = locate(report["text"], evidence)
+        if (target and span and span[0] < target[1] and target[0] < span[1]) or _squash(match) in _squash(evidence):
+            out.append(r["id"])
+    return out
+
+
 def score(report: dict, result: dict) -> dict:
     """Match a result's flags to the report's planted errors: caught, missed, cascade, false alarms."""
     flagged = [c for c in result["claims"] if c["status"] in FLAGGED]
@@ -56,13 +86,21 @@ def score(report: dict, result: dict) -> dict:
     caught, missed, used = [], [], set()
 
     for err in report["planted"]:
-        if err["type"] in ("missing_requirement", "misread_requirement"):
+        if err["type"] in ("missing_requirement", "misread_requirement") and err.get("requirement"):
             hit = err["requirement"] in not_covered
             if hit:
                 used.add(err["requirement"])
+        elif err["type"] in ("missing_requirement", "misread_requirement"):
+            # Given as the offending sentence: caught when a requirement marked partial/missing is answered by
+            # that sentence (its evidence overlaps it), or when a flagged claim sits inside it.
+            reqs = _requirements_at(report, result, err["match"], not_covered)
+            matches = _flags_for(err["match"], flagged)
+            hit = bool(reqs or matches)
+            used |= set(reqs) | {c["id"] for c in matches}
         else:
-            # Every flag that contains the match is this one error: counted once, never a false alarm.
-            matches = [c for c in flagged if err["match"].lower() in c["quote"].lower()]
+            # Every flag that contains the match (or sits inside a sentence-long match) is this one error:
+            # counted once, never a false alarm.
+            matches = _flags_for(err["match"], flagged)
             hit = bool(matches)
             used |= {c["id"] for c in matches}
         (caught if hit else missed).append(err)
@@ -81,9 +119,22 @@ def score(report: dict, result: dict) -> dict:
     return {"caught": caught, "missed": missed, "cascade": cascade, "false_alarms": false_alarms}
 
 
+META_DEFAULTS = {"judge_votes": 1, "cache_salt": ""}  # what results saved before these settings existed used
+
+
 def run_meta() -> dict:
-    """What a result must have been made with to be reused: both models and the prompt version."""
-    return {"model": llm.MODEL, "judge_model": llm.JUDGE_MODEL, "prompt_version": prompt_version()}
+    """What a result must have been made with to be reused: models, judge votes, prompt version, cache namespace."""
+    return {"model": llm.MODEL, "judge_model": llm.JUDGE_MODEL, "judge_votes": llm.JUDGE_VOTES,
+            "prompt_version": prompt_version(), "cache_salt": llm.SALT}
+
+
+def fmt_time(stamp: str) -> str:
+    """'2026-11-05 09:17 UTC' -> '5 Nov 2026, 09:17 UTC' (the stored format stays sortable)."""
+    try:
+        t = datetime.strptime(stamp.replace(" UTC", ""), "%Y-%m-%d %H:%M")
+    except (ValueError, AttributeError):
+        return stamp
+    return f"{t.day} {t:%b %Y, %H:%M}" + (" UTC" if "UTC" in stamp else "")
 
 
 def load_result(rep: dict) -> tuple[dict | None, bool]:
@@ -93,7 +144,7 @@ def load_result(rep: dict) -> tuple[dict | None, bool]:
         return None, False
     saved = json.loads(path.read_text(encoding="utf-8"))
     meta = saved.get("meta", {})
-    current = all(meta.get(k) == v for k, v in run_meta().items())
+    current = all(meta.get(k, META_DEFAULTS.get(k)) == v for k, v in run_meta().items())
     return recheck(saved, rep["text"]), current
 
 
@@ -142,7 +193,7 @@ def to_markdown(m: dict, run: dict) -> str:
     versions = ", ".join(f"`{v}`" for v in m["prompt_versions"]) or "none"
     lines = ["# Benchmark results\n",
              f"Models: extraction `{run['model']}`, judge `{run['judge_model']}`; prompt version(s) {versions}; "
-             f"run {run['timestamp']} ({run['mode']}).",
+             f"run {fmt_time(run['timestamp'])} ({run['mode']}).",
              ""]
     if m["reports_scored"] < m["reports_total"]:
         lines += [f"> **Partial:** {m['reports_scored']} of {m['reports_total']} reports scored.", ""]
@@ -178,15 +229,16 @@ def append_history(m: dict, run: dict) -> None:
             with path.open("w", newline="", encoding="utf-8") as f:
                 w = csv.DictWriter(f, fieldnames=HISTORY_FIELDS)
                 w.writeheader()
-                w.writerows({k: r.get(k) or (r.get("model", "") if k == "judge_model" else "")
+                w.writerows({k: r.get(k) or {"judge_model": r.get("model", ""), "judge_votes": "1"}.get(k, "")
                              for k in HISTORY_FIELDS} for r in rows)
     new = not path.exists()
     with path.open("a", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=HISTORY_FIELDS)
         if new:
             w.writeheader()
-        w.writerow({**{k: run[k] for k in ("timestamp", "mode", "model", "judge_model", "api_calls",
-                                            "cache_hits", "seconds", "status")},
+        w.writerow({**{k: run.get(k, 1 if k == "judge_votes" else "") for k in (
+                        "timestamp", "mode", "model", "judge_model", "judge_votes", "api_calls", "cache_hits",
+                        "seconds", "status")},
                     "prompt_version": "+".join(m["prompt_versions"]),
                     **{k: m[k] for k in ("reports_scored", "reports_total", "false_alarms", "cascade",
                                          "query_mismatches")},
@@ -197,7 +249,8 @@ def append_history(m: dict, run: dict) -> None:
 def refresh_site() -> None:
     """Rebuild the showcase's data (docs/data/site.js) from the results just written, so the site follows each run
     with no manual step: e.g. the "earlier run" labels disappear once a report is re-scored with the frozen settings."""
-    if OUT.resolve() != DEFAULT_OUT.resolve():  # tests and ad-hoc runs on other folders leave the site alone
+    # the benchmark, held-out and repeat folders under results/ feed the site; tests and ad-hoc folders do not
+    if OUT.resolve() != DEFAULT_OUT.resolve() and DEFAULT_OUT.resolve() not in OUT.resolve().parents:
         return
     from scripts import build_site
     build_site.main()
@@ -205,20 +258,36 @@ def refresh_site() -> None:
 
 def main(argv: list[str] | None = None) -> int:
     """Run (or resume) the benchmark; see the module docstring."""
+    global OUT
     parser = argparse.ArgumentParser(description="Run the Report Checker benchmark.")
     parser.add_argument("--offline", action="store_true", help="never call the API; score saved results")
+    parser.add_argument("--reports", default=str(BENCH / "reports.yaml"), help="reports + answer key (YAML)")
+    parser.add_argument("--out", help="folder for results, metrics and history (default: results/)")
+    parser.add_argument("--judge-model", help="judge model (default: llm.JUDGE_MODEL)")
+    parser.add_argument("--votes", type=int, help="judge votes per report; majority wins (default: llm.JUDGE_VOTES)")
+    parser.add_argument("--salt", help="separate cache namespace: a repeat run that bypasses the main cache")
     args = parser.parse_args(argv)
+    if args.out:
+        OUT = Path(args.out)
+    if args.judge_model:
+        llm.JUDGE_MODEL = args.judge_model
+    if args.votes:
+        llm.JUDGE_VOTES = args.votes
+    if args.salt:
+        llm.SALT = args.salt
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-    reports = yaml.safe_load((BENCH / "reports.yaml").read_text(encoding="utf-8"))["reports"]
+    reports = yaml.safe_load(Path(args.reports).read_text(encoding="utf-8"))["reports"]
     requirements = (BENCH / "requirements.md").read_text(encoding="utf-8")
-    OUT.mkdir(exist_ok=True)
+    OUT.mkdir(parents=True, exist_ok=True)
     llm.OFFLINE = llm.OFFLINE or args.offline
     calls0, hits0, t0 = llm.stats["calls"], llm.stats["cache_hits"], time.monotonic()
     run = {**run_meta(), "mode": "offline" if llm.OFFLINE else "live",
            "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}
-    print(f"model {run['model']}, prompt version {run['prompt_version']}, mode {run['mode']}")
+    salt = f", cache salt {llm.SALT}" if llm.SALT else ""
+    print(f"extraction {run['model']}, judge {run['judge_model']} x{run['judge_votes']}, "
+          f"prompt version {run['prompt_version']}, mode {run['mode']}{salt}")
 
     scored, stopped = {}, None
     for rep in reports:
@@ -231,7 +300,9 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print(f"{rep['id']}: checking ...")
             try:
-                result = check_report(rep["text"], requirements, ask=llm.ask_json, judge_ask=llm.ask_judge)
+                llm.start_report()
+                result = check_report(rep["text"], requirements, ask=llm.ask_json, judge_ask=llm.ask_judge,
+                                      judge_votes=llm.JUDGE_VOTES)
             except llm.LLMError as e:
                 stopped = " ".join(str(e).split())[:200]  # one line, so history.csv stays readable
                 print(f"\nSTOPPED: {e}\nFinished reports are saved; run `python evaluate.py` again to resume.\n")
@@ -241,6 +312,7 @@ def main(argv: list[str] | None = None) -> int:
                                                    encoding="utf-8")
         scored[rep["id"]] = (result, score(rep, result))
 
+    llm._report_overloads = None  # the per-report retry budget ends with the benchmark loop
     m = metrics(reports, scored)
     complete = len(scored) == len(reports) and stopped is None
     run.update(api_calls=llm.stats["calls"] - calls0, cache_hits=llm.stats["cache_hits"] - hits0,
