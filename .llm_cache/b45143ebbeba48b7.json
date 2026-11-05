@@ -1,0 +1,67 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Renewables rose by 15% between 2015 and 2025",
+      "kind": "numeric",
+      "stated_value": 15.0,
+      "sql": "SELECT 100.0 * (e2025.renewables_share_elec - e2015.renewables_share_elec) / e2015.renewables_share_elec FROM energy e2015 JOIN energy e2025 ON e2015.country = e2025.country WHERE e2015.country = 'Israel' AND e2015.year = 2015 AND e2025.year = 2025"
+    },
+    {
+      "id": "C2",
+      "quote": "reaching 16.9% of Israel's electricity",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C3",
+      "quote": "In 2025 coal still provided 14.3% of Israel's electricity",
+      "kind": "numeric",
+      "stated_value": 14.3,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C4",
+      "quote": "the phase-out is far from complete",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C5",
+      "quote": "Total generation increased from 64.2 TWh",
+      "kind": "numeric",
+      "stated_value": 64.2,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C6",
+      "quote": "to 82.1 TWh over the decade",
+      "kind": "numeric",
+      "stated_value": 82.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C7",
+      "quote": "79.7% of generation in 2025",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C8",
+      "quote": "Israel's reliance on gas (79.7% of generation in 2025) is the main vulnerability",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C9",
+      "quote": "any disruption to gas supply would hit most of the power system",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    }
+  ]
+}

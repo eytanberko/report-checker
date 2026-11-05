@@ -1,0 +1,136 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Israel's renewables share went from 1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015",
+      "status": "verified",
+      "actual": 1.9,
+      "note": ""
+    },
+    {
+      "id": "C2",
+      "quote": "to 16.9% in 2025",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 16.93,
+      "note": ""
+    },
+    {
+      "id": "C3",
+      "quote": "Coal fell from 45.4%",
+      "kind": "numeric",
+      "stated_value": 45.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2015",
+      "status": "verified",
+      "actual": 45.4,
+      "note": ""
+    },
+    {
+      "id": "C4",
+      "quote": "to 3.4%",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 3.41,
+      "note": ""
+    },
+    {
+      "id": "C5",
+      "quote": "The coal phase-out was driven mainly by the growth of solar.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null,
+      "status": "unsupported",
+      "actual": null,
+      "note": "The 42 percentage point decline in coal far exceeds the 15 percentage point increase in renewables/solar, meaning solar could not have been the main driver of the phase-out."
+    },
+    {
+      "id": "C6",
+      "quote": "Total generation grew by 17.9% between 2015 and 2025",
+      "kind": "numeric",
+      "stated_value": 17.9,
+      "sql": "SELECT 100.0 * (e2025.electricity_generation - e2015.electricity_generation) / e2015.electricity_generation FROM energy e2015 JOIN energy e2025 ON e2015.country = e2025.country WHERE e2015.country = 'Israel' AND e2015.year = 2015 AND e2025.year = 2025",
+      "status": "contradicted",
+      "actual": 27.82,
+      "note": "data says 27.82, report says 17.9"
+    },
+    {
+      "id": "C7",
+      "quote": "reaching 82.1 TWh",
+      "kind": "numeric",
+      "stated_value": 82.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 82.1,
+      "note": ""
+    },
+    {
+      "id": "C8",
+      "quote": "Greece (49.7%)",
+      "kind": "numeric",
+      "stated_value": 49.7,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Greece' AND year = 2025",
+      "status": "verified",
+      "actual": 49.7,
+      "note": ""
+    },
+    {
+      "id": "C9",
+      "quote": "Cyprus (27.8%)",
+      "kind": "numeric",
+      "stated_value": 27.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Cyprus' AND year = 2025",
+      "status": "verified",
+      "actual": 27.75,
+      "note": ""
+    },
+    {
+      "id": "C10",
+      "quote": "Greece (49.7%) and Cyprus (27.8%) are well ahead on renewables in 2025",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null,
+      "status": "supported",
+      "actual": null,
+      "note": "Both Greece (49.7%) and Cyprus (27.8%) have higher renewable shares than Israel's 16.9% in 2025."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Israel's renewables share went from 1.9% in 2015 to 16.9% in 2025.",
+      "reason": "The report explicitly provides the 2025 renewable share and its trajectory from 2015."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal fell from 45.4% to 3.4% over the same period.",
+      "reason": "The report provides the current low share of coal and its historical decline."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "Compared with peers, Greece (49.7%) and Cyprus (27.8%) are well ahead on renewables in 2025.",
+      "reason": "The report compares Israel's renewable adoption against two Mediterranean peers for 2025."
+    },
+    {
+      "id": "R4",
+      "status": "covered",
+      "evidence": "Total generation grew by 17.9% between 2015 and 2025, reaching 82.1 TWh.",
+      "reason": "The report quantifies the overall growth in total electricity generation between 2015 and 2025."
+    },
+    {
+      "id": "R5",
+      "status": "missing",
+      "evidence": null,
+      "reason": "The brief does not mention or analyze any future risks."
+    }
+  ]
+}

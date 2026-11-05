@@ -1,0 +1,46 @@
+{
+  "judgments": [
+    {
+      "id": "C4",
+      "verdict": "supported",
+      "reason": "Solar provides 16.2% out of the 16.9% total renewable generation, accounting for roughly 96% of all renewables."
+    },
+    {
+      "id": "C14",
+      "verdict": "supported",
+      "reason": "The verified data shows natural gas comprises 79.7% of total generation, directly supporting the conclusion of heavy single-fuel dependence."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Israel generated 16.9% of its electricity from renewables in 2025, up from 1.9% in 2015, an increase of 15 percentage points.",
+      "reason": "The report provides the 2025 renewables share, the 2015 share, and the exact percentage-point change."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal fell from 45.4% of generation in 2015 to just 3.4% in 2025",
+      "reason": "The report specifies both historical and current shares of coal in Israel's electricity mix."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "Among Mediterranean peers, Greece reached 49.7% renewables in 2025 and Cyprus 27.8%.",
+      "reason": "The report compares Israel's renewable figures against two Mediterranean peers (Greece and Cyprus) for 2025."
+    },
+    {
+      "id": "R4",
+      "status": "covered",
+      "evidence": "Total generation grew from 64.2 TWh to 82.1 TWh, about 28%.",
+      "reason": "The report details total generation in TWh for both 2015 and 2025 as well as the percentage growth."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "Key risk: with roughly 80% of electricity coming from gas, Israel depends heavily on a single fuel.",
+      "reason": "The report highlights natural gas single-fuel reliance as a key risk directly grounded in the 79.7% generation figure."
+    }
+  ]
+}

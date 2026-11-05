@@ -1,0 +1,133 @@
+# Benchmark: 10 analyst reports answering benchmark/requirements.md.
+# 3 are clean, 7 contain PLANTED errors. `planted` is the answer key used by evaluate.py.
+# A planted claim error is "caught" if a flagged claim's quote contains `match`.
+# A planted missing requirement is "caught" if the checker marks that requirement not covered.
+# Optional `also` (quote substrings) / `also_requirements` (requirement ids) list downstream
+# "cascade" errors caused by a planted error: counted separately, not as false alarms or recall.
+#
+# Error types (taxonomy from real analyst QA work):
+#   wrong_number          - typo / misread value
+#   wrong_period          - right metric, value from a different year
+#   wrong_entity          - right metric, value from a different country
+#   wrong_calculation     - percent vs percentage points, absolute vs relative change
+#   unsupported_conclusion- cause, forecast or claim the data does not support
+#   missing_requirement   - the client asked for it, the report does not answer it
+#   misread_requirement   - the report answers a different question than asked (wrong period,
+#                           wrong comparison group); scored like missing_requirement, by requirement id
+#   plausible_calculation - a calculation that looks right but uses the wrong method
+#                           (simple average instead of compound growth, ratio instead of % change)
+
+reports:
+  - id: report_01
+    author: Analyst A
+    text: |
+      Israel generated 16.9% of its electricity from renewables in 2025, up from 1.9% in 2015,
+      an increase of 15 percentage points. Almost all of it is solar, which supplied 16.2% of
+      electricity in 2025. Coal fell from 45.4% of generation in 2015 to just 3.4% in 2025, while
+      natural gas filled the gap and reached 79.7%. Total generation grew from 64.2 TWh to 82.1 TWh,
+      about 28%. Among Mediterranean peers, Greece reached 49.7% renewables in 2025 and Cyprus 27.8%.
+      Key risk: with roughly 80% of electricity coming from gas, Israel depends heavily on a single fuel.
+    planted: []
+
+  - id: report_02
+    author: Analyst B
+    text: |
+      In 2025 renewables provided 16.9% of Israel's electricity, compared with 1.9% in 2015.
+      Coal has almost disappeared but still accounts for 13.4% of generation in 2025.
+      Gas now supplies 79.7% of electricity. Generation rose from 64.2 TWh in 2015 to 82.1 TWh in 2025.
+      Israel remains far behind Spain (55.9%) and Italy (48.8%) on renewables in 2025.
+      At this pace, renewables will exceed 50% of Israel's electricity by 2030.
+      The main risk is dependence on gas, which supplies four out of five kilowatt-hours.
+    planted:
+      - {type: wrong_number, match: "13.4%", also_requirements: [R2]}
+      - {type: unsupported_conclusion, match: "exceed 50%"}
+
+  - id: report_03
+    author: Analyst C
+    text: |
+      Renewables rose by 15% between 2015 and 2025, reaching 16.9% of Israel's electricity.
+      In 2025 coal still provided 14.3% of Israel's electricity, so the phase-out is far from complete.
+      Total generation increased from 64.2 TWh to 82.1 TWh over the decade.
+      Israel's reliance on gas (79.7% of generation in 2025) is the main vulnerability:
+      any disruption to gas supply would hit most of the power system.
+    planted:
+      - {type: wrong_calculation, match: "rose by 15%"}
+      - {type: wrong_period, match: "14.3%", also: ["far from complete"]}
+      - {type: missing_requirement, requirement: R3}
+
+  - id: report_04
+    author: Analyst D
+    text: |
+      Israel's renewables share reached 16.9% in 2025 (1.9% in 2015). Coal is nearly gone at 3.4%
+      of electricity in 2025, down from 45.4% in 2015. Total generation grew to 92.1 TWh in 2025
+      from 64.2 TWh in 2015. In the region, Cyprus reached 49.7% renewables in 2025, and Egypt 13.0%.
+      The key risk is concentration: gas supplied 79.7% of Israel's electricity in 2025.
+    planted:
+      - {type: wrong_number, match: "92.1 TWh"}
+      - {type: wrong_entity, match: "Cyprus reached 49.7%"}
+
+  - id: report_05
+    author: Analyst E
+    text: |
+      Renewables supplied 16.9% of Israel's electricity in 2025, about 15 percentage points more than
+      in 2015 (1.9%). Coal dropped to 3.4% in 2025 from 45.4% ten years earlier. Generation increased
+      by roughly 28%, from 64.2 TWh to 82.1 TWh. Israel still lags Italy (48.8%) and Spain (55.9%),
+      both of which generate around half of their electricity from renewables.
+      Carbon intensity fell from 693 to 493 grams of CO2 per kWh between 2015 and 2025.
+      The main risk: gas reached 79.7% of generation, leaving little diversity in supply.
+    planted: []
+
+  - id: report_06
+    author: Analyst F
+    text: |
+      Israel's renewables share went from 1.9% in 2015 to 16.9% in 2025. Coal fell from 45.4% to 3.4%
+      over the same period. The coal phase-out was driven mainly by the growth of solar.
+      Total generation grew by 17.9% between 2015 and 2025, reaching 82.1 TWh.
+      Compared with peers, Greece (49.7%) and Cyprus (27.8%) are well ahead on renewables in 2025.
+    planted:
+      - {type: unsupported_conclusion, match: "driven mainly by the growth of solar"}
+      - {type: wrong_calculation, match: "17.9%"}
+      - {type: missing_requirement, requirement: R5}
+
+  - id: report_07
+    author: Analyst G
+    text: |
+      Renewables provided 16.9% of Israel's electricity in 2025, up from 1.9% in 2015.
+      Solar provided 13.1% of electricity in 2025 and is the main renewable source.
+      Coal fell to 3.4% in 2025. Generation grew from 64.2 TWh to 82.1 TWh.
+      In the region, Egypt reached 24.0% renewables in 2025, ahead of Israel, while Greece reached 49.7%.
+      The key risk is that 79.7% of Israel's electricity comes from gas.
+    planted:
+      - {type: wrong_period, match: "13.1%"}
+      - {type: wrong_entity, match: "Egypt reached 24.0%", also: ["ahead of Israel"]}
+
+  - id: report_08
+    author: Analyst H
+    text: |
+      Summary: renewables reached 16.9% of Israel's electricity in 2025 versus 1.9% in 2015.
+      Coal is almost phased out (3.4% in 2025, from 45.4% in 2015), replaced mostly by gas, whose share
+      rose from 51.6% to 79.7%. Generation grew about 28% to 82.1 TWh. Peers in 2025: Greece 49.7%,
+      Italy 48.8%, Cyprus 27.8% renewables. Risk: heavy dependence on one fuel, gas, for about 80% of power.
+    planted: []
+
+  - id: report_09
+    author: Analyst I
+    text: |
+      Since 2020, renewables in Israel rose from 6.1% to 16.9% of electricity in 2025, an increase of
+      about 11 percentage points. Coal fell to 3.4% in 2025. Generation grew by 2.8% per year on average
+      between 2015 and 2025, reaching 82.1 TWh. Israel trails Greece (49.7%) and Italy (48.8%) on
+      renewables in 2025. Key risk: gas supplies 79.7% of Israel's electricity.
+    planted:
+      - {type: misread_requirement, requirement: R1}   # client asked for change since 2015, not 2020
+      - {type: plausible_calculation, match: "2.8% per year"}   # simple 28%/10; compound annual growth is ~2.5%
+
+  - id: report_10
+    author: Analyst J
+    text: |
+      Renewables reached 16.9% of Israel's electricity in 2025, up from 1.9% in 2015, so renewables grew
+      by 891%. Coal is down to 3.4% in 2025. Generation grew about 28% to 82.1 TWh. Compared with Germany
+      (59.1%) and the Netherlands (51.2%) in 2025, Israel is far behind on renewables.
+      Key risk: 79.7% of Israel's electricity comes from gas.
+    planted:
+      - {type: plausible_calculation, match: "891%"}   # ratio x100; percent change is ~791%
+      - {type: misread_requirement, requirement: R3}   # Germany and the Netherlands are not Mediterranean peers
