@@ -21,6 +21,7 @@ import yaml
 
 from checker import llm
 from checker.core import FLAGGED, check_report, recheck
+from checker.highlight import locate
 from checker.prompts import prompt_version
 
 BENCH = Path("benchmark")
@@ -28,6 +29,23 @@ OUT = Path("results")
 HISTORY_FIELDS = ["timestamp", "mode", "model", "prompt_version", "reports_scored", "reports_total",
                   "recall", "precision", "false_alarms", "cascade", "query_mismatches",
                   "api_calls", "cache_hits", "seconds", "status"]
+
+
+def _requirement_cascades(report: dict, result: dict, flagged: list[dict], candidates: set[str]) -> set[str]:
+    """General rule: a requirement marked partial/missing is a cascade of a planted claim error when its
+    evidence quote contains that error's match, or overlaps (in the report text) a claim the checker flagged."""
+    matches = [e["match"].lower() for e in report["planted"] if e.get("match")]
+    flagged_spans = [s for s in (locate(report["text"], c["quote"]) for c in flagged) if s]
+    out = set()
+    for r in result["requirements"]:
+        evidence = r.get("evidence")
+        if r["id"] not in candidates or not isinstance(evidence, str) or not evidence.strip():
+            continue
+        span = locate(report["text"], evidence)
+        if any(m in evidence.lower() for m in matches) or \
+                (span and any(s[0] < span[1] and span[0] < s[1] for s in flagged_spans)):
+            out.add(r["id"])
+    return out
 
 
 def score(report: dict, result: dict) -> dict:
@@ -42,15 +60,16 @@ def score(report: dict, result: dict) -> dict:
             if hit:
                 used.add(err["requirement"])
         else:
-            match = next((c for c in flagged if err["match"].lower() in c["quote"].lower()), None)
-            hit = match is not None
-            if hit:
-                used.add(match["id"])
+            # Every flag that contains the match is this one error: counted once, never a false alarm.
+            matches = [c for c in flagged if err["match"].lower() in c["quote"].lower()]
+            hit = bool(matches)
+            used |= {c["id"] for c in matches}
         (caught if hit else missed).append(err)
 
     # Downstream "cascade" errors caused by a planted error: neither false alarms nor extra recall.
     also = [m.lower() for e in report["planted"] for m in e.get("also", [])]
     also_reqs = {r for e in report["planted"] for r in e.get("also_requirements", [])}
+    also_reqs |= _requirement_cascades(report, result, flagged, not_covered - used)
     cascade = [c for c in flagged if c["id"] not in used and any(m in c["quote"].lower() for m in also)]
     cascade += [{"id": r, "quote": f"requirement {r} marked not covered"}
                 for r in sorted((not_covered - used) & also_reqs)]

@@ -15,6 +15,8 @@ from .schema import DATA_PATH, SCHEMA, TABLE
 
 TIME_NAMES = re.compile(r"^(year|yr|fiscal_year|period)$", re.I)
 MAX_LISTED = 30  # list every category value up to this many distinct values
+ENERGY_CONTEXT = ["renewables_share_elec", "solar_share_elec", "wind_share_elec", "gas_share_elec",
+                  "coal_share_elec", "oil_share_elec", "fossil_share_elec", "electricity_generation"]
 
 
 @dataclass
@@ -26,6 +28,7 @@ class Dataset:
     entity_col: str | None
     time_col: str | None
     shares: dict[str, list[str]] = field(default_factory=dict)
+    context_columns: list[str] | None = None  # columns shown to the judge; None = all numeric columns
 
     def connect(self) -> duckdb.DuckDBPyConnection:
         """Fresh in-memory connection with the CSV loaded as `self.table`."""
@@ -91,7 +94,7 @@ def describe(con: duckdb.DuckDBPyConnection, table: str, source: str = "") -> tu
 def load_dataset(path: str, description: str | None = None, table: str | None = None) -> Dataset:
     """Load any CSV. `description` overrides the auto-built schema text (the energy file has one built in)."""
     if Path(path).resolve() == Path(DATA_PATH).resolve():
-        return Dataset(path, TABLE, description or SCHEMA, "country", "year", ENERGY_SHARES)
+        return Dataset(path, TABLE, description or SCHEMA, "country", "year", ENERGY_SHARES, ENERGY_CONTEXT)
     table = table or table_name(path)
     ds = Dataset(path, table, "", None, None)
     auto, ds.entity_col, ds.time_col = describe(ds.connect(), table, path)

@@ -40,7 +40,21 @@ def locate(text: str, quote: str) -> tuple[int, int] | None:
     m = re.search(pattern, text, re.I)
     if m:
         return m.span()
-    return _fuzzy_locate(text, quote)
+    return _fuzzy_locate(text, quote) or _longest_run(text, quote)
+
+
+def _longest_run(text: str, quote: str) -> tuple[int, int] | None:
+    """Longest run of 2+ consecutive quote words found verbatim, preferring runs with a number.
+
+    Handles quotes stitched from separate parts of a sentence ("Greece 49.7% renewables")."""
+    words = quote.split()
+    for n in range(len(words) - 1, 1, -1):
+        runs = [words[i:i + n] for i in range(len(words) - n + 1)]
+        for run in sorted(runs, key=lambda r: not any(ch.isdigit() for w in r for ch in w)):
+            m = re.search(r"\s+".join(re.escape(w) for w in run), text, re.I)
+            if m:
+                return m.span()
+    return None
 
 
 def _fuzzy_locate(text: str, quote: str) -> tuple[int, int] | None:

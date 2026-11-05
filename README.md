@@ -32,7 +32,7 @@ flowchart LR
 | Guardrails | Python, before execution: columns exist, values (e.g. countries) exist, years in range, the query's country/year are named or implied by the claim's sentence | 🔧 `query_mismatch` |
 | Verify | DuckDB runs the query; the stated value must match within rounding | ✅ `verified` / ❌ `contradicted` |
 | Consistency | Python, **no data access**: a stated change vs its stated endpoints under the claim's own wording (%, percentage points, per year compounded), shares above 100%, the same metric stated twice | 🟧 `inconsistent` |
-| Judge | LLM checks conclusions against the verified facts | ✅ `supported` / ⚠️ `unsupported` |
+| Judge | LLM checks conclusions against the verified facts and a data table built in Python (every column for the countries/years the report mentions) | ✅ `supported` / ⚠️ `unsupported` |
 | Coverage | LLM checks each client requirement; a wrong scope (period, comparison group, metric) is `partial` | ✅ / ⚠️ / ❌ |
 
 Anything the checker can't use (malformed LLM output, a claim without a number) becomes ❔ `unverifiable`
@@ -74,6 +74,23 @@ those reports, with 4 flags counted as false alarms. Reviewing each one led to t
   prompt rules: a wrong-scope answer is "partial", and "X% per year on average" means compound growth.
 - **Deterministic stages added** (guardrails, internal consistency). They change no LLM prompt; saved
   results are re-checked with them for free.
+
+After the first full 10-report run on one model (`gemini-3.5-flash-lite`: recall 15/16, 7 false alarms),
+two scoring rules and one judge change were added. *All three were added after seeing that run's results.*
+- **One planted error, many flags:** if several flagged claims contain the same planted error's match, the
+  error counts once and the extra flags are not false alarms (report_07's "13.1%" appeared in a numeric
+  claim and in a judgment claim that bundled it).
+- **Requirement-level cascades, as a general rule:** a requirement marked partial/missing is a cascade of a
+  planted claim error, not a false alarm, when its evidence quote contains that error's match, or overlaps
+  (in the report text) a claim the checker flagged. 6 of the 7 false alarms were the coverage judge marking
+  an answered requirement "partial" *because its number was wrong*; that error is already caught by the SQL
+  check, so counting it again would double-penalise one mistake. This replaces per-report labels for
+  requirements; quote-level `also` labels remain.
+- **Judge data context:** the judge missed "the coal phase-out was driven mainly by solar" because it only
+  saw the report's own numbers, and the report never mentions gas. It now also gets a table built in Python,
+  with no extra LLM call: for every country and year in the extracted claims, all `*_share_elec` columns and
+  `electricity_generation`, plus the absolute change from the first to the last year (gas +28.0 points,
+  solar +14.4).
 
 Each run records the prompt version (a hash of both prompt templates); `legacy` marks results made with the
 first-run prompts. Scores for different prompt versions are not directly comparable.

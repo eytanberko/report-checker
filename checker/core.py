@@ -6,6 +6,7 @@ import duckdb
 
 from . import llm
 from .consistency import apply_issues, find_issues
+from .context import data_context
 from .dataset import Dataset, default_dataset
 from .guardrails import check_query
 from .normalize import apply_verdict, normalize_claims, normalize_review
@@ -59,7 +60,7 @@ def check_report(report: str, requirements: str, ask: Callable[[str], dict] = ll
                       for c in numeric) or "(none)"
     j_list = json.dumps([{"id": c["id"], "quote": c["quote"]} for c in judgments], ensure_ascii=False)
     try:
-        review = ask(judge_prompt(report, requirements, facts, j_list))
+        review = ask(judge_prompt(report, requirements, facts, j_list, data_context(con, ds, claims)))
     except llm.BadOutput as e:
         review, errors = None, errors + [f"judge failed: {e}"]
     verdicts, reqs, review_errors = normalize_review(review, [c["id"] for c in judgments])

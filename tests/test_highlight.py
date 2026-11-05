@@ -72,3 +72,9 @@ def test_every_saved_claim_is_located(path):
     result = json.loads(path.read_text(encoding="utf-8"))
     _, missing = render_html(TEXTS[path.stem], result["claims"])
     assert not missing
+
+
+def test_locate_stitched_quote_falls_back_to_longest_run():
+    text = "Peers in 2025: Greece 49.7%,\n  Italy 48.8%, Cyprus 27.8% renewables."
+    s, e = locate(text, "Greece 49.7% renewables")
+    assert text[s:e] == "Greece 49.7%"

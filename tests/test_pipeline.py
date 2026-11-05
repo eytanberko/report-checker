@@ -49,3 +49,41 @@ def test_cascade_flags_are_not_false_alarms():
     s = score(rep, result)
     assert len(s["caught"]) == 2 and not s["false_alarms"]
     assert [c["id"] for c in s["cascade"]] == ["C9"]
+
+
+def test_duplicate_flags_of_one_planted_error_count_once():
+    rep = REPORTS["report_07"]
+    flags = [{"id": "C3", "quote": "Solar provided 13.1% of electricity in 2025", "status": "contradicted"},
+             {"id": "C4", "quote": "Solar provided 13.1% ... and is the main renewable source",
+              "status": "unsupported"},
+             {"id": "C8", "quote": "Egypt reached 24.0% renewables in 2025", "status": "contradicted"}]
+    s = score(rep, {"claims": flags, "requirements": []})
+    assert len(s["caught"]) == 2 and not s["false_alarms"] and not s["cascade"]
+
+
+def requirement(rid, status, evidence):
+    return {"id": rid, "status": status, "evidence": evidence, "reason": ""}
+
+
+def test_requirement_cascade_general_rule():
+    rep = REPORTS["report_04"]  # planted: "92.1 TWh", "Cyprus reached 49.7%"
+    flags = [{"id": "C5", "quote": "Total generation grew to 92.1 TWh in 2025", "status": "contradicted"},
+             {"id": "C7", "quote": "Cyprus reached 49.7% renewables in 2025", "status": "contradicted"}]
+    reqs = [
+        requirement("R4", "partial", "Total generation grew to 92.1 TWh in 2025 from 64.2 TWh in 2015."),  # match
+        requirement("R3", "partial", "In the region, Cyprus reached 49.7% renewables"),  # match
+        requirement("R2", "partial", "Coal is nearly gone at 3.4%"),           # unrelated evidence: false alarm
+        requirement("R5", "missing", None),                                    # no evidence: false alarm
+    ]
+    s = score(rep, {"claims": flags, "requirements": reqs})
+    assert sorted(c["id"] for c in s["cascade"]) == ["R3", "R4"]
+    assert [a["id"] for a in s["false_alarms"]] == ["R2", "R5"]
+
+
+def test_requirement_cascade_by_overlap_with_a_flagged_claim():
+    rep = REPORTS["report_04"]
+    flags = [{"id": "C5", "quote": "Total generation grew to 92.1 TWh in 2025", "status": "contradicted"},
+             {"id": "C9", "quote": "Egypt 13.0%", "status": "unverifiable"}]   # flagged, but not a planted error
+    reqs = [requirement("R3", "partial", "and Egypt 13.0%.")]                  # no planted match; overlaps C9
+    s = score(rep, {"claims": flags, "requirements": reqs})
+    assert [c["id"] for c in s["cascade"]] == ["R3"] and [a["id"] for a in s["false_alarms"]] == ["C9"]

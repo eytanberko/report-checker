@@ -47,8 +47,13 @@ REPORT:
 FACTS ALREADY CHECKED AGAINST THE DATA (actual values from the database):
 {facts}
 
+DATA CONTEXT (straight from the database, for the countries and years the report mentions;
+use it to check causes, comparisons and trends, including ones the report does not mention):
+{context}
+
 TASKS:
-1. For each JUDGMENT claim below, decide if the facts and the report's own numbers support it.
+1. For each JUDGMENT claim below, decide if the facts, the data context and the report's own numbers
+   support it.
    "supported"   = follows reasonably from the data. A risk or recommendation that is grounded
                    in numbers from the data counts as supported.
    "unsupported" = only if it is contradicted by the data or relies on facts not in the data
@@ -77,6 +82,7 @@ def extract_prompt(report: str, schema: str = SCHEMA, table: str = TABLE,
                           report=report)
 
 
-def judge_prompt(report: str, requirements: str, facts: str, judgments: str) -> str:
-    """Prompt that judges conclusions against the checked facts and checks requirement coverage."""
-    return JUDGE.format(report=report, requirements=requirements, facts=facts, judgments=judgments)
+def judge_prompt(report: str, requirements: str, facts: str, judgments: str, context: str = "(none)") -> str:
+    """Prompt that judges conclusions against the checked facts and data context, and checks coverage."""
+    return JUDGE.format(report=report, requirements=requirements, facts=facts, judgments=judgments,
+                        context=context)
