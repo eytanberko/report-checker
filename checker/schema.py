@@ -1,7 +1,9 @@
 """Description of the data the reports are based on. Given to the LLM so it can write SQL."""
+from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent.parent  # repo root: paths work from any working directory
 TABLE = "energy"
-DATA_PATH = "data/energy.csv"
+DATA_PATH = str(ROOT / "data" / "energy.csv")
 
 SCHEMA = """
 Table `energy` (one row per country per year, 2010-2025; source: Our World in Data).

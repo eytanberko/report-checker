@@ -24,8 +24,8 @@ from checker.core import FLAGGED, check_report, recheck
 from checker.highlight import locate
 from checker.prompts import prompt_version
 
-BENCH = Path("benchmark")
-OUT = Path("results")
+BENCH = Path(__file__).resolve().parent / "benchmark"
+OUT = Path(__file__).resolve().parent / "results"
 HISTORY_FIELDS = ["timestamp", "mode", "model", "judge_model", "prompt_version", "reports_scored", "reports_total",
                   "recall", "precision", "false_alarms", "cascade", "query_mismatches",
                   "api_calls", "cache_hits", "seconds", "status"]

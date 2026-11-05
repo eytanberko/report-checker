@@ -140,9 +140,10 @@ first-run prompts. Scores for different prompt versions are not directly compara
 
 ## Run it
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-dev.txt    # app + tests + lint (the app alone: requirements.txt)
 python -m pytest -q                    # offline tests, no API key needed
 streamlit run app.py                   # demo UI: saved runs work offline; "Run live check" calls the API
+                                       # (hidden when no API key is set, e.g. in the public demo)
 
 # CLI: prints the verdict, writes <report>.review.md; exit 0 = clean, 1 = issues, 2 = could not run
 python -m checker check --report r.md --requirements req.md --data data.csv [--offline]
@@ -161,6 +162,11 @@ python evaluate.py --offline           # score saved results only, no API calls
   `LLM_OFFLINE=1` never calls an API.
 - **Your own data:** `--data any.csv`. The schema description for the LLM (columns, types, ranges, example
   values, categories) is built from the file. `examples/cafes/` is a tiny synthetic example.
+
+### Public demo (Streamlit Community Cloud)
+The app runs without any API key: it shows the saved benchmark runs (highlighting, memo, metrics) and hides
+live checks. Deploy from this repo with `app.py` as the main file; `requirements.txt` holds only what the app
+needs. To enable live checks in a private deployment, add `GEMINI_API_KEY` under the app's Secrets.
 
 ## Project layout
 | Path | What |

@@ -34,7 +34,7 @@ if PROVIDER not in PROVIDERS:
     raise ValueError(f"LLM_PROVIDER must be one of {', '.join(PROVIDERS)}, not {PROVIDER!r}")
 MODEL = os.getenv(PROVIDERS[PROVIDER]["model_env"], PROVIDERS[PROVIDER]["model"])  # extraction
 JUDGE_MODEL = os.getenv("JUDGE_MODEL", PROVIDERS[PROVIDER].get("judge_model", MODEL))  # judge + coverage
-CACHE = Path(".llm_cache")
+CACHE = Path(__file__).resolve().parent.parent / ".llm_cache"
 OFFLINE = os.getenv("LLM_OFFLINE") == "1"
 MIN_INTERVAL = float(os.getenv("LLM_MIN_INTERVAL", "7"))
 OVERLOAD_WAITS = (120, 240, 480)  # seconds to wait before each retry on 500/503; then stop

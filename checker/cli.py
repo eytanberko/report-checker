@@ -16,10 +16,10 @@ from .core import FLAGGED, check_report, recheck
 from .dataset import load_dataset
 from .highlight import verdict
 from .memo import review_memo
-from .schema import DATA_PATH
+from .schema import DATA_PATH, ROOT
 
-BENCH = Path("benchmark")
-RESULTS = Path("results")
+BENCH = ROOT / "benchmark"
+RESULTS = ROOT / "results"
 
 
 def _norm(text: str) -> str:

@@ -1,14 +1,18 @@
 """Demo UI.  Run:  streamlit run app.py"""
 import json
+import os
+import sys
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 import yaml
 
-from checker.core import FLAGGED, check_report, recheck
-from checker.highlight import render_html, verdict
-from checker.memo import review_memo
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # find `checker` however the app is launched
+from checker import llm  # noqa: E402
+from checker.core import FLAGGED, check_report, recheck  # noqa: E402
+from checker.highlight import render_html, verdict  # noqa: E402
+from checker.memo import review_memo  # noqa: E402
 
 st.set_page_config(page_title="Report Checker", page_icon="🔎", layout="wide")
 ICON = {"verified": "✅", "supported": "✅", "contradicted": "❌", "unsupported": "⚠️", "unverifiable": "❔",
@@ -18,15 +22,34 @@ LEGEND = ("🟩 verified / supported · 🟥 contradicted by the data · 🟨 un
 REQ_ICON = {"covered": "✅", "partial": "⚠️", "missing": "❌"}
 PASTE = "Paste my own"
 SERIES = ["#2a78d6", "#eb6834"]  # categorical slots 1-2 (blue, orange) of the validated reference palette
+ROOT = Path(__file__).resolve().parent  # repo root: works from any working directory (e.g. Streamlit Cloud)
+DEMO_NOTE = "Live checks are disabled in the public demo; saved runs are shown."
 
-reports = yaml.safe_load(Path("benchmark/reports.yaml").read_text(encoding="utf-8"))["reports"]
+
+def live_enabled() -> bool:
+    """True when an API key for the configured provider is set, as an env var or a Streamlit secret."""
+    key_env = llm.PROVIDERS[llm.PROVIDER]["key_env"]
+    if os.getenv(key_env):
+        return True
+    try:
+        secret = st.secrets.get(key_env)
+    except Exception:  # no secrets file at all
+        return False
+    if secret:
+        os.environ[key_env] = str(secret)  # the LLM client reads keys from the environment
+    return bool(secret)
+
+
+LIVE = live_enabled()
+
+reports = yaml.safe_load((ROOT / "benchmark" / "reports.yaml").read_text(encoding="utf-8"))["reports"]
 by_label = {r["id"] + " · " + r["author"]: r for r in reports}
-default_reqs = Path("benchmark/requirements.md").read_text(encoding="utf-8")
+default_reqs = (ROOT / "benchmark" / "requirements.md").read_text(encoding="utf-8")
 
 
 def saved_result(rep: dict) -> dict | None:
     """The saved benchmark result for this report, re-checked with the current deterministic stages."""
-    path = Path("results") / f"{rep['id']}.json"
+    path = ROOT / "results" / f"{rep['id']}.json"
     # Deterministic stages are re-run on the saved LLM output, so saved runs get the latest checks.
     return recheck(json.loads(path.read_text(encoding="utf-8")), rep["text"]) if path.exists() else None
 
@@ -100,7 +123,9 @@ with tab_check:
     live = st.session_state.get("live", {})
 
     label = "Run live check" if saved else "Run check"
-    if st.button(label, type="primary", disabled=not report.strip()):
+    if not LIVE:
+        st.info(DEMO_NOTE)
+    elif st.button(label, type="primary", disabled=not report.strip()):
         with st.spinner("Extracting claims, running SQL, reviewing conclusions..."):
             try:
                 live[choice] = {"report": report, "requirements": requirements,
@@ -117,9 +142,10 @@ with tab_check:
         st.info("Saved run — loaded from `results/" + rep["id"] + ".json` (no API call)")
         show_result(saved, report, choice)
     elif rep and not unedited:
-        st.caption("Text edited — the saved run no longer applies. Run a live check.")
+        st.caption("Text edited — the saved run no longer applies." + (" Run a live check." if LIVE else ""))
     elif rep:
-        st.caption("No saved run for this report yet. Run a live check.")
+        st.caption("No saved run for this report yet." + (" Run a live check." if LIVE else ""))
+
 
 def pct(x: float | None) -> str:
     """0.917 -> '92%'; None -> 'n/a'."""
@@ -128,7 +154,7 @@ def pct(x: float | None) -> str:
 
 def show_benchmark() -> None:
     """Benchmark tab: headline metrics, caught-% by error type, per-report table, run history."""
-    path = Path("results/metrics.json")
+    path = ROOT / "results" / "metrics.json"
     if not path.exists():
         st.info("Run `python evaluate.py` first.")
         return
@@ -157,7 +183,7 @@ def show_benchmark() -> None:
                                    "query_mismatches", "prompt_version")} for r in m["by_report"]]
     st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
-    hist_path = Path("results/history.csv")
+    hist_path = ROOT / "results" / "history.csv"
     if hist_path.exists():
         st.subheader("History across runs")
         hist = pd.read_csv(hist_path)
