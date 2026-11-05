@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 import yaml
 
@@ -16,6 +17,7 @@ LEGEND = ("🟩 verified / supported · 🟥 contradicted by the data · 🟨 un
           "🟧 inconsistent with the report's own numbers · hover a highlight for details")
 REQ_ICON = {"covered": "✅", "partial": "⚠️", "missing": "❌"}
 PASTE = "Paste my own"
+SERIES = ["#2a78d6", "#eb6834"]  # categorical slots 1-2 (blue, orange) of the validated reference palette
 
 reports = yaml.safe_load(Path("benchmark/reports.yaml").read_text(encoding="utf-8"))["reports"]
 by_label = {r["id"] + " · " + r["author"]: r for r in reports}
@@ -114,9 +116,48 @@ with tab_check:
     elif rep:
         st.caption("No saved run for this report yet. Run a live check.")
 
-with tab_bench:
-    metrics = Path("results/metrics.md")
-    if metrics.exists():
-        st.markdown(metrics.read_text(encoding="utf-8"))
-    else:
+def pct(x) -> str:
+    return "n/a" if x is None else f"{x:.0%}"
+
+
+def show_benchmark():
+    path = Path("results/metrics.json")
+    if not path.exists():
         st.info("Run `python evaluate.py` first.")
+        return
+    m = json.loads(path.read_text(encoding="utf-8"))
+    run = m["run"]
+    st.caption(f"Model `{run['model']}` · prompt version(s) {', '.join(m['prompt_versions'])} · "
+               f"{run['timestamp']} ({run['mode']}) · {run['api_calls']} API calls, {run['cache_hits']} cached")
+    if m["reports_scored"] < m["reports_total"]:
+        st.warning(f"Partial: {m['reports_scored']} of {m['reports_total']} reports scored.")
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Recall", pct(m["recall"]), f"{m['caught']} of {m['planted']} planted errors", delta_color="off")
+    c2.metric("Precision", pct(m["precision"]))
+    c3.metric("False alarms", m["false_alarms"])
+    c4.metric("Cascade errors caught", m["cascade"], "not in recall/precision", delta_color="off")
+
+    st.subheader("Planted errors caught, by type (%)")
+    by_type = pd.DataFrame(m["by_type"]).set_index("type")
+    by_type["caught %"] = (100 * by_type["caught"] / by_type["planted"]).round()
+    left, right = st.columns([3, 2])
+    left.bar_chart(by_type["caught %"], horizontal=True, color=SERIES[0], height=260)
+    right.dataframe(by_type, use_container_width=True)
+
+    st.subheader("By report")
+    rows = [{k: r.get(k) for k in ("report", "planted", "caught", "cascade", "false_alarms",
+                                   "query_mismatches", "prompt_version")} for r in m["by_report"]]
+    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+    hist_path = Path("results/history.csv")
+    if hist_path.exists():
+        st.subheader("History across runs")
+        hist = pd.read_csv(hist_path)
+        if len(hist) >= 2:
+            trend = hist.set_index("timestamp")[["recall", "precision"]] * 100
+            st.line_chart(trend, color=SERIES[:2], height=240, y_label="%")
+        st.dataframe(hist, use_container_width=True, hide_index=True)
+
+
+with tab_bench:
+    show_benchmark()

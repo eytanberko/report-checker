@@ -21,3 +21,11 @@ def test_paste_my_own_requires_live_run():
     at = run_app("Paste my own")
     assert [b.label for b in at.button] == ["Run check"]
     assert not any("Saved run" in i.value for i in at.info)
+
+
+def test_benchmark_tab_shows_metrics_chart_and_history():
+    at = AppTest.from_file("app.py", default_timeout=30).run()
+    assert not at.exception
+    labels = [m.label for m in at.metric]
+    assert {"Recall", "Precision", "False alarms", "Cascade errors caught"} <= set(labels)
+    assert any(s.value == "History across runs" for s in at.subheader)

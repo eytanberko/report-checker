@@ -1,0 +1,159 @@
+{
+  "run": {
+    "model": "gemini-3.6-flash",
+    "prompt_version": "7a00fa6a",
+    "mode": "offline",
+    "timestamp": "2026-11-05 00:35 UTC",
+    "api_calls": 0,
+    "cache_hits": 0,
+    "seconds": 0.6,
+    "status": "partial"
+  },
+  "reports_scored": 7,
+  "reports_total": 10,
+  "planted": 12,
+  "caught": 12,
+  "recall": 1.0,
+  "precision": 0.9230769230769231,
+  "false_alarms": 1,
+  "cascade": 3,
+  "query_mismatches": 0,
+  "by_type": [
+    {
+      "type": "wrong_number",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "unsupported_conclusion",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "wrong_calculation",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "wrong_period",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "missing_requirement",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "wrong_entity",
+      "caught": 2,
+      "planted": 2
+    }
+  ],
+  "by_report": [
+    {
+      "report": "report_01",
+      "planted": 0,
+      "scored": true,
+      "caught": 0,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "legacy",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_02",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "legacy",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_03",
+      "planted": 3,
+      "scored": true,
+      "caught": 3,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "legacy",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_04",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "legacy",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_05",
+      "planted": 0,
+      "scored": true,
+      "caught": 0,
+      "cascade": 0,
+      "false_alarms": 1,
+      "query_mismatches": 0,
+      "prompt_version": "legacy",
+      "missed": [],
+      "false_alarm_details": [
+        "The main risk"
+      ]
+    },
+    {
+      "report": "report_06",
+      "planted": 3,
+      "scored": true,
+      "caught": 3,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "legacy",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_07",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "legacy",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_08",
+      "planted": 0,
+      "scored": false
+    },
+    {
+      "report": "report_09",
+      "planted": 2,
+      "scored": false
+    },
+    {
+      "report": "report_10",
+      "planted": 2,
+      "scored": false
+    }
+  ],
+  "prompt_versions": [
+    "legacy"
+  ]
+}

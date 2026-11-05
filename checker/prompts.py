@@ -1,3 +1,5 @@
+import hashlib
+
 from .schema import SCHEMA, TABLE
 
 EXTRACT = """You are a QA reviewer for data-analysis reports.
@@ -61,6 +63,11 @@ Return JSON:
 {{"judgments": [{{"id": "...", "verdict": "supported|unsupported", "reason": "one sentence"}}],
   "requirements": [{{"id": "R1", "status": "covered|partial|missing", "evidence": "quote or null",
                      "reason": "one sentence"}}]}}"""
+
+
+def prompt_version() -> str:
+    """Short hash of both prompt templates: results made with other prompts are stale."""
+    return hashlib.sha256((EXTRACT + JUDGE).encode()).hexdigest()[:8]
 
 
 def extract_prompt(report: str, schema: str = SCHEMA, table: str = TABLE,
