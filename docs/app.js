@@ -352,9 +352,12 @@
   /* ---------- links ---------- */
   function renderLinks() {
     if (SITE.links.linkedin) {
+      const href = esc(SITE.links.linkedin);
       const li = document.createElement("li");
-      li.innerHTML = `<a href="${esc(SITE.links.linkedin)}">LinkedIn</a>`;
+      li.innerHTML = `<a href="${href}">LinkedIn</a>`;
       $("#signoff-links").append(li);
+      $("#cover-links").insertAdjacentHTML("beforeend", `<a href="${href}">LinkedIn</a>`);
+      document.querySelector(".byline-compact").insertAdjacentHTML("beforeend", ` · <a href="${href}">LinkedIn</a>`);
     }
   }
 

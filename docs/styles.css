@@ -92,6 +92,7 @@ h1 {
 .cover-fields dt { padding-top: .2rem; }
 .cover-fields dd { margin: 0; font-size: 1rem; line-height: 1.5; color: var(--print); }
 .cover-links a, .signoff-links a { display: inline-flex; align-items: center; gap: .45rem; font: 600 .95rem var(--f-form); }
+.cover-links dd { display: flex; flex-wrap: wrap; gap: .3rem 1.5rem; }
 .cover-links svg, .signoff-links svg { width: 1.05rem; height: 1.05rem; }
 
 /* ---------- sheets ---------- */

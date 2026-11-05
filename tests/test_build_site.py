@@ -41,8 +41,9 @@ def test_heldout_is_a_placeholder_until_it_exists(data):
     assert data["heldout"] is None
 
 
-def test_linkedin_hidden_until_set(data):
-    assert data["links"]["linkedin"] == ""
+def test_profile_links(data):
+    assert data["links"]["linkedin"] == "https://www.linkedin.com/in/eytan-berkowitz"
+    assert data["links"]["github"] == "https://github.com/eytanberko/report-checker"
 
 
 def test_main_writes_loadable_js(tmp_path, monkeypatch):

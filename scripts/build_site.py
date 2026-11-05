@@ -33,7 +33,7 @@ FROZEN_TAG = "v1.0-frozen"
 LINKS = {
     "github": "https://github.com/eytanberko/report-checker",
     "demo": "https://report-checkerwitz.streamlit.app/",
-    "linkedin": "",  # hidden on the site until set
+    "linkedin": "https://www.linkedin.com/in/eytan-berkowitz",
 }
 
 

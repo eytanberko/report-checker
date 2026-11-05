@@ -45,7 +45,7 @@ verdict shows the SQL behind it. Built by someone who does this review by hand t
 - The frozen benchmark run is partial (reports 01-06 scored; 07-10 pending a quota reset). The held-out result
   does not exist yet and must appear only as a clearly marked placeholder.
 - The prompts and scoring rules were tuned on this benchmark; the site must say so, not hide it.
-- LinkedIn link: user wants one; URL not yet provided (undecided; hide until supplied).
+- LinkedIn: https://www.linkedin.com/in/eytan-berkowitz (shown in the cover, the phone byline and the sign-off).
 
 ## Brand Commitments
 - Name: "Report Checker". Author credit: Eytan Berkowitz, with GitHub (github.com/eytanberko/report-checker) and
