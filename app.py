@@ -5,10 +5,14 @@ from pathlib import Path
 import streamlit as st
 import yaml
 
-from checker.core import check_report, summary
+from checker.core import FLAGGED, check_report
+from checker.highlight import render_html, verdict
 
 st.set_page_config(page_title="Report Checker", page_icon="🔎", layout="wide")
-ICON = {"verified": "✅", "supported": "✅", "contradicted": "❌", "unsupported": "⚠️", "unverifiable": "❔"}
+ICON = {"verified": "✅", "supported": "✅", "contradicted": "❌", "unsupported": "⚠️", "unverifiable": "❔",
+        "inconsistent": "🟧", "query_mismatch": "🔧"}
+LEGEND = ("🟩 verified / supported · 🟥 contradicted by the data · 🟨 unsupported / unverifiable · "
+          "🟧 inconsistent with the report's own numbers · hover a highlight for details")
 REQ_ICON = {"covered": "✅", "partial": "⚠️", "missing": "❌"}
 PASTE = "Paste my own"
 
@@ -35,22 +39,24 @@ def show_answer_key(rep: dict):
         st.markdown(line)
 
 
-def show_result(result: dict):
-    s = summary(result)
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Claims", s["claims"])
-    c2.metric("Verified", s["verified"])
-    c3.metric("Flagged", s["flagged"])
-    c4.metric("Requirements not covered", s["requirements_missing"])
+def show_result(result: dict, report: str):
+    level, text = verdict(result, FLAGGED)
+    {"ok": st.success, "warn": st.warning, "error": st.error}[level](f"**{text}**")
 
-    st.subheader("Claims")
-    for c in result["claims"]:
-        line = f'{ICON[c["status"]]} **{c["status"].upper()}** — “{c["quote"]}”'
-        if c.get("note"):
-            line += f'  \n  ↳ {c["note"]}'
-        st.markdown(line)
-        if c.get("sql"):
-            with st.expander("SQL used to check this claim"):
+    st.subheader("Report")
+    st.caption(LEGEND)
+    body, missing = render_html(report, result["claims"])
+    st.markdown(body, unsafe_allow_html=True)
+    if missing:
+        st.caption("Not located in the text: " + "; ".join(f'{c["id"]} “{c["quote"]}”' for c in missing))
+
+    with st.expander("Claim details and SQL"):
+        for c in result["claims"]:
+            line = f'{ICON.get(c["status"], "❔")} **{c["id"]} {c["status"].upper()}** — “{c["quote"]}”'
+            if c.get("note"):
+                line += f'  \n  ↳ {c["note"]}'
+            st.markdown(line)
+            if c.get("sql"):
                 st.code(c["sql"], language="sql")
 
     st.subheader("Client requirements")
@@ -92,10 +98,10 @@ with tab_check:
     run = live.get(choice)
     if run and run["report"] == report and run["requirements"] == requirements:
         st.success("Live run")
-        show_result(run["result"])
+        show_result(run["result"], report)
     elif saved:
         st.info("Saved run — loaded from `results/" + rep["id"] + ".json` (no API call)")
-        show_result(saved)
+        show_result(saved, report)
     elif rep and not unedited:
         st.caption("Text edited — the saved run no longer applies. Run a live check.")
     elif rep:
