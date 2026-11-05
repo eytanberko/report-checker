@@ -5,7 +5,7 @@ the same prompt always returns the same saved answer.
 
 Env vars:
   LLM_PROVIDER      gemini (default) or groq
-  GEMINI_API_KEY    free key from aistudio.google.com;  GEMINI_MODEL (default gemini-3.6-flash)
+  GEMINI_API_KEY    free key from aistudio.google.com;  GEMINI_MODEL (default gemini-3.5-flash-lite)
   GROQ_API_KEY      free key from console.groq.com;     GROQ_MODEL   (default llama-3.3-70b-versatile)
   LLM_OFFLINE=1     answer from the cache only, never call an API
   LLM_MIN_INTERVAL  seconds between API calls (default 7, under the free-tier per-minute limits)
@@ -20,7 +20,7 @@ from pathlib import Path
 import requests
 
 PROVIDERS = {
-    "gemini": {"key_env": "GEMINI_API_KEY", "model_env": "GEMINI_MODEL", "model": "gemini-3.6-flash",
+    "gemini": {"key_env": "GEMINI_API_KEY", "model_env": "GEMINI_MODEL", "model": "gemini-3.5-flash-lite",
                "url": "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
                "signup": "aistudio.google.com"},
     "groq": {"key_env": "GROQ_API_KEY", "model_env": "GROQ_MODEL", "model": "llama-3.3-70b-versatile",

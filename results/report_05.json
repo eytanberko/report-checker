@@ -12,17 +12,7 @@
     },
     {
       "id": "C2",
-      "quote": "about 15 percentage points more than in 2015",
-      "kind": "numeric",
-      "stated_value": 15.0,
-      "sql": "SELECT (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015)",
-      "status": "verified",
-      "actual": 15.03,
-      "note": ""
-    },
-    {
-      "id": "C3",
-      "quote": "in 2015 (1.9%)",
+      "quote": "about 15 percentage points more than in 2015 (1.9%)",
       "kind": "numeric",
       "stated_value": 1.9,
       "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015",
@@ -31,7 +21,7 @@
       "note": ""
     },
     {
-      "id": "C4",
+      "id": "C3",
       "quote": "Coal dropped to 3.4% in 2025",
       "kind": "numeric",
       "stated_value": 3.4,
@@ -41,7 +31,7 @@
       "note": ""
     },
     {
-      "id": "C5",
+      "id": "C4",
       "quote": "from 45.4% ten years earlier",
       "kind": "numeric",
       "stated_value": 45.4,
@@ -51,17 +41,17 @@
       "note": ""
     },
     {
-      "id": "C6",
-      "quote": "Generation increased by roughly 28%",
+      "id": "C5",
+      "quote": "Generation increased by roughly 28%, from 64.2 TWh to 82.1 TWh",
       "kind": "numeric",
       "stated_value": 28.0,
-      "sql": "SELECT 100.0 * ((SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)) / (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)",
+      "sql": "SELECT 100.0 * (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025) / (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015) - 100.0",
       "status": "verified",
       "actual": 27.82,
       "note": ""
     },
     {
-      "id": "C7",
+      "id": "C6",
       "quote": "from 64.2 TWh",
       "kind": "numeric",
       "stated_value": 64.2,
@@ -71,7 +61,7 @@
       "note": ""
     },
     {
-      "id": "C8",
+      "id": "C7",
       "quote": "to 82.1 TWh",
       "kind": "numeric",
       "stated_value": 82.1,
@@ -81,48 +71,28 @@
       "note": ""
     },
     {
-      "id": "C9",
-      "quote": "Israel still lags Italy",
+      "id": "C8",
+      "quote": "Israel still lags Italy (48.8%)",
       "kind": "numeric",
-      "stated_value": 1,
-      "sql": "SELECT CASE WHEN (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) < (SELECT renewables_share_elec FROM energy WHERE country = 'Italy' AND year = 2025) THEN 1 ELSE 0 END",
-      "status": "verified",
-      "actual": 1.0,
-      "note": ""
+      "stated_value": 48.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Italy' AND year = 2024",
+      "status": "query_mismatch",
+      "actual": null,
+      "note": "query uses year 2024, which the claim's sentence doesn't state or imply"
+    },
+    {
+      "id": "C9",
+      "quote": "and Spain (55.9%)",
+      "kind": "numeric",
+      "stated_value": 55.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Spain' AND year = 2024",
+      "status": "query_mismatch",
+      "actual": null,
+      "note": "query uses year 2024, which the claim's sentence doesn't state or imply"
     },
     {
       "id": "C10",
-      "quote": "Italy (48.8%)",
-      "kind": "numeric",
-      "stated_value": 48.8,
-      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Italy' AND year = 2025",
-      "status": "verified",
-      "actual": 48.78,
-      "note": ""
-    },
-    {
-      "id": "C11",
-      "quote": "Spain (55.9%)",
-      "kind": "numeric",
-      "stated_value": 55.9,
-      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Spain' AND year = 2025",
-      "status": "verified",
-      "actual": 55.86,
-      "note": ""
-    },
-    {
-      "id": "C12",
-      "quote": "both of which generate around half of their electricity from renewables",
-      "kind": "judgment",
-      "stated_value": null,
-      "sql": null,
-      "status": "supported",
-      "actual": null,
-      "note": "Italy at 48.8% and Spain at 55.9% are both approximately half of total generation."
-    },
-    {
-      "id": "C13",
-      "quote": "Carbon intensity fell from 693",
+      "quote": "Carbon intensity fell from 693 to 493 grams of CO2 per kWh between 2015 and 2025",
       "kind": "numeric",
       "stated_value": 693.0,
       "sql": "SELECT carbon_intensity_elec FROM energy WHERE country = 'Israel' AND year = 2015",
@@ -131,8 +101,8 @@
       "note": ""
     },
     {
-      "id": "C14",
-      "quote": "to 493 grams of CO2 per kWh between 2015 and 2025",
+      "id": "C11",
+      "quote": "Carbon intensity fell from 693 to 493 grams of CO2 per kWh between 2015 and 2025",
       "kind": "numeric",
       "stated_value": 493.0,
       "sql": "SELECT carbon_intensity_elec FROM energy WHERE country = 'Israel' AND year = 2025",
@@ -141,34 +111,14 @@
       "note": ""
     },
     {
-      "id": "C15",
-      "quote": "The main risk",
-      "kind": "judgment",
-      "stated_value": null,
-      "sql": null,
-      "status": "unsupported",
-      "actual": null,
-      "note": "Asserting that gas concentration is the single primary risk ranks it above other unmeasured risks without comparative data."
-    },
-    {
-      "id": "C16",
-      "quote": "gas reached 79.7% of generation",
-      "kind": "numeric",
-      "stated_value": 79.7,
-      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
-      "status": "verified",
-      "actual": 79.66,
-      "note": ""
-    },
-    {
-      "id": "C17",
-      "quote": "leaving little diversity in supply",
+      "id": "C12",
+      "quote": "The main risk: gas reached 79.7% of generation, leaving little diversity in supply.",
       "kind": "judgment",
       "stated_value": null,
       "sql": null,
       "status": "supported",
       "actual": null,
-      "note": "Natural gas comprising nearly 80% of total electricity generation mathematically demonstrates low fuel diversity."
+      "note": "The risk is directly grounded in the reported data showing gas constitutes 79.7% of total generation."
     }
   ],
   "requirements": [
@@ -176,31 +126,36 @@
       "id": "R1",
       "status": "covered",
       "evidence": "Renewables supplied 16.9% of Israel's electricity in 2025, about 15 percentage points more than in 2015 (1.9%).",
-      "reason": "The report provides the 2025 renewable share and the change since 2015."
+      "reason": "The report provides both the 2025 renewables share and the change since 2015."
     },
     {
       "id": "R2",
       "status": "covered",
       "evidence": "Coal dropped to 3.4% in 2025 from 45.4% ten years earlier.",
-      "reason": "The report specifies coal's share in 2025 and its decrease over the decade."
+      "reason": "The report clearly states the status and significant decline of coal in Israel's electricity mix."
     },
     {
       "id": "R3",
       "status": "covered",
       "evidence": "Israel still lags Italy (48.8%) and Spain (55.9%), both of which generate around half of their electricity from renewables.",
-      "reason": "The report compares Israel's renewable performance against two Mediterranean peers, Italy and Spain."
+      "reason": "The report compares Israel with two Mediterranean peers using their renewables shares."
     },
     {
       "id": "R4",
       "status": "covered",
       "evidence": "Generation increased by roughly 28%, from 64.2 TWh to 82.1 TWh.",
-      "reason": "The report details total electricity generation growth in both percentage and TWh between 2015 and 2025."
+      "reason": "The report provides the exact percentage growth and absolute figures for total electricity generation between 2015 and 2025."
     },
     {
       "id": "R5",
       "status": "covered",
       "evidence": "The main risk: gas reached 79.7% of generation, leaving little diversity in supply.",
-      "reason": "The report highlights supply concentration in natural gas as a key risk grounded in generation statistics."
+      "reason": "The report identifies a key risk grounded in the data regarding the high concentration of natural gas in generation."
     }
-  ]
+  ],
+  "meta": {
+    "model": "gemini-3.5-flash-lite",
+    "prompt_version": "7a00fa6a",
+    "finished": "2026-11-05T08:10:44+00:00"
+  }
 }

@@ -193,7 +193,7 @@ def main(argv: list[str] | None = None) -> int:
             try:
                 result = check_report(rep["text"], requirements, ask=llm.ask_json)
             except llm.LLMError as e:
-                stopped = str(e)
+                stopped = " ".join(str(e).split())[:200]  # one line, so history.csv stays readable
                 print(f"\nSTOPPED: {e}\nFinished reports are saved; run `python evaluate.py` again to resume.\n")
                 continue
             result["meta"] = {**run_meta(), "finished": datetime.now(timezone.utc).isoformat(timespec="seconds")}

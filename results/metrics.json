@@ -1,23 +1,23 @@
 {
   "run": {
-    "model": "gemini-3.6-flash",
+    "model": "gemini-3.5-flash-lite",
     "prompt_version": "7a00fa6a",
-    "mode": "offline",
-    "timestamp": "2026-11-05 00:35 UTC",
-    "api_calls": 0,
+    "mode": "live",
+    "timestamp": "2026-11-05 08:16 UTC",
+    "api_calls": 11,
     "cache_hits": 0,
-    "seconds": 0.6,
-    "status": "partial"
+    "seconds": 170.5,
+    "status": "complete"
   },
-  "reports_scored": 7,
+  "reports_scored": 10,
   "reports_total": 10,
-  "planted": 12,
-  "caught": 12,
-  "recall": 1.0,
-  "precision": 0.9230769230769231,
-  "false_alarms": 1,
-  "cascade": 3,
-  "query_mismatches": 0,
+  "planted": 16,
+  "caught": 15,
+  "recall": 0.9375,
+  "precision": 0.6818181818181818,
+  "false_alarms": 7,
+  "cascade": 1,
+  "query_mismatches": 3,
   "by_type": [
     {
       "type": "wrong_number",
@@ -26,7 +26,7 @@
     },
     {
       "type": "unsupported_conclusion",
-      "caught": 2,
+      "caught": 1,
       "planted": 2
     },
     {
@@ -48,6 +48,16 @@
       "type": "wrong_entity",
       "caught": 2,
       "planted": 2
+    },
+    {
+      "type": "misread_requirement",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "plausible_calculation",
+      "caught": 2,
+      "planted": 2
     }
   ],
   "by_report": [
@@ -59,7 +69,7 @@
       "cascade": 0,
       "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "legacy",
+      "prompt_version": "7a00fa6a",
       "missed": [],
       "false_alarm_details": []
     },
@@ -68,10 +78,10 @@
       "planted": 2,
       "scored": true,
       "caught": 2,
-      "cascade": 1,
+      "cascade": 0,
       "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "legacy",
+      "prompt_version": "7a00fa6a",
       "missed": [],
       "false_alarm_details": []
     },
@@ -80,12 +90,15 @@
       "planted": 3,
       "scored": true,
       "caught": 3,
-      "cascade": 1,
-      "false_alarms": 0,
+      "cascade": 0,
+      "false_alarms": 2,
       "query_mismatches": 0,
-      "prompt_version": "legacy",
+      "prompt_version": "7a00fa6a",
       "missed": [],
-      "false_alarm_details": []
+      "false_alarm_details": [
+        "requirement R1 marked not covered",
+        "requirement R2 marked not covered"
+      ]
     },
     {
       "report": "report_04",
@@ -93,11 +106,14 @@
       "scored": true,
       "caught": 2,
       "cascade": 0,
-      "false_alarms": 0,
+      "false_alarms": 2,
       "query_mismatches": 0,
-      "prompt_version": "legacy",
+      "prompt_version": "7a00fa6a",
       "missed": [],
-      "false_alarm_details": []
+      "false_alarm_details": [
+        "requirement R3 marked not covered",
+        "requirement R4 marked not covered"
+      ]
     },
     {
       "report": "report_05",
@@ -105,25 +121,27 @@
       "scored": true,
       "caught": 0,
       "cascade": 0,
-      "false_alarms": 1,
-      "query_mismatches": 0,
-      "prompt_version": "legacy",
+      "false_alarms": 0,
+      "query_mismatches": 2,
+      "prompt_version": "7a00fa6a",
       "missed": [],
-      "false_alarm_details": [
-        "The main risk"
-      ]
+      "false_alarm_details": []
     },
     {
       "report": "report_06",
       "planted": 3,
       "scored": true,
-      "caught": 3,
+      "caught": 2,
       "cascade": 0,
-      "false_alarms": 0,
+      "false_alarms": 1,
       "query_mismatches": 0,
-      "prompt_version": "legacy",
-      "missed": [],
-      "false_alarm_details": []
+      "prompt_version": "7a00fa6a",
+      "missed": [
+        "driven mainly by the growth of solar"
+      ],
+      "false_alarm_details": [
+        "requirement R4 marked not covered"
+      ]
     },
     {
       "report": "report_07",
@@ -131,29 +149,53 @@
       "scored": true,
       "caught": 2,
       "cascade": 1,
-      "false_alarms": 0,
+      "false_alarms": 2,
       "query_mismatches": 0,
-      "prompt_version": "legacy",
+      "prompt_version": "7a00fa6a",
       "missed": [],
-      "false_alarm_details": []
+      "false_alarm_details": [
+        "Solar provided 13.1% of electricity in 2025 and is the main ",
+        "requirement R3 marked not covered"
+      ]
     },
     {
       "report": "report_08",
       "planted": 0,
-      "scored": false
+      "scored": true,
+      "caught": 0,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "7a00fa6a",
+      "missed": [],
+      "false_alarm_details": []
     },
     {
       "report": "report_09",
       "planted": 2,
-      "scored": false
+      "scored": true,
+      "caught": 2,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "7a00fa6a",
+      "missed": [],
+      "false_alarm_details": []
     },
     {
       "report": "report_10",
       "planted": 2,
-      "scored": false
+      "scored": true,
+      "caught": 2,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 1,
+      "prompt_version": "7a00fa6a",
+      "missed": [],
+      "false_alarm_details": []
     }
   ],
   "prompt_versions": [
-    "legacy"
+    "7a00fa6a"
   ]
 }

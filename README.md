@@ -93,7 +93,9 @@ set GEMINI_API_KEY=your_key            # Windows (mac/linux: export ...). Free k
 python evaluate.py
 python evaluate.py --offline           # score saved results only, no API calls
 ```
-- **LLM provider:** Gemini by default (`GEMINI_MODEL`, default `gemini-3.6-flash`). Groq is optional:
+- **LLM provider:** Gemini by default (`GEMINI_MODEL`, default `gemini-3.5-flash-lite`: the free tier allows
+  far more requests per day than the full flash models, about 500 vs 20, so the whole benchmark runs in one day
+  on one model; check your limits at aistudio.google.com/rate-limit). Groq is optional:
   `LLM_PROVIDER=groq`, `GROQ_API_KEY` (free key at console.groq.com), `GROQ_MODEL`.
 - **Cache:** LLM answers are cached in `.llm_cache/` (committed), so re-runs are free and reproducible.
   `LLM_OFFLINE=1` never calls an API.

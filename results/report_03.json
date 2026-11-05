@@ -5,7 +5,7 @@
       "quote": "Renewables rose by 15% between 2015 and 2025",
       "kind": "numeric",
       "stated_value": 15.0,
-      "sql": "SELECT 100.0 * (e2025.renewables_share_elec - e2015.renewables_share_elec) / e2015.renewables_share_elec FROM energy e2015 JOIN energy e2025 ON e2015.country = e2025.country WHERE e2015.country = 'Israel' AND e2015.year = 2015 AND e2025.year = 2025",
+      "sql": "SELECT 100.0 * (MAX(CASE WHEN year = 2025 THEN renewables_share_elec END) - MAX(CASE WHEN year = 2015 THEN renewables_share_elec END)) / MAX(CASE WHEN year = 2015 THEN renewables_share_elec END) FROM energy WHERE country = 'Israel'",
       "status": "contradicted",
       "actual": 791.57,
       "note": "data says 791.57, report says 15"
@@ -28,41 +28,31 @@
       "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
       "status": "contradicted",
       "actual": 3.41,
-      "note": "data says 3.41, report says 14.3"
+      "note": "data says 3.41, report says 14.3; also inconsistent: shares for Israel 2025 add up to more than 100%: 16.9 (renewables_share_elec) + 79.7 (gas_share_elec) + 14.3 (coal_share_elec)"
     },
     {
       "id": "C4",
-      "quote": "the phase-out is far from complete",
+      "quote": "so the phase-out is far from complete",
       "kind": "judgment",
       "stated_value": null,
       "sql": null,
-      "status": "unsupported",
+      "status": "supported",
       "actual": null,
-      "note": "The premise is based on a contradicted stat and actual data shows coal dropped to 3.41%, indicating the phase-out is nearly complete."
+      "note": "Although the coal share is low at 3.41%, the report's statement that the phase-out is far from complete is a reasonable qualitative judgment based on the presence of remaining coal generation."
     },
     {
       "id": "C5",
-      "quote": "Total generation increased from 64.2 TWh",
+      "quote": "Total generation increased from 64.2 TWh to 82.1 TWh over the decade.",
       "kind": "numeric",
-      "stated_value": 64.2,
-      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015",
+      "stated_value": 17.9,
+      "sql": "SELECT MAX(CASE WHEN year = 2025 THEN electricity_generation END) - MAX(CASE WHEN year = 2015 THEN electricity_generation END) FROM energy WHERE country = 'Israel'",
       "status": "verified",
-      "actual": 64.23,
+      "actual": 17.87,
       "note": ""
     },
     {
       "id": "C6",
-      "quote": "to 82.1 TWh over the decade",
-      "kind": "numeric",
-      "stated_value": 82.1,
-      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025",
-      "status": "verified",
-      "actual": 82.1,
-      "note": ""
-    },
-    {
-      "id": "C7",
-      "quote": "79.7% of generation in 2025",
+      "quote": "Israel's reliance on gas (79.7% of generation in 2025)",
       "kind": "numeric",
       "stated_value": 79.7,
       "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
@@ -71,56 +61,51 @@
       "note": ""
     },
     {
-      "id": "C8",
-      "quote": "Israel's reliance on gas (79.7% of generation in 2025) is the main vulnerability",
+      "id": "C7",
+      "quote": "is the main vulnerability: any disruption to gas supply would hit most of the power system.",
       "kind": "judgment",
       "stated_value": null,
       "sql": null,
       "status": "supported",
       "actual": null,
-      "note": "Relying on a single fuel source for 79.7% of power generation logically constitutes the primary system vulnerability."
-    },
-    {
-      "id": "C9",
-      "quote": "any disruption to gas supply would hit most of the power system",
-      "kind": "judgment",
-      "stated_value": null,
-      "sql": null,
-      "status": "supported",
-      "actual": null,
-      "note": "Since gas accounts for nearly 80% of total generation, a supply disruption would inherently affect most of the power grid."
+      "note": "The risk is fully grounded in the verified high gas generation share of nearly 80%, making any supply disruption a critical vulnerability for the power system."
     }
   ],
   "requirements": [
     {
       "id": "R1",
-      "status": "covered",
+      "status": "partial",
       "evidence": "Renewables rose by 15% between 2015 and 2025, reaching 16.9% of Israel's electricity.",
-      "reason": "The text states the 2025 renewable share and describes how it changed since 2015."
+      "reason": "The report states renewables rose by 15% instead of the actual verified 791.57% growth, though the 2025 share is correctly stated."
     },
     {
       "id": "R2",
-      "status": "covered",
+      "status": "partial",
       "evidence": "In 2025 coal still provided 14.3% of Israel's electricity, so the phase-out is far from complete.",
-      "reason": "The report directly addresses the status of coal in the generation mix."
+      "reason": "The report includes coal's status, but the stated 14.3% share is contradicted by the actual database value of 3.41%."
     },
     {
       "id": "R3",
       "status": "missing",
       "evidence": null,
-      "reason": "The report contains no mention of any Mediterranean peer countries."
+      "reason": "The report completely fails to provide a comparison with at least two Mediterranean peers."
     },
     {
       "id": "R4",
       "status": "covered",
       "evidence": "Total generation increased from 64.2 TWh to 82.1 TWh over the decade.",
-      "reason": "The report details the increase in total generation between 2015 and 2025."
+      "reason": "The report accurately states the growth of Israel's total electricity generation between 2015 and 2025."
     },
     {
       "id": "R5",
       "status": "covered",
       "evidence": "Israel's reliance on gas (79.7% of generation in 2025) is the main vulnerability: any disruption to gas supply would hit most of the power system.",
-      "reason": "The report highlights heavy gas reliance as a key risk grounded in the generation data."
+      "reason": "The report identifies a key risk grounded in the verified high gas generation share."
     }
-  ]
+  ],
+  "meta": {
+    "model": "gemini-3.5-flash-lite",
+    "prompt_version": "7a00fa6a",
+    "finished": "2026-11-05T08:08:22+00:00"
+  }
 }

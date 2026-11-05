@@ -1,0 +1,41 @@
+{
+  "judgments": [
+    {
+      "id": "C9",
+      "verdict": "supported",
+      "reason": "The risk of high gas concentration is directly grounded in the reported and verified data showing gas supplied 79.7% of electricity in 2025."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Israel's renewables share reached 16.9% in 2025 (1.9% in 2015).",
+      "reason": "The report accurately states the 2025 renewables share and the change since 2015."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal is nearly gone at 3.4% of electricity in 2025, down from 45.4% in 2015.",
+      "reason": "The report fully details the current status and historical decline of coal in Israel's electricity mix."
+    },
+    {
+      "id": "R3",
+      "status": "partial",
+      "evidence": "In the region, Cyprus reached 49.7% renewables in 2025, and Egypt 13.0%.",
+      "reason": "While it compares Israel with two Mediterranean peers, the data used for Cyprus was contradicted and incorrect."
+    },
+    {
+      "id": "R4",
+      "status": "partial",
+      "evidence": "Total generation grew to 92.1 TWh in 2025 from 64.2 TWh in 2015.",
+      "reason": "The requirement is addressed, but the 2025 generation figure of 92.1 TWh is contradicted by the actual database value of 82.1 TWh."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "The key risk is concentration: gas supplied 79.7% of Israel's electricity in 2025.",
+      "reason": "The report identifies a key risk that is explicitly grounded in the data regarding gas dependency."
+    }
+  ]
+}

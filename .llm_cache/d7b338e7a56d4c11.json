@@ -1,0 +1,41 @@
+{
+  "judgments": [
+    {
+      "id": "C12",
+      "verdict": "supported",
+      "reason": "The report explicitly cites that gas accounts for 79.7% of power generation in 2025, which grounds the risk of heavy dependence on a single fuel in the verified data."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "renewables reached 16.9% of Israel's electricity in 2025 versus 1.9% in 2015",
+      "reason": "The report provides both the 2025 renewables share and the 2015 baseline figure, fully satisfying the requirement."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal is almost phased out (3.4% in 2025, from 45.4% in 2015)",
+      "reason": "The report clearly states the status and share of coal in Israel's electricity mix for 2025 and its historical context."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "Peers in 2025: Greece 49.7%, Italy 48.8%, Cyprus 27.8% renewables.",
+      "reason": "The report compares Israel with three Mediterranean peers (Greece, Italy, Cyprus) using the latest available year (2025)."
+    },
+    {
+      "id": "R4",
+      "status": "covered",
+      "evidence": "Generation grew about 28% to 82.1 TWh.",
+      "reason": "The report specifies the growth rate and total electricity generation for the 2015-2025 period."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "Risk: heavy dependence on one fuel, gas, for about 80% of power.",
+      "reason": "The report identifies one key risk that is directly grounded in the 79.7% gas generation share provided in the data."
+    }
+  ]
+}
