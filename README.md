@@ -2,6 +2,8 @@
 
 **An AI reviewer that checks an analyst's report against the data, and against what the client asked, before it ships.**
 
+**Live demo: [report-checkerwitz.streamlit.app](https://report-checkerwitz.streamlit.app/)** (saved benchmark runs; live checks are off in the public demo)
+
 ## Why I built this
 I lead a team of data analysts, and I review every product before it ships: are the numbers right,
 do the conclusions follow from the data, does it answer what the client asked?
