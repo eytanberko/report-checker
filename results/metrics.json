@@ -1,22 +1,22 @@
 {
   "run": {
     "model": "gemini-3.5-flash-lite",
-    "prompt_version": "7a00fa6a",
+    "prompt_version": "1f18b8c3",
     "mode": "live",
-    "timestamp": "2026-11-05 08:16 UTC",
+    "timestamp": "2026-11-05 09:17 UTC",
     "api_calls": 11,
-    "cache_hits": 0,
-    "seconds": 170.5,
+    "cache_hits": 5,
+    "seconds": 187.9,
     "status": "complete"
   },
   "reports_scored": 10,
   "reports_total": 10,
   "planted": 16,
-  "caught": 15,
-  "recall": 0.9375,
-  "precision": 0.6818181818181818,
-  "false_alarms": 7,
-  "cascade": 1,
+  "caught": 14,
+  "recall": 0.875,
+  "precision": 0.9333333333333333,
+  "false_alarms": 1,
+  "cascade": 7,
   "query_mismatches": 3,
   "by_type": [
     {
@@ -51,7 +51,7 @@
     },
     {
       "type": "misread_requirement",
-      "caught": 2,
+      "caught": 1,
       "planted": 2
     },
     {
@@ -69,7 +69,7 @@
       "cascade": 0,
       "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "7a00fa6a",
+      "prompt_version": "1f18b8c3",
       "missed": [],
       "false_alarm_details": []
     },
@@ -78,10 +78,10 @@
       "planted": 2,
       "scored": true,
       "caught": 2,
-      "cascade": 0,
+      "cascade": 1,
       "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "7a00fa6a",
+      "prompt_version": "1f18b8c3",
       "missed": [],
       "false_alarm_details": []
     },
@@ -91,29 +91,23 @@
       "scored": true,
       "caught": 3,
       "cascade": 0,
-      "false_alarms": 2,
+      "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "7a00fa6a",
+      "prompt_version": "1f18b8c3",
       "missed": [],
-      "false_alarm_details": [
-        "requirement R1 marked not covered",
-        "requirement R2 marked not covered"
-      ]
+      "false_alarm_details": []
     },
     {
       "report": "report_04",
       "planted": 2,
       "scored": true,
       "caught": 2,
-      "cascade": 0,
-      "false_alarms": 2,
+      "cascade": 2,
+      "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "7a00fa6a",
+      "prompt_version": "1f18b8c3",
       "missed": [],
-      "false_alarm_details": [
-        "requirement R3 marked not covered",
-        "requirement R4 marked not covered"
-      ]
+      "false_alarm_details": []
     },
     {
       "report": "report_05",
@@ -123,7 +117,7 @@
       "cascade": 0,
       "false_alarms": 0,
       "query_mismatches": 2,
-      "prompt_version": "7a00fa6a",
+      "prompt_version": "1f18b8c3",
       "missed": [],
       "false_alarm_details": []
     },
@@ -132,31 +126,26 @@
       "planted": 3,
       "scored": true,
       "caught": 2,
-      "cascade": 0,
-      "false_alarms": 1,
+      "cascade": 1,
+      "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "7a00fa6a",
+      "prompt_version": "1f18b8c3",
       "missed": [
         "driven mainly by the growth of solar"
       ],
-      "false_alarm_details": [
-        "requirement R4 marked not covered"
-      ]
+      "false_alarm_details": []
     },
     {
       "report": "report_07",
       "planted": 2,
       "scored": true,
       "caught": 2,
-      "cascade": 1,
-      "false_alarms": 2,
+      "cascade": 2,
+      "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "7a00fa6a",
+      "prompt_version": "1f18b8c3",
       "missed": [],
-      "false_alarm_details": [
-        "Solar provided 13.1% of electricity in 2025 and is the main ",
-        "requirement R3 marked not covered"
-      ]
+      "false_alarm_details": []
     },
     {
       "report": "report_08",
@@ -166,7 +155,7 @@
       "cascade": 0,
       "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "7a00fa6a",
+      "prompt_version": "1f18b8c3",
       "missed": [],
       "false_alarm_details": []
     },
@@ -174,12 +163,14 @@
       "report": "report_09",
       "planted": 2,
       "scored": true,
-      "caught": 2,
-      "cascade": 0,
+      "caught": 1,
+      "cascade": 1,
       "false_alarms": 0,
       "query_mismatches": 0,
-      "prompt_version": "7a00fa6a",
-      "missed": [],
+      "prompt_version": "1f18b8c3",
+      "missed": [
+        "R1"
+      ],
       "false_alarm_details": []
     },
     {
@@ -188,14 +179,16 @@
       "scored": true,
       "caught": 2,
       "cascade": 0,
-      "false_alarms": 0,
+      "false_alarms": 1,
       "query_mismatches": 1,
-      "prompt_version": "7a00fa6a",
+      "prompt_version": "1f18b8c3",
       "missed": [],
-      "false_alarm_details": []
+      "false_alarm_details": [
+        "requirement R4 marked not covered"
+      ]
     }
   ],
   "prompt_versions": [
-    "7a00fa6a"
+    "1f18b8c3"
   ]
 }

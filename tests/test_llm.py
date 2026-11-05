@@ -134,3 +134,17 @@ def test_groq_missing_key(groq, monkeypatch):
     monkeypatch.delenv("GROQ_API_KEY")
     with pytest.raises(llm.LLMError, match="Set GROQ_API_KEY .*console.groq.com"):
         llm.ask_json("p")
+
+
+def test_overload_backs_off_exponentially_then_succeeds(http):
+    busy = Resp(503, {"error": {"code": 503, "message": "high demand"}})
+    http["responses"] = [busy, busy, busy, busy, busy, OK]
+    assert llm.ask_json("p") == {"answer": 42}
+    assert [s for s in http["sleeps"] if s >= 15] == [15, 30, 60, 120, 120]
+
+
+def test_overload_gives_up_after_retries(http):
+    busy = Resp(503, {"error": {"code": 503, "message": "high demand"}})
+    http["responses"] = [busy] * 8
+    with pytest.raises(llm.LLMError, match="kept failing: 503"):
+        llm.ask_json("p")

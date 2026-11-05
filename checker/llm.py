@@ -111,7 +111,7 @@ def cache_path(prompt: str) -> Path:
     return CACHE / f"{key}.json"
 
 
-def ask_json(prompt: str, retries: int = 5) -> dict:
+def ask_json(prompt: str, retries: int = 8) -> dict:
     """Send a prompt, get back parsed JSON."""
     CACHE.mkdir(exist_ok=True)
     cached = cache_path(prompt)
@@ -137,8 +137,8 @@ def ask_json(prompt: str, retries: int = 5) -> dict:
                 raise QuotaExhausted(f"Daily free-tier quota for {MODEL} is used up.{hours}")
             time.sleep(delay or 15 * (attempt + 1))  # per-minute limit: wait as the server asks
             continue
-        if r.status_code in (500, 503):  # overload
-            time.sleep(15 * (attempt + 1))
+        if r.status_code in (500, 503):  # overload: back off 15, 30, 60, 120, 120 ... s (~10 min in total)
+            time.sleep(min(120, 15 * 2 ** attempt))
             continue
         r.raise_for_status()
         try:

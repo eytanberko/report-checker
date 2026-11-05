@@ -118,7 +118,7 @@
       "sql": null,
       "status": "supported",
       "actual": null,
-      "note": "The risk is directly grounded in the reported data showing gas constitutes 79.7% of total generation."
+      "note": "The data context confirms that gas reached 79.7% of Israel's electricity generation in 2025, which logically supports the risk of low supply diversity."
     }
   ],
   "requirements": [
@@ -126,36 +126,36 @@
       "id": "R1",
       "status": "covered",
       "evidence": "Renewables supplied 16.9% of Israel's electricity in 2025, about 15 percentage points more than in 2015 (1.9%).",
-      "reason": "The report provides both the 2025 renewables share and the change since 2015."
+      "reason": "The report provides both Israel's 2025 renewables share and the change since 2015."
     },
     {
       "id": "R2",
       "status": "covered",
       "evidence": "Coal dropped to 3.4% in 2025 from 45.4% ten years earlier.",
-      "reason": "The report clearly states the status and significant decline of coal in Israel's electricity mix."
+      "reason": "The report clearly states the current status and recent trajectory of coal in the electricity mix."
     },
     {
       "id": "R3",
       "status": "covered",
       "evidence": "Israel still lags Italy (48.8%) and Spain (55.9%), both of which generate around half of their electricity from renewables.",
-      "reason": "The report compares Israel with two Mediterranean peers using their renewables shares."
+      "reason": "The report compares Israel with two Mediterranean peers using their latest available 2025 data."
     },
     {
       "id": "R4",
       "status": "covered",
       "evidence": "Generation increased by roughly 28%, from 64.2 TWh to 82.1 TWh.",
-      "reason": "The report provides the exact percentage growth and absolute figures for total electricity generation between 2015 and 2025."
+      "reason": "The report explicitly details the growth rate and absolute figures for total electricity generation between 2015 and 2025."
     },
     {
       "id": "R5",
       "status": "covered",
       "evidence": "The main risk: gas reached 79.7% of generation, leaving little diversity in supply.",
-      "reason": "The report identifies a key risk grounded in the data regarding the high concentration of natural gas in generation."
+      "reason": "The report identifies a key risk grounded directly in the high gas share figures from the data context."
     }
   ],
   "meta": {
     "model": "gemini-3.5-flash-lite",
-    "prompt_version": "7a00fa6a",
-    "finished": "2026-11-05T08:10:44+00:00"
+    "prompt_version": "1f18b8c3",
+    "finished": "2026-11-05T09:12:18+00:00"
   }
 }
