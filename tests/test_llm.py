@@ -136,15 +136,17 @@ def test_groq_missing_key(groq, monkeypatch):
         llm.ask_json("p")
 
 
-def test_overload_backs_off_exponentially_then_succeeds(http):
+def test_overload_waits_2_4_8_minutes_then_succeeds(http):
     busy = Resp(503, {"error": {"code": 503, "message": "high demand"}})
-    http["responses"] = [busy, busy, busy, busy, busy, OK]
+    http["responses"] = [busy, busy, busy, OK]
     assert llm.ask_json("p") == {"answer": 42}
-    assert [s for s in http["sleeps"] if s >= 15] == [15, 30, 60, 120, 120]
+    assert [s for s in http["sleeps"] if s >= 60] == [120, 240, 480] and len(http["requests"]) == 4
 
 
-def test_overload_gives_up_after_retries(http):
+def test_overload_stops_cleanly_after_three_retries(http):
     busy = Resp(503, {"error": {"code": 503, "message": "high demand"}})
-    http["responses"] = [busy] * 8
-    with pytest.raises(llm.LLMError, match="kept failing: 503"):
+    http["responses"] = [busy] * 4 + [OK]
+    with pytest.raises(llm.Overloaded, match="still overloaded after 3 retries .waited 14 min.; stopping"):
         llm.ask_json("p")
+    assert len(http["requests"]) == 4          # 1 call + 3 retries, never a 5th
+    assert isinstance(llm.Overloaded("x"), llm.LLMError)   # so evaluate.py stops cleanly and can resume

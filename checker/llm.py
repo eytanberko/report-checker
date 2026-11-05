@@ -37,6 +37,7 @@ JUDGE_MODEL = os.getenv("JUDGE_MODEL", PROVIDERS[PROVIDER].get("judge_model", MO
 CACHE = Path(".llm_cache")
 OFFLINE = os.getenv("LLM_OFFLINE") == "1"
 MIN_INTERVAL = float(os.getenv("LLM_MIN_INTERVAL", "7"))
+OVERLOAD_WAITS = (120, 240, 480)  # seconds to wait before each retry on 500/503; then stop
 
 stats = {"calls": 0, "cache_hits": 0}  # API requests made (incl. retries) / answers served from cache
 _last_call = 0.0
@@ -52,6 +53,10 @@ class CacheMiss(LLMError):
 
 class BadOutput(LLMError):
     """The model answered, but not with usable JSON (never cached)."""
+
+
+class Overloaded(LLMError):
+    """The server stayed overloaded (500/503) through every retry."""
 
 
 class QuotaExhausted(LLMError):
@@ -135,6 +140,7 @@ def ask_json(prompt: str, retries: int = 8, model: str | None = None) -> dict:
     if not api_key:
         raise LLMError(f"Set {conf['key_env']} (free key from {conf['signup']})")
 
+    overloads = 0
     for attempt in range(retries):
         _throttle()
         stats["calls"] += 1
@@ -146,8 +152,14 @@ def ask_json(prompt: str, retries: int = 8, model: str | None = None) -> dict:
                 raise QuotaExhausted(f"Daily free-tier quota for {model} is used up.{hours}")
             time.sleep(delay or 15 * (attempt + 1))  # per-minute limit: wait as the server asks
             continue
-        if r.status_code in (500, 503):  # overload: back off 15, 30, 60, 120, 120 ... s (~10 min in total)
-            time.sleep(min(120, 15 * 2 ** attempt))
+        if r.status_code in (500, 503):
+            # Server overload. Every retry counts against the daily quota (only 20/day on some models),
+            # so wait long between few retries, then stop cleanly; a later run resumes.
+            if overloads == len(OVERLOAD_WAITS):
+                raise Overloaded(f"{model} still overloaded after {overloads} retries "
+                                 f"(waited {sum(OVERLOAD_WAITS) // 60} min); stopping to save quota.")
+            time.sleep(OVERLOAD_WAITS[overloads])
+            overloads += 1
             continue
         r.raise_for_status()
         try:

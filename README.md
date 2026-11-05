@@ -126,6 +126,15 @@ The re-run with the data context (recall 14/16, 1 false alarm) led to the last c
 From this tag on there are no prompt, scoring-rule or model changes until the held-out test. Everything
 above was tuned on this benchmark, so only a held-out set can show how well it generalises.
 
+**Status: the benchmark run is incomplete.** Reports 01-06 are scored with this configuration (see
+`results/metrics.md`). The free daily quota of the judge model (~20 requests) ran out, mostly on retries
+during server overloads. **Reports 07-10 are pending** and will run with the same frozen configuration once
+the quota resets (`python evaluate.py` resumes where it stopped).
+
+Infrastructure changes after the freeze (no effect on prompts, rules, models or scores):
+- **Overload retries:** on 500/503 the client waits 2, 4, then 8 minutes, at most 3 retries per call, then
+  stops cleanly. Every retry counts against the daily quota, so fewer, longer-spaced retries protect it.
+
 Each run records the prompt version (a hash of both prompt templates); `legacy` marks results made with the
 first-run prompts. Scores for different prompt versions are not directly comparable.
 
