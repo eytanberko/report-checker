@@ -9,13 +9,13 @@
   }
 
   const STATUS = {
-    verified: { tick: "t-agreed", label: "Agreed to the data" },
+    verified: { tick: "t-agreed", label: "Matches the data" },
     supported: { tick: "t-agreed", label: "Supported by the data" },
-    contradicted: { tick: "t-exception", label: "Exception: the data contradicts it" },
-    inconsistent: { tick: "t-nofoot", label: "Does not foot: the report's own numbers disagree" },
-    unsupported: { tick: "t-unsupported", label: "The data does not support this conclusion" },
-    unverifiable: { tick: "t-unverified", label: "Could not be verified" },
-    query_mismatch: { tick: "t-query", label: "Not checked: the checker's query failed" },
+    contradicted: { tick: "t-exception", label: "Contradicted by the data" },
+    inconsistent: { tick: "t-nofoot", label: "Numbers inside the report don't add up" },
+    unsupported: { tick: "t-unsupported", label: "Conclusion not supported by the data" },
+    unverifiable: { tick: "t-unverified", label: "Couldn't be checked" },
+    query_mismatch: { tick: "t-query", label: "Not checked: the checker's own query was wrong" },
   };
   const REQ = {
     covered: { tick: "t-agreed", cls: "tk-agreed", label: "Answered" },
@@ -57,8 +57,8 @@
       const exc = n("contradicted") + n("inconsistent");
       const other = n("unsupported");
       const tally = [
-        exc ? `<span title="${exc} exception${exc > 1 ? "s" : ""}">${tick("t-exception", "tk-exception")}${exc}</span>` : "",
-        other ? `<span title="${other} unsupported">${tick("t-unsupported", "tk-unsupported")}${other}</span>` : "",
+        exc ? `<span title="${exc} contradicted or inconsistent number${exc > 1 ? "s" : ""}">${tick("t-exception", "tk-exception")}${exc}</span>` : "",
+        other ? `<span title="${other} unsupported conclusion${other > 1 ? "s" : ""}">${tick("t-unsupported", "tk-unsupported")}${other}</span>` : "",
         !exc && !other ? `<span>${tick("t-agreed", "tk-agreed")}clean</span>` : "",
       ].join("");
       return `<button class="tab" role="tab" id="tab-${r.id}" aria-controls="panel" aria-selected="false" tabindex="-1" data-id="${r.id}">
@@ -82,7 +82,7 @@
     });
   }
 
-  /* ---------- the ticked report ---------- */
+  /* ---------- the marked-up report ---------- */
   const CIRCLE = '<svg class="circle" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M52 3C25 2 4 8 3 20c-1 12 22 17 48 17 25 0 46-6 46-17C97 9 78 3 47 4"/></svg>';
 
   // An auditor circles the figure itself: find the stated value in the claim's own text.
@@ -137,7 +137,7 @@
       : isNumber ? "" : `<p class="note-why">A conclusion, judged by the judge model against the checked facts and the data.</p>`;
     return `<p class="note-status">${tick(st.tick, tickClass(c.status))}${esc(st.label)}</p>
       <p class="note-quote">${esc(c.quote)}</p>${data}${why}${sql}
-      <p class="note-link"><a href="#${current.id}/${c.id}">Link to this claim</a></p>`;
+      <p class="note-link"><a class="claim-link" href="${claimUrl(current.id, c.id)}">Copy link to this claim</a><span class="copied" role="status"></span></p>`;
   }
 
   function showNote(id) {
@@ -189,7 +189,7 @@
     const cascade = k.cascade.length ? `<p>${k.cascade.length} more flag${k.cascade.length > 1 ? "s" : ""} followed from a planted error (counted as a consequence, not as a false alarm).</p>` : "";
     const run = r.run.frozen
       ? ""
-      : `<p><em>Shown from an earlier run (prompt ${esc(r.run.prompt_version)}, ${esc(r.run.model)}). The frozen v1.0 run of this report is pending.</em></p>`;
+      : `<p><em>Shown from an earlier run with older settings (prompt ${esc(r.run.prompt_version)}, ${esc(r.run.model)}). The v1.0 run of this report is pending and will replace it automatically.</em></p>`;
     $("#answer-key").innerHTML = `<h3>Answer key for this report</h3>${planted}${fa}${cascade}${run}`;
   }
 
@@ -241,18 +241,16 @@
       t.tabIndex = on ? 0 : -1;
     });
     $("#panel").setAttribute("aria-labelledby", `tab-${r.id}`);
-    $("#b-ref").textContent = `B-${n}`;
-    $("#c-ref").textContent = `C-${n}`;
-    $("#d-ref").textContent = `D-${n}`;
+    ["#b-ref", "#c-ref", "#d-ref"].forEach((sel) => { $(sel).textContent = `Report ${n}`; });
     const run = r.run.frozen
-      ? `Frozen v1.0 run`
-      : `Earlier run · v1.0 pending`;
+      ? `v1.0 (frozen settings)`
+      : `Earlier settings · v1.0 pending`;
     $("#b-meta").innerHTML = `
       <div><dt>Client</dt><dd>Energy Policy desk</dd></div>
       <div><dt>Prepared by</dt><dd>${esc(r.author)}</dd></div>
       <div><dt>Period</dt><dd>2015–2025</dd></div>
       <div><dt>Reviewed by</dt><dd>Report Checker</dd></div>
-      <div class="${r.run.frozen ? "" : "run-older"}"><dt>Run</dt><dd>${run}</dd></div>`;
+      <div class="${r.run.frozen ? "" : "run-older"}"><dt>Settings</dt><dd>${run}</dd></div>`;
     const byId = Object.fromEntries(r.claims.map((c) => [c.id, c]));
     $("#report-text").innerHTML = renderSegments(r.segments, byId);
     renderAnswerKey(r);
@@ -289,7 +287,7 @@
     ].filter(Boolean);
     $("#caveats").innerHTML = caveats.map((c) => `<li>${esc(c)}</li>`).join("");
 
-    // One pencil mark per planted mistake (no bars: one of one must not look like two of two), footed below.
+    // One pencil mark per planted mistake (no bars: one of one must not look like two of two), totalled below.
     const byType = Object.fromEntries((m.by_type || []).map((t) => [t.type, t]));
     $("#types-body").innerHTML = TYPES.map(([type, label, example]) => {
       const t = byType[type];
@@ -305,7 +303,7 @@
     const footCaught = (m.by_type || []).reduce((a, t) => a + t.caught, 0);
     const footPlanted = (m.by_type || []).reduce((a, t) => a + t.planted, 0);
     const foots = footCaught === m.caught && footPlanted === m.planted;
-    $("#types-foot").innerHTML = `<tr><th scope="row" colspan="3">Total${foots ? '<span class="foot-mark" title="Footed: agrees to the recall figure">F</span>' : ""}</th>
+    $("#types-foot").innerHTML = `<tr><th scope="row" colspan="3">Total${foots ? `<span class="foot-mark" title="Matches the recall figure above">${tick("t-agreed", "tk-agreed")}</span>` : ""}</th>
       <td class="num">${footCaught} of ${footPlanted}</td></tr>`;
     labelCells("#types-body");
     const h = SITE.heldout;
@@ -313,33 +311,60 @@
       ? `<span class="stamp">Held-out</span><div><h3>Held-out test</h3><p>Recall ${pct(h.recall)}, precision ${pct(h.precision)}, ${h.false_alarms} false alarm${h.false_alarms === 1 ? "" : "s"} on ${h.reports_scored} reports the checker had never seen.</p></div>`
       : `<span class="stamp">Not yet run</span><div><h3>Held-out test</h3><p>New reports the checker has never seen, scored with the configuration frozen before they were written (tag ${esc(cfg.tag)}, prompt ${esc(cfg.prompt_version)}). This is where the result that matters will appear.</p></div>`;
 
-    // Each change is stated once; a run with the same configuration as the one above is a re-run (ditto).
-    let prevConfig = null;
-    $("#history-body").innerHTML = SITE.history.map((row) => {
-      const config = `${row.prompt_version}|${row.model}|${row.judge_model}`;
-      const rerun = config === prevConfig;
-      prevConfig = config;
-      const frozen = row.prompt_version === cfg.prompt_version && row.model === cfg.model && row.judge_model === cfg.judge_model;
+    const rows = SITE.history;
+    const isFrozen = (row) => row.prompt_version === cfg.prompt_version && row.model === cfg.model && row.judge_model === cfg.judge_model;
+    const outcomeOf = (row) => (row.status && row.status.startsWith("stopped")
+      ? (/quota/i.test(row.status) ? "Stopped early: daily quota." : "Stopped early: server overloaded.")
+      : row.status === "partial" ? "Partial." : "Complete.");
+
+    function runRow(row, change, cls = "") {
+      const frozen = isFrozen(row);
       const m1 = `<span class="nowrap">${esc(row.model)}</span>`;
       const models = row.judge_model && row.judge_model !== row.model
         ? `${m1}<br><span class="nowrap">${esc(row.judge_model)} (judge)</span>` : m1;
-      const outcome = row.status && row.status.startsWith("stopped")
-        ? (/quota/i.test(row.status) ? "Stopped early: daily quota." : "Stopped early: server overloaded.")
-        : row.status === "partial" ? "Partial." : "Complete.";
-      const change = rerun
-        ? `<span class="ditto" aria-hidden="true">〃</span> Same configuration, run again. ${outcome}`
-        : `${esc(VERSION_NOTES[row.prompt_version] || "")} ${outcome}`;
       const date = (row.timestamp || "").slice(5, 16).replace("-", "/");
       return `<tr class="figures ${frozen ? "frozen" : ""}"><td><div>${esc(date)}${frozen ? '<span class="tag">v1.0</span>' : ""}</div></td>
         <td class="models"><div>${models}</div></td><td class="num">${esc(row.reports_scored)}/${esc(row.reports_total)}</td>
         <td class="num">${row.recall === "" ? "–" : pct(+row.recall)}</td><td class="num">${row.precision === "" ? "–" : pct(+row.precision)}</td>
         <td class="num">${esc(row.false_alarms)}</td></tr>
-        <tr class="change ${frozen ? "frozen" : ""} ${rerun ? "rerun" : ""}"><td colspan="6" data-label="What changed"><div>${change}</div></td></tr>`;
+        <tr class="change ${frozen ? "frozen" : ""} ${cls}"><td colspan="6" data-label="What changed"><div>${change}</div></td></tr>`;
+    }
+    function labelRuns(tbodySel) {
+      const table = $(tbodySel).closest("table");
+      const heads = [...table.querySelectorAll("thead th")].map((th) => th.textContent.trim());
+      table.querySelectorAll("tbody tr.figures").forEach((tr) => [...tr.children].forEach((td, i) => { td.dataset.label = heads[i] || ""; }));
+    }
+
+    // The three runs that matter: the first, the best with one model for every step, and the frozen v1.0 settings.
+    const f1 = (r) => (+r.recall && +r.precision ? (2 * r.recall * r.precision) / (+r.recall + +r.precision) : 0);
+    const single = rows.filter((r) => r.status === "complete" && (!r.judge_model || r.judge_model === r.model));
+    const bestSingle = single.reduce((best, r) => (!best || f1(r) > f1(best) ? r : best), null);
+    const frozenRuns = rows.filter(isFrozen);
+    const frozenRun = frozenRuns.filter((r) => r.status === "complete").pop() || frozenRuns.pop();
+    const key = [];
+    const add = (row, role) => { if (row && !key.some((k) => k.row === row)) key.push({ row, role }); };
+    add(rows[0], "First run.");
+    add(bestSingle, "Best run with one model for every step.");
+    add(frozenRun, "The frozen v1.0 settings.");
+    $("#history-key").innerHTML = key
+      .sort((a, b) => rows.indexOf(a.row) - rows.indexOf(b.row))
+      .map(({ row, role }) => runRow(row, `<strong>${esc(role)}</strong> ${esc(VERSION_NOTES[row.prompt_version] || "")} ${outcomeOf(row)}`))
+      .join("");
+    labelRuns("#history-key");
+
+    // Full history: each change stated once; a run with the same settings as the one above is a re-run (ditto).
+    let prevConfig = null;
+    $("#history-body").innerHTML = rows.map((row) => {
+      const config = `${row.prompt_version}|${row.model}|${row.judge_model}`;
+      const rerun = config === prevConfig;
+      prevConfig = config;
+      const change = rerun
+        ? `<span class="ditto" aria-hidden="true">〃</span> Same settings, run again. ${outcomeOf(row)}`
+        : `${esc(VERSION_NOTES[row.prompt_version] || "")} ${outcomeOf(row)}`;
+      return runRow(row, change, rerun ? "rerun" : "");
     }).join("");
-    $("#history-body").closest("table").querySelectorAll("tbody tr.figures").forEach((tr) => {
-      const heads = [...tr.closest("table").querySelectorAll("thead th")].map((th) => th.textContent.trim());
-      [...tr.children].forEach((td, i) => { td.dataset.label = heads[i] || ""; });
-    });
+    labelRuns("#history-body");
+    $("#all-runs-title").textContent = `Show all ${rows.length} runs`;
   }
 
   // Phones show each schedule row as labelled lines: copy the column headers onto the cells.
@@ -361,15 +386,44 @@
     }
   }
 
+  // A claim link is "<page>#report_07/C3": it opens that report with that claim selected and on screen.
+  function claimUrl(reportId, claimId) {
+    return `${location.href.split("#")[0]}#${reportId}/${claimId}`;
+  }
+
+  function scrollToClaim(claimId) {
+    const el = document.querySelector(`.claim[data-id="${CSS.escape(claimId)}"]`);
+    if (el) el.scrollIntoView({ block: "center", behavior: "instant" });
+  }
+
   function fromHash() {
-    const [id, claim] = location.hash.slice(1).split("/");
+    const [id, claim] = decodeURIComponent(location.hash.slice(1)).split("/");
     if (id && SITE.reports.some((r) => r.id === id)) {
       select(id, claim, false);
-      if (claim) document.querySelector(`.claim[data-id="${CSS.escape(claim)}"]`)?.scrollIntoView({ block: "center" });
+      if (claim) {
+        scrollToClaim(claim);
+        // fonts can still move the text after the first paint; settle on the claim once they are in
+        document.fonts?.ready.then(() => scrollToClaim(claim));
+      }
       return true;
     }
     return false;
   }
+
+  // "Copy link to this claim": copy the address instead of navigating to the page we are already on.
+  document.addEventListener("click", async (e) => {
+    const a = e.target.closest(".claim-link");
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;  // new tab/window: let the browser open it
+    e.preventDefault();
+    const status = a.parentElement.querySelector(".copied");
+    try {
+      await navigator.clipboard.writeText(a.href);
+      status.textContent = "Link copied";
+    } catch {
+      history.replaceState(null, "", a.href);
+      status.textContent = "Link is in the address bar";
+    }
+  });
 
   renderTabs();
   bindClaims();

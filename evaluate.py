@@ -26,6 +26,7 @@ from checker.prompts import prompt_version
 
 BENCH = Path(__file__).resolve().parent / "benchmark"
 OUT = Path(__file__).resolve().parent / "results"
+DEFAULT_OUT = OUT
 HISTORY_FIELDS = ["timestamp", "mode", "model", "judge_model", "prompt_version", "reports_scored", "reports_total",
                   "recall", "precision", "false_alarms", "cascade", "query_mismatches",
                   "api_calls", "cache_hits", "seconds", "status"]
@@ -193,6 +194,15 @@ def append_history(m: dict, run: dict) -> None:
                     "precision": "" if m["precision"] is None else round(m["precision"], 3)})
 
 
+def refresh_site() -> None:
+    """Rebuild the showcase's data (docs/data/site.js) from the results just written, so the site follows each run
+    with no manual step: e.g. the "earlier run" labels disappear once a report is re-scored with the frozen settings."""
+    if OUT.resolve() != DEFAULT_OUT.resolve():  # tests and ad-hoc runs on other folders leave the site alone
+        return
+    from scripts import build_site
+    build_site.main()
+
+
 def main(argv: list[str] | None = None) -> int:
     """Run (or resume) the benchmark; see the module docstring."""
     parser = argparse.ArgumentParser(description="Run the Report Checker benchmark.")
@@ -242,6 +252,7 @@ def main(argv: list[str] | None = None) -> int:
     append_history(m, run)
     print("\n" + md)
     print(f"{run['api_calls']} API calls, {run['cache_hits']} cache hits, {run['seconds']}s, {run['status']}")
+    refresh_site()
     return 0 if complete else 3
 
 

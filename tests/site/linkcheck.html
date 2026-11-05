@@ -1,0 +1,36 @@
+<!doctype html><meta charset="utf-8"><title>claim link check</title><body><script src="../../docs/data/site.js"></script><script>
+// Opens every claim link in a fresh frame (like a new tab) and checks it lands on that report and claim.
+const W = +(new URLSearchParams(location.search).get("w") || 1440);
+const links = []; for (const r of window.SITE.reports) for (const c of r.claims) links.push([r.id, c.id, c.quote]);
+const fails = []; let i = 0, ok = 0;
+function next() {
+  if (i >= links.length) { document.body.setAttribute("data-out", JSON.stringify({ width: W, ok, total: links.length, fails })); return; }
+  const [rid, cid, quote] = links[i++];
+  const f = document.createElement("iframe"); f.style.cssText = `width:${W}px;height:800px;border:0`;
+  f.src = `../../docs/index.html#${rid}/${cid}`;
+  f.onload = () => setTimeout(() => {
+    const d = f.contentDocument, why = [];
+    const tab = d.querySelector('.tab[aria-selected="true"]');
+    if (!tab || tab.dataset.id !== rid) why.push("tab=" + (tab && tab.dataset.id));
+    const act = [...d.querySelectorAll(".claim.is-active")].map((e) => e.dataset.id);
+    if (!act.includes(cid)) why.push("active=" + act.join(","));
+    const nq = (d.querySelector(".note-quote") || {}).textContent || "";
+    if (!nq.includes(quote.slice(0, 20))) why.push("note=" + nq.slice(0, 30));
+    const el = d.querySelector(`.claim[data-id="${cid}"]`);
+    const r = el && el.getBoundingClientRect();
+    if (!r || r.bottom < 0 || r.top > f.contentWindow.innerHeight) why.push("offscreen");
+    const a = d.querySelector(".claim-link");
+    if (!a || !a.href.endsWith(`#${rid}/${cid}`)) why.push("link=" + (a && a.href.split("#")[1]));
+    const before = f.contentWindow.location.href;
+    a && a.click();
+    setTimeout(() => {
+      if (f.contentWindow.location.href.split("#")[0] !== before.split("#")[0]) why.push("copy-link navigated");
+      if (!(d.querySelector(".copied") || {}).textContent) why.push("no copy feedback");
+      if (why.length) fails.push(`${rid}/${cid}: ${why.join(" ")}`); else ok++;
+      f.remove(); next();
+    }, 120);
+  }, 300);
+  document.body.append(f);
+}
+next();
+</script>

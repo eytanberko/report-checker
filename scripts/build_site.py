@@ -71,7 +71,17 @@ def requirements_list(md: str) -> list[dict]:
     return [{"id": rid, "text": text.strip()} for rid, text in re.findall(r"\*\*(R\d+)\*\*:\s*(.+)", md)]
 
 
-def report_entry(rep: dict, frozen_version: str) -> dict | None:
+def frozen_config() -> dict:
+    """The frozen v1.0 settings: what a result must have been made with to count as the frozen run."""
+    return {"prompt_version": prompt_version(), "model": llm.MODEL, "judge_model": llm.JUDGE_MODEL}
+
+
+def is_frozen(meta: dict, config: dict) -> bool:
+    """True when a saved result was made with exactly the frozen settings (prompts and both models)."""
+    return all(meta.get(k) == v for k, v in config.items())
+
+
+def report_entry(rep: dict, config: dict) -> dict | None:
     path = RESULTS / f"{rep['id']}.json"
     if not path.exists():
         return None
@@ -94,7 +104,7 @@ def report_entry(rep: dict, frozen_version: str) -> dict | None:
         "memo": review_memo(result, f"{rep['id']} ({rep['author']})"),
         "run": {"prompt_version": meta.get("prompt_version", "legacy"), "model": meta.get("model"),
                 "judge_model": meta.get("judge_model", meta.get("model")),
-                "frozen": meta.get("prompt_version") == frozen_version},
+                "frozen": is_frozen(meta, config)},
         "answer_key": {
             "planted": [{"type": e["type"], "target": e.get("match") or e.get("requirement"),
                          "caught": e in s["caught"]} for e in rep["planted"]],
@@ -116,15 +126,15 @@ def history_rows() -> list[dict]:
 def build() -> dict:
     """Everything the site renders, as one JSON-serialisable dict."""
     reports_yaml = yaml.safe_load((BENCH / "reports.yaml").read_text(encoding="utf-8"))["reports"]
-    frozen_version = prompt_version()
+    config = frozen_config()
     heldout_path = RESULTS / "heldout" / "metrics.json"
     metrics_path = RESULTS / "metrics.json"
     return {
         "links": LINKS,
-        "config": {"tag": FROZEN_TAG, "prompt_version": frozen_version,
+        "config": {"tag": FROZEN_TAG, "prompt_version": config["prompt_version"],
                    "model": llm.MODEL, "judge_model": llm.JUDGE_MODEL},
         "requirements": requirements_list((BENCH / "requirements.md").read_text(encoding="utf-8")),
-        "reports": [e for e in (report_entry(r, frozen_version) for r in reports_yaml) if e],
+        "reports": [e for e in (report_entry(r, config) for r in reports_yaml) if e],
         "metrics": json.loads(metrics_path.read_text(encoding="utf-8")) if metrics_path.exists() else None,
         "history": history_rows(),
         "heldout": json.loads(heldout_path.read_text(encoding="utf-8")) if heldout_path.exists() else None,

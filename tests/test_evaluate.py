@@ -77,3 +77,15 @@ def test_stale_results_are_rerun_live(out, monkeypatch):
     monkeypatch.setattr(llm, "ask_json", fake)
     monkeypatch.setattr(llm, "ask_judge", fake)
     assert evaluate.main([]) == 0 and fake.calls == 20
+
+
+def test_site_data_refreshes_after_a_real_run_only(monkeypatch, tmp_path):
+    from scripts import build_site
+    calls = []
+    monkeypatch.setattr(build_site, "main", lambda: calls.append(1) or 0)
+    monkeypatch.setattr(evaluate, "OUT", tmp_path)
+    evaluate.refresh_site()
+    assert calls == []                                   # a test or ad-hoc folder never touches docs/
+    monkeypatch.setattr(evaluate, "OUT", evaluate.DEFAULT_OUT)
+    evaluate.refresh_site()
+    assert calls == [1]                                  # the real results folder rebuilds the site data

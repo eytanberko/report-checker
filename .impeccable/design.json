@@ -381,7 +381,7 @@
       },
       "data": {
         "displayName": "Data",
-        "purpose": "W/P refs, requirement refs, tab numbers, numeric cells, model names."
+        "purpose": "report refs, requirement refs, tab numbers, numeric cells, model names."
       },
       "sql": {
         "displayName": "SQL",
@@ -389,7 +389,7 @@
       },
       "hand": {
         "displayName": "Hand",
-        "purpose": "Signature, ditto mark and footing mark only."
+        "purpose": "Signature and ditto mark only."
       }
     },
     "shadows": [
@@ -462,7 +462,7 @@
       "name": "Working-Paper Header",
       "kind": "custom",
       "refersTo": "wp-ref",
-      "description": "Printed header on every sheet: boxed W/P ref, condensed title, field row.",
+      "description": "Printed header on every sheet: condensed title, field row, and a boxed ref to the selected report on report sheets.",
       "html": "<div class=\"ds-wp-head\"><span class=\"ds-wp-ref\">B-1</span><h2 class=\"ds-wp-title\">Report under review</h2><dl class=\"ds-wp-meta\"><div><dt>Client</dt><dd>Energy Policy desk</dd></div><div><dt>Prepared by</dt><dd>Analyst F</dd></div><div><dt>Run</dt><dd>Frozen v1.0 run</dd></div></dl></div>",
       "css": ".ds-wp-head { display: grid; grid-template-columns: auto 1fr; column-gap: 1.25rem; row-gap: .35rem; align-items: baseline; padding: 1.1rem 1.5rem 1rem; background: linear-gradient(#e0eadb, #e0eadb) bottom / 100% 3px no-repeat, #e8f0e3; border-bottom: 2px solid #183324; color: #183324; } .ds-wp-ref { grid-row: span 2; align-self: start; font: 700 1.05rem/1 'JetBrains Mono', Consolas, monospace; border: 1.5px solid #183324; padding: .45rem .55rem .4rem; min-width: 3.4rem; text-align: center; } .ds-wp-title { margin: 0; font: 750 2rem/1.1 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 78%; letter-spacing: -.01em; } .ds-wp-meta { grid-column: 2; margin: 0; display: flex; flex-wrap: wrap; gap: .3rem 1.6rem; } .ds-wp-meta div { display: flex; gap: .45rem; align-items: baseline; } .ds-wp-meta dt { font: 600 .74rem/1.3 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 85%; letter-spacing: .06em; text-transform: uppercase; color: #3d5848; } .ds-wp-meta dd { margin: 0; font: 500 .95rem 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 92%; }"
     },
@@ -491,7 +491,7 @@
       "css": ".ds-note { max-width: 21rem; background: #f2f7ef; border: 1px solid #4f7a5e; padding: 1rem 1.05rem 1.1rem; box-shadow: 0 10px 24px -20px rgba(24, 51, 36, .6); color: #183324; font: 400 1rem/1.5 'Source Serif 4', Georgia, serif; } .ds-note-red { border-color: #b3221a; } .ds-note-status { display: flex; align-items: center; gap: .5rem; margin: 0 0 .55rem; font: 700 1rem/1.2 'Archivo', sans-serif; font-stretch: 85%; } .ds-note-status svg { width: 1.35rem; height: 1.35rem; } .ds-note-quote { margin: 0 0 .7rem; line-height: 1.45; } .ds-note-data { margin: 0 0 .6rem; } .ds-note-data strong { font: 600 1.05rem 'JetBrains Mono', Consolas, monospace; } .ds-note-sql summary { cursor: pointer; font: 600 .74rem/1.3 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 85%; letter-spacing: .06em; text-transform: uppercase; color: #3d5848; } .ds-note-sql summary:focus-visible { outline: 2px solid #1f4fa3; outline-offset: 3px; } .ds-note-sql pre { margin: .35rem 0 0; padding: .6rem .7rem; background: #e8f0e3; border: 1px solid #b5ccb0; font: 400 .8rem/1.55 'JetBrains Mono', Consolas, monospace; white-space: pre-wrap; }"
     },
     {
-      "name": "Tick-Mark Legend",
+      "name": "Legend",
       "kind": "custom",
       "refersTo": "label",
       "description": "The legend that sits on every sheet using tick marks.",
@@ -525,10 +525,10 @@
   ],
   "narrative": {
     "northStar": "The Working-Paper File",
-    "overview": "The whole surface is an auditor's working-paper file on one analyst report. Each section is a sheet of pale ledger-green pad laid on a darker green desk, headed by a printed working-paper block (a boxed W/P reference such as B-1, a condensed title, a row of form fields: client, prepared by, period, reviewed by, run). Inside, the analyst's report sits on the pad's printed ruling and every figure carries a coloured-pencil tick mark that points to its evidence in the margin.\n\nDensity is that of a real working paper: compact form labels, schedules with rules and footings, notes in the margin. The voice is calm and procedural. Colour is almost entirely the green of the paper and its print; the pencils (blue, red, brown, ochre, graphite) carry meaning and nothing else. The world refuses the AI-showcase default of hero headline, feature cards and metric tiles; the cover is the file's label, and the work leads.",
+    "overview": "The whole surface is an auditor's working-paper file on one analyst report. Each section is a sheet of pale ledger-green pad laid on a darker green desk, headed by a printed working-paper block (a boxed reference such as Report 02, a condensed title, a row of form fields: client, prepared by, period, reviewed by, settings). Inside, the analyst's report sits on the pad's printed ruling and every figure carries a coloured-pencil tick mark that points to its evidence in the margin.\n\nDensity is that of a real working paper: compact form labels, schedules with rules and footings, notes in the margin. The voice is calm and procedural. Colour is almost entirely the green of the paper and its print; the pencils (blue, red, brown, ochre, graphite) carry meaning and nothing else. The world refuses the AI-showcase default of hero headline, feature cards and metric tiles; the cover is the file's label, and the work leads.",
     "keyCharacteristics": [
       "Ledger-green pad sheets on a green desk, edged by a strong green rule and a soft paper shadow.",
-      "Printed working-paper header on every sheet: boxed monospace W/P ref, condensed Archivo title, uppercase field labels.",
+      "Printed working-paper header on every sheet: condensed Archivo title, uppercase field labels, and on the report sheets a boxed monospace reference to the selected report.",
       "Coloured-pencil tick marks drawn as authored SVG strokes; each status has its own pencil, mark shape and underline style.",
       "Red only where the data contradicts a figure.",
       "Four type hands with fixed jobs: printed form, the report's text, data, and the preparer's handwriting.",
@@ -547,7 +547,7 @@
       },
       {
         "name": "The Four Hands Rule",
-        "body": "Each face has one job. Archivo prints the form; Source Serif carries sentences; JetBrains Mono is reserved for data, references and SQL; Kalam appears only as the signature, the ditto mark and the footing mark.",
+        "body": "Each face has one job. Archivo prints the form; Source Serif carries sentences; JetBrains Mono is reserved for data, references and SQL; Kalam appears only as the signature and the ditto mark.",
         "section": "typography"
       },
       {
@@ -562,8 +562,8 @@
       }
     ],
     "dos": [
-      "Do head every sheet with the working-paper block: boxed mono W/P ref, condensed Archivo title, field row or subtitle.",
-      "Do encode each status by pencil colour, tick shape and underline style together, and show the tick-mark legend on the sheet that uses the marks.",
+      "Do head every sheet with the working-paper block: condensed Archivo title, field row or subtitle, and the boxed report ref on report sheets.",
+      "Do encode each status by pencil colour, tick shape and underline style together, and show the legend on the sheet that uses the marks.",
       "Do draw tick marks from the authored SVG symbol set, coloured by `currentColor`.",
       "Do set every comparable figure in tabular numerals and data, refs and SQL in JetBrains Mono.",
       "Do close totals with a single rule over and a 3px double rule under.",
@@ -571,7 +571,7 @@
     ],
     "donts": [
       "Don't use red for anything except a figure the data contradicts.",
-      "Don't use Kalam beyond the signature, the ditto mark and the footing mark.",
+      "Don't use Kalam beyond the signature and the ditto mark.",
       "Don't add hero headlines, feature cards or metric tiles; numbers live in sentences and schedules.",
       "Don't put an uppercase label above a heading as a section kicker; the uppercase label names a form field, a column or a caption.",
       "Don't add shadows beyond the sheet and the note slip, or round anything other than tabs, claims and focus.",

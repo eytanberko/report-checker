@@ -136,13 +136,13 @@ components:
 
 **Creative North Star: "The Working-Paper File"**
 
-The whole surface is an auditor's working-paper file on one analyst report. Each section is a sheet of pale ledger-green pad laid on a darker green desk, headed by a printed working-paper block (a boxed W/P reference such as B-1, a condensed title, a row of form fields: client, prepared by, period, reviewed by, run). Inside, the analyst's report sits on the pad's printed ruling and every figure carries a coloured-pencil tick mark that points to its evidence in the margin.
+The whole surface is an auditor's working-paper file on one analyst report. Each section is a sheet of pale ledger-green pad laid on a darker green desk, headed by a printed working-paper block (a boxed reference such as Report 02, a condensed title, a row of form fields: client, prepared by, period, reviewed by, settings). Inside, the analyst's report sits on the pad's printed ruling and every figure carries a coloured-pencil tick mark that points to its evidence in the margin.
 
 Density is that of a real working paper: compact form labels, schedules with rules and footings, notes in the margin. The voice is calm and procedural. Colour is almost entirely the green of the paper and its print; the pencils (blue, red, brown, ochre, graphite) carry meaning and nothing else. The world refuses the AI-showcase default of hero headline, feature cards and metric tiles; the cover is the file's label, and the work leads.
 
 **Key Characteristics:**
 - Ledger-green pad sheets on a green desk, edged by a strong green rule and a soft paper shadow.
-- Printed working-paper header on every sheet: boxed monospace W/P ref, condensed Archivo title, uppercase field labels.
+- Printed working-paper header on every sheet: condensed Archivo title, uppercase field labels, and on the report sheets a boxed monospace reference to the selected report.
 - Coloured-pencil tick marks drawn as authored SVG strokes; each status has its own pencil, mark shape and underline style.
 - Red only where the data contradicts a figure.
 - Four type hands with fixed jobs: printed form, the report's text, data, and the preparer's handwriting.
@@ -196,11 +196,11 @@ A monochrome ledger-green paper world, printed in deep green ink, annotated with
 - **Body** (Source Serif 4 400, 1.0625rem/1.6): prose, memo, notes; measure 60 to 72ch.
 - **Report Text** (Source Serif 4, 1.16rem on the 2rem ruling, lining tabular figures, max 68ch): the report under review.
 - **Label** (Archivo 600, 0.74rem, 0.06em tracking, uppercase, print-2): form field labels, table column heads, legend caption, step "who" lines, signature caption.
-- **Data** (JetBrains Mono): W/P refs (700), requirement refs, tab numbers, numeric schedule cells, the note's data figure, model names, SQL (0.8rem/1.55).
-- **Hand** (Kalam 400): the signature (2rem, rotated -2deg), the ditto mark in the run history, and the "F" footing mark.
+- **Data** (JetBrains Mono): report refs (700), requirement refs, tab numbers, numeric schedule cells, the note's data figure, model names, SQL (0.8rem/1.55).
+- **Hand** (Kalam 400): the signature (2rem, rotated -2deg) and the ditto mark in the run history.
 
 ### Named Rules
-**The Four Hands Rule.** Each face has one job. Archivo prints the form; Source Serif carries sentences; JetBrains Mono is reserved for data, references and SQL; Kalam appears only as the signature, the ditto mark and the footing mark.
+**The Four Hands Rule.** Each face has one job. Archivo prints the form; Source Serif carries sentences; JetBrains Mono is reserved for data, references and SQL; Kalam appears only as the signature and the ditto mark.
 
 **The Tabular Figures Rule.** Every figure that can be compared vertically or read against data uses tabular numerals (schedules, tab tallies, report text).
 
@@ -208,7 +208,7 @@ A monochrome ledger-green paper world, printed in deep green ink, annotated with
 
 Each section is a sheet: centred, max 84rem, full width below that, padded by the sheet padding, separated by 1.5 to 2.25rem of desk. The page gutter is clamp(1rem, 3vw, 2.5rem). The report text sits on a 2rem ruling drawn as a repeating gradient in the faint rule colour.
 
-The review sheet is a three-column working paper at full width: index tabs (11rem) hanging off the sheet's left edge, the ruled report, and a sticky margin (15 to 21rem) holding the evidence note above the tick-mark legend; the answer key sits under the report.
+The review sheet is a three-column working paper at full width: index tabs (11rem) hanging off the sheet's left edge, the ruled report, and a margin (15 to 21rem) holding the evidence note above the legend; the answer key sits under the report. The note stays in its place (never sticky or fixed), so it can never cover the legend or any other content.
 
 Responsive behaviour (desktop first):
 - **1100px:** the index tabs become a strip of top tabs across the sheet; the note stays beside the report; the six-step procedure wraps to three columns.
@@ -229,12 +229,12 @@ Depth is physical paper on a desk, nothing more. Sheets sit on the desk with a h
 
 ## Shapes
 
-Square paper. Sheets, notes, SQL blocks, schedules, procedure steps and the W/P ref box have square corners and 1 to 2px green rules. The only rounding: index tabs (3px on their free corners, like cut card tabs), the claim highlight and the focus ring (2px). Procedure steps join edge to edge and point to the next step with a rotated-square arrow. The held-out panel uses a dashed rule; its stamp is a bordered uppercase label rotated -3deg. Schedule footings use a single rule over and a 3px double rule under, as a ledger total.
+Square paper. Sheets, notes, SQL blocks, schedules, procedure steps and the report ref box have square corners and 1 to 2px green rules. The only rounding: index tabs (3px on their free corners, like cut card tabs), the claim highlight and the focus ring (2px). Procedure steps join edge to edge and point to the next step with a rotated-square arrow. The held-out panel uses a dashed rule; its stamp is a bordered uppercase label rotated -3deg. Schedule footings use a single rule over and a 3px double rule under, as a ledger total.
 
 ## Components
 
 ### Working-Paper Header
-Printed and procedural. A boxed W/P ref (JetBrains Mono 700, 1.5px print border) spans two rows at left; the condensed headline and either a subtitle or a field row (uppercase label, Archivo value) sit beside it. A 2px print rule closes the header, with a 3px pad-column band beneath. W/P refs follow the selected report (B-n, C-n, D-n).
+Printed and procedural. On the report sheets a boxed reference (JetBrains Mono 700, 1.5px print border) spans two rows at left; the condensed headline and either a subtitle or a field row (uppercase label, Archivo value) sit beside it. A 2px print rule closes the header, with a 3px pad-column band beneath. The ref names the selected report ("Report 02") on the report, coverage and memo sheets; the benchmark and method sheets have no ref box.
 
 ### Index Tabs
 Card-index tabs, not buttons. Unselected tabs are desk green with a strong rule on three sides; hover lightens to tab-hover over 0.2s. The selected tab turns pad colour, gains 700 weight, and extends 1px to merge with the sheet. Each tab carries a mono number, the analyst's name and a tally of small pencil marks; an earlier-run note is set in italic. Below 1100px they become top tabs; below 760px the strip scrolls.
@@ -263,8 +263,9 @@ One authored motion: when a report opens on a contradicted claim, its red circle
 ## Do's and Don'ts
 
 ### Do:
-- **Do** head every sheet with the working-paper block: boxed mono W/P ref, condensed Archivo title, field row or subtitle.
-- **Do** encode each status by pencil colour, tick shape and underline style together, and show the tick-mark legend on the sheet that uses the marks.
+- **Do** head every sheet with the working-paper block: condensed Archivo title, field row or subtitle, and the boxed report ref on report sheets.
+- **Do** write every label in plain words for a technical leader, not an accountant: "Contradicted by the data", "Numbers inside the report don't add up", "Legend"; the working-paper look carries the world, the words stay plain.
+- **Do** encode each status by pencil colour, tick shape and underline style together, and show the legend on the sheet that uses the marks.
 - **Do** draw tick marks from the authored SVG symbol set, coloured by `currentColor`.
 - **Do** set every comparable figure in tabular numerals and data, refs and SQL in JetBrains Mono.
 - **Do** close totals with a single rule over and a 3px double rule under.
@@ -272,7 +273,7 @@ One authored motion: when a report opens on a contradicted claim, its red circle
 
 ### Don't:
 - **Don't** use red for anything except a figure the data contradicts.
-- **Don't** use Kalam beyond the signature, the ditto mark and the footing mark.
+- **Don't** use Kalam beyond the signature and the ditto mark.
 - **Don't** add hero headlines, feature cards or metric tiles; numbers live in sentences and schedules.
 - **Don't** put an uppercase label above a heading as a section kicker; the uppercase label names a form field, a column or a caption.
 - **Don't** add shadows beyond the sheet and the note slip, or round anything other than tabs, claims and focus.

@@ -119,6 +119,7 @@ main { padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem); display: grid; grid-temp
 }
 .wp-head h2 { margin: 0; font: 750 clamp(1.45rem, 2.6vw, 2rem)/1.1 var(--f-form); font-stretch: 78%; letter-spacing: -.01em; text-wrap: balance; }
 .wp-sub { margin: 0; max-width: 70ch; color: var(--print-2); font-size: 1rem; }
+.wp-head:not(:has(.wp-ref)) { grid-template-columns: minmax(0, 1fr); }
 .wp-meta { grid-column: 2; margin: 0; display: flex; flex-wrap: wrap; gap: .3rem 1.6rem; }
 .wp-meta div { display: flex; gap: .45rem; align-items: baseline; }
 .wp-meta dd { margin: 0; font: 500 .95rem var(--f-form); font-stretch: 92%; color: var(--print); }
@@ -208,7 +209,8 @@ main { padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem); display: grid; grid-temp
 .key-miss { color: var(--ochre); }
 
 /* ---------- the margin: note + legend ---------- */
-.margin { position: sticky; top: 1rem; }
+/* the evidence note stays in its place: never sticky, so it can never cover the legend or anything else */
+.margin { position: static; }
 .note {
   background: var(--note-bg); border: 1px solid var(--rule-strong); padding: 1rem 1.05rem 1.1rem;
   min-height: 11rem;
@@ -285,7 +287,8 @@ main { padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem); display: grid; grid-temp
 .schedule-legend { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .5rem; margin: 0 0 .7rem; font-size: .92rem; color: var(--print-2); }
 .schedule-legend svg { width: 1.05rem; height: 1.05rem; }
 .schedule-legend svg + svg, .schedule-legend .foot-mark { margin-left: .6rem; }
-.foot-mark { font: 400 1.25rem/1 var(--f-hand); color: var(--blue); margin-left: .5rem; }
+.foot-mark { display: inline-flex; vertical-align: -.2em; margin-left: .5rem; }
+.foot-mark svg { width: 1.15rem; height: 1.15rem; }
 .schedule tfoot th, .schedule tfoot td { padding: .6rem .75rem; border-top: 1px solid var(--print); border-bottom: 3px double var(--print); font: 700 1rem var(--f-form); font-stretch: 88%; text-align: left; }
 .schedule tfoot td.num { text-align: right; font-family: var(--f-data); font-size: .95rem; }
 .untested-label { font: 500 .85rem var(--f-form); color: var(--print-3); }
@@ -304,6 +307,17 @@ tr.untested td { color: var(--print-3); }
 .ditto { font: 400 1.15rem/1 var(--f-hand); color: var(--print-3); margin-right: .2rem; }
 .history th { white-space: normal; vertical-align: bottom; }
 .history tr.frozen td { background: var(--blue-wash); }
+.all-runs { margin-top: 1rem; }
+.all-runs summary {
+  display: inline-flex; align-items: center; gap: .45rem; cursor: pointer; list-style: none;
+  font: 600 .95rem var(--f-form); color: var(--blue); padding: .35rem 0;
+}
+.all-runs summary::-webkit-details-marker { display: none; }
+.all-runs summary::before { content: ""; width: .5rem; height: .5rem; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .2s var(--ease-out); }
+.all-runs[open] summary::before { transform: rotate(45deg); }
+.all-runs summary:hover { text-decoration: underline; text-underline-offset: .22em; }
+.all-runs .table-wrap { margin-top: .5rem; }
+.copied { margin-left: .6rem; color: var(--print-2); font-size: .82rem; }
 .history .tag { display: inline-block; margin-left: .35rem; font: 700 .7rem var(--f-form); letter-spacing: .05em; text-transform: uppercase; color: var(--blue); border: 1px solid var(--blue); padding: .05rem .3rem; }
 
 /* ---------- F: procedure ---------- */
@@ -335,7 +349,7 @@ tr.untested td { color: var(--print-3); }
   .tabs { margin: 0 calc(-1 * clamp(1rem, 2.6vw, 2.25rem)) 1.5rem; border-right: 0; border-bottom: 1px solid var(--rule-strong); }
   .tabs-caption { padding-left: clamp(1rem, 2.6vw, 2.25rem); }
   [role="tablist"] { grid-auto-flow: column; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; padding: 0 clamp(1rem, 2.6vw, 2.25rem); overflow: visible; }
-  .tab { grid-template-columns: 1fr; align-content: start; gap: .1rem; border: 1px solid var(--rule-strong); border-bottom: 0; border-radius: 3px 3px 0 0; padding: .4rem .45rem .45rem; font-size: .84rem; }
+  .tab { grid-template-columns: 1fr; align-content: start; gap: .1rem; border: 1px solid var(--rule-strong); border-bottom: 0; border-radius: 3px 3px 0 0; padding: .4rem .45rem .45rem; font-size: .8rem; }
   .tab-tally { grid-column: 1; font-size: .76rem; gap: .05rem .4rem; }
   .tab[aria-selected="true"] { width: auto; margin-bottom: -1px; padding-bottom: calc(.45rem + 1px); }
   .wp-meta { gap: .25rem 1.1rem; }
@@ -346,7 +360,7 @@ tr.untested td { color: var(--print-3); }
 @media (max-width: 900px) {
   /* one column; the note sits right under the report and is scrolled into view when a claim is tapped */
   .review-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "tabs" "paper" "note" "key" "legend"; }
-  .margin { position: static; margin-top: .75rem; }
+  .margin { margin-top: .75rem; }
   .note { min-height: 0; }
   .wide-only { display: none; }
   .narrow-only { display: inline; }
@@ -358,7 +372,7 @@ tr.untested td { color: var(--print-3); }
   .cover-inner { grid-template-columns: 1fr; }
   .cover-fields { display: none; }
   .byline-compact { display: block; margin: .6rem 0 0; font-size: .95rem; color: var(--print-2); max-width: 40ch; }
-  .purpose { margin-top: .55rem; font-size: 1.12rem; }
+  .purpose { margin-top: .55rem; font-size: 1.2rem; }
   .report-text { font-size: 1.08rem; }
   .bench-lead, .method-notes { grid-template-columns: 1fr; }
   .caveats { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule-strong); padding-top: 1rem; }
@@ -370,12 +384,12 @@ tr.untested td { color: var(--print-3); }
   .heldout .stamp { justify-self: start; }
   .wp-head { grid-template-columns: auto 1fr; align-items: center; padding-top: .8rem; padding-bottom: .7rem; }
   .wp-ref { grid-row: auto; font-size: .9rem; padding: .35rem .45rem; min-width: 0; }
-  .wp-head h2 { font-size: 1.4rem; }
+  .wp-head h2 { font-size: 1.45rem; }
   .wp-sub, .wp-meta { grid-column: 1 / -1; }
   /* the sheet header keeps only what a phone reader needs: who prepared it and which run */
   .wp-meta { gap: .1rem .9rem; }
   .wp-meta div:nth-child(1), .wp-meta div:nth-child(3), .wp-meta div:nth-child(4) { display: none; }
-  .wp-meta dd { font-size: .88rem; }
+  .wp-meta dd { font-size: .92rem; }
   .paper-instruction { margin-bottom: .6rem; font-size: .92rem; }
 }
 
