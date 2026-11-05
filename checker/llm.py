@@ -1,10 +1,14 @@
-"""Minimal Gemini client (free tier) with a disk cache, a throttle and clear quota errors.
+"""Minimal LLM client (Gemini by default, Groq optional) with a disk cache, a throttle and clear quota errors.
 
 The cache makes runs reproducible and free after the first call:
 the same prompt always returns the same saved answer.
-Needs env var GEMINI_API_KEY (get one at aistudio.google.com).
 
-Env vars: GEMINI_MODEL, LLM_OFFLINE=1 (cache only), LLM_MIN_INTERVAL (seconds between API calls).
+Env vars:
+  LLM_PROVIDER      gemini (default) or groq
+  GEMINI_API_KEY    free key from aistudio.google.com;  GEMINI_MODEL (default gemini-3.6-flash)
+  GROQ_API_KEY      free key from console.groq.com;     GROQ_MODEL   (default llama-3.3-70b-versatile)
+  LLM_OFFLINE=1     answer from the cache only, never call an API
+  LLM_MIN_INTERVAL  seconds between API calls (default 7, under the free-tier per-minute limits)
 """
 import hashlib
 import json
@@ -15,11 +19,21 @@ from pathlib import Path
 
 import requests
 
-MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+PROVIDERS = {
+    "gemini": {"key_env": "GEMINI_API_KEY", "model_env": "GEMINI_MODEL", "model": "gemini-3.6-flash",
+               "url": "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+               "signup": "aistudio.google.com"},
+    "groq": {"key_env": "GROQ_API_KEY", "model_env": "GROQ_MODEL", "model": "llama-3.3-70b-versatile",
+             "url": "https://api.groq.com/openai/v1/chat/completions",
+             "signup": "console.groq.com"},
+}
+PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
+if PROVIDER not in PROVIDERS:
+    raise ValueError(f"LLM_PROVIDER must be one of {', '.join(PROVIDERS)}, not {PROVIDER!r}")
+MODEL = os.getenv(PROVIDERS[PROVIDER]["model_env"], PROVIDERS[PROVIDER]["model"])
 CACHE = Path(".llm_cache")
-URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-OFFLINE = os.getenv("LLM_OFFLINE") == "1"  # answer from the cache only, never call the API
-MIN_INTERVAL = float(os.getenv("LLM_MIN_INTERVAL", "7"))  # free tier allows ~10 requests/minute
+OFFLINE = os.getenv("LLM_OFFLINE") == "1"
+MIN_INTERVAL = float(os.getenv("LLM_MIN_INTERVAL", "7"))
 
 stats = {"calls": 0, "cache_hits": 0}  # API requests made (incl. retries) / answers served from cache
 _last_call = 0.0
@@ -45,8 +59,34 @@ def _throttle() -> None:
     _last_call = time.monotonic()
 
 
+def _post(prompt: str, api_key: str) -> requests.Response:
+    """One request to the configured provider, asking for a JSON answer at temperature 0."""
+    url = PROVIDERS[PROVIDER]["url"].format(model=MODEL)
+    if PROVIDER == "groq":
+        body = {"model": MODEL, "temperature": 0, "response_format": {"type": "json_object"},
+                "messages": [{"role": "user", "content": prompt}]}
+        return requests.post(url, json=body, timeout=300, headers={"Authorization": f"Bearer {api_key}"})
+    body = {"contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"temperature": 0, "responseMimeType": "application/json"}}
+    return requests.post(url, json=body, timeout=300, headers={"x-goog-api-key": api_key})
+
+
+def _answer_text(r: requests.Response) -> str:
+    data = r.json()
+    if PROVIDER == "groq":
+        return data["choices"][0]["message"]["content"]
+    return data["candidates"][0]["content"]["parts"][0]["text"]
+
+
 def _quota_info(r: requests.Response) -> tuple[bool, float | None]:
-    """(is a per-day quota, server's suggested retry delay in seconds) from a 429 response."""
+    """(is a per-day quota, suggested retry delay in seconds) from a 429 response."""
+    if PROVIDER == "groq":  # message says e.g. "Limit 1000, ... requests per day (RPD)"; delay in a header
+        try:
+            message = r.json()["error"]["message"]
+        except (ValueError, KeyError, TypeError):
+            message = r.text
+        delay = r.headers.get("retry-after")
+        return "per day" in message.lower(), float(delay) if delay else None
     try:
         details = r.json()["error"].get("details", [])
     except (ValueError, KeyError, AttributeError):
@@ -62,6 +102,7 @@ def _quota_info(r: requests.Response) -> tuple[bool, float | None]:
 
 
 def cache_path(prompt: str) -> Path:
+    """Where the answer to this prompt (for the current model) is cached."""
     key = hashlib.sha256(f"{MODEL}\n{prompt}".encode()).hexdigest()[:16]
     return CACHE / f"{key}.json"
 
@@ -76,19 +117,15 @@ def ask_json(prompt: str, retries: int = 5) -> dict:
     if OFFLINE:
         raise CacheMiss("offline mode: this prompt has no cached answer")
 
-    api_key = os.getenv("GEMINI_API_KEY")
+    conf = PROVIDERS[PROVIDER]
+    api_key = os.getenv(conf["key_env"])
     if not api_key:
-        raise LLMError("Set GEMINI_API_KEY (free key from aistudio.google.com)")
+        raise LLMError(f"Set {conf['key_env']} (free key from {conf['signup']})")
 
-    body = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0, "responseMimeType": "application/json"},
-    }
     for attempt in range(retries):
         _throttle()
         stats["calls"] += 1
-        r = requests.post(URL.format(model=MODEL), json=body, timeout=300,
-                          headers={"x-goog-api-key": api_key})
+        r = _post(prompt, api_key)
         if r.status_code == 429:
             per_day, delay = _quota_info(r)
             if per_day:
@@ -100,8 +137,7 @@ def ask_json(prompt: str, retries: int = 5) -> dict:
             time.sleep(15 * (attempt + 1))
             continue
         r.raise_for_status()
-        text = r.json()["candidates"][0]["content"]["parts"][0]["text"]
-        result = json.loads(text)
+        result = json.loads(_answer_text(r))
         cached.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
         return result
-    raise LLMError(f"Gemini kept failing: {r.status_code} {r.text[:200]}")
+    raise LLMError(f"{PROVIDER} kept failing: {r.status_code} {r.text[:200]}")

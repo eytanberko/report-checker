@@ -61,7 +61,9 @@ Results: see [`results/metrics.md`](results/metrics.md) (recall, precision, fals
 pip install -r requirements.txt
 python -m pytest -q                    # offline tests, no API key needed
 set GEMINI_API_KEY=your_key            # Windows (mac/linux: export ...). Free key: aistudio.google.com
-python evaluate.py                     # run the benchmark
+python evaluate.py                     # run the benchmark (resumable; --offline scores saved results)
+# optional: Groq instead of Gemini (free key: console.groq.com)
+#   set LLM_PROVIDER=groq  and  set GROQ_API_KEY=your_key   (GROQ_MODEL to change the model)
 streamlit run app.py                   # demo UI
 python -m checker check --report r.md --requirements req.md --data data.csv   # CLI: verdict + review memo
                                        # --offline: saved/cached results only; exit 0 = clean, 1 = issues
