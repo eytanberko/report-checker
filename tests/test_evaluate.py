@@ -38,6 +38,7 @@ def history(out):
 def test_quota_stop_then_resume(out, monkeypatch):
     first = FakeLLM(quota=5)                       # enough for 2 reports (2 calls each) + 1 extract
     monkeypatch.setattr(llm, "ask_json", first)
+    monkeypatch.setattr(llm, "ask_judge", first)
     assert evaluate.main([]) == 3
     assert sorted(p.stem for p in out.glob("report_*.json")) == ["report_01", "report_02"]
     meta = json.loads((out / "report_01.json").read_text(encoding="utf-8"))["meta"]
@@ -47,6 +48,7 @@ def test_quota_stop_then_resume(out, monkeypatch):
 
     second = FakeLLM()
     monkeypatch.setattr(llm, "ask_json", second)
+    monkeypatch.setattr(llm, "ask_judge", second)
     assert evaluate.main([]) == 0
     assert second.calls == 16                      # only the 8 unfinished reports
     rows = history(out)
@@ -59,6 +61,7 @@ def test_offline_scores_saved_results_without_calls(out, monkeypatch):
     def no_calls(prompt):
         raise AssertionError("offline must not call the LLM")
     monkeypatch.setattr(llm, "ask_json", no_calls)
+    monkeypatch.setattr(llm, "ask_judge", no_calls)
     stale = {"claims": [], "requirements": [{"id": "R3", "status": "missing"}]}  # legacy: no meta
     (out / "report_03.json").write_text(json.dumps(stale), encoding="utf-8")
     assert evaluate.main(["--offline"]) == 3
@@ -72,4 +75,5 @@ def test_stale_results_are_rerun_live(out, monkeypatch):
                                                     "meta": {"model": llm.MODEL, "prompt_version": "old"}}))
     fake = FakeLLM()
     monkeypatch.setattr(llm, "ask_json", fake)
+    monkeypatch.setattr(llm, "ask_judge", fake)
     assert evaluate.main([]) == 0 and fake.calls == 20

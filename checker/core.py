@@ -10,7 +10,7 @@ from .context import data_context
 from .dataset import Dataset, default_dataset
 from .guardrails import check_query
 from .normalize import apply_verdict, normalize_claims, normalize_review
-from .prompts import extract_prompt, judge_prompt
+from .prompts import extract_prompt, format_facts, judge_prompt
 from .verify import is_safe_select, verify_claim
 
 # Which statuses count as a finding the reviewer must look at.
@@ -37,13 +37,21 @@ def check_numeric(con: duckdb.DuckDBPyConnection, claims: list[dict], report: st
             numeric.append({**c, "status": "query_mismatch", "actual": None, "note": mismatch})
         else:
             numeric.append(verify_claim(con, c))
-    issues = find_issues(numeric, list(catalog.columns), ds.entity_col, ds.time_col, shares=ds.shares)
+    # A mismatched query doesn't measure what its claim says, so it can't key the consistency checks.
+    keyed = [c for c in numeric if c["status"] != "query_mismatch"]
+    issues = find_issues(keyed, list(catalog.columns), ds.entity_col, ds.time_col, shares=ds.shares)
     return apply_issues(numeric, issues)
 
 
-def check_report(report: str, requirements: str, ask: Callable[[str], dict] = llm.ask_json,
-                 dataset: Dataset | None = None) -> dict:
-    """Run the whole pipeline on one report. `ask` is the LLM call (injectable for tests)."""
+def check_report(report: str, requirements: str, ask: Callable[[str], dict] | None = None,
+                 dataset: Dataset | None = None, judge_ask: Callable[[str], dict] | None = None) -> dict:
+    """Run the whole pipeline on one report.
+
+    `ask` is the extraction LLM call and `judge_ask` the judge call (default: the extraction and judge
+    models from llm.py). A test that injects only `ask` gets it for both stages."""
+    if ask is None:
+        ask, judge_ask = llm.ask_json, judge_ask or llm.ask_judge
+    judge_ask = judge_ask or ask
     ds = dataset or default_dataset()
     con = ds.connect()
 
@@ -55,12 +63,10 @@ def check_report(report: str, requirements: str, ask: Callable[[str], dict] = ll
     numeric = check_numeric(con, claims, report, ds)
     judgments = [c for c in claims if c["kind"] == "judgment"]
 
-    facts = "\n".join(f'- "{c["quote"]}" -> {c["status"]}'
-                      + (f' (actual: {c["actual"]})' if c["actual"] is not None else "")
-                      for c in numeric) or "(none)"
+    facts = format_facts(numeric)
     j_list = json.dumps([{"id": c["id"], "quote": c["quote"]} for c in judgments], ensure_ascii=False)
     try:
-        review = ask(judge_prompt(report, requirements, facts, j_list, data_context(con, ds, claims)))
+        review = judge_ask(judge_prompt(report, requirements, facts, j_list, data_context(con, ds, claims)))
     except llm.BadOutput as e:
         review, errors = None, errors + [f"judge failed: {e}"]
     verdicts, reqs, review_errors = normalize_review(review, [c["id"] for c in judgments])

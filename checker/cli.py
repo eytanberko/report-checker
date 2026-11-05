@@ -52,7 +52,8 @@ def cmd_check(args: argparse.Namespace) -> int:
         result = recheck(saved[1], report, dataset)
     else:
         try:
-            result = check_report(report, requirements, ask=llm.ask_json, dataset=dataset)
+            result = check_report(report, requirements, ask=llm.ask_json, dataset=dataset,
+                                  judge_ask=llm.ask_judge)
         except llm.CacheMiss:
             print("No saved or cached result for this report. Run without --offline "
                   "(needs an API key, see README).", file=sys.stderr)

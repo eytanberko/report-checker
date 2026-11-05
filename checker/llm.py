@@ -6,6 +6,7 @@ the same prompt always returns the same saved answer.
 Env vars:
   LLM_PROVIDER      gemini (default) or groq
   GEMINI_API_KEY    free key from aistudio.google.com;  GEMINI_MODEL (default gemini-3.5-flash-lite)
+  JUDGE_MODEL       model for the judge stage (default gemini-3.6-flash on Gemini, GROQ_MODEL on Groq)
   GROQ_API_KEY      free key from console.groq.com;     GROQ_MODEL   (default llama-3.3-70b-versatile)
   LLM_OFFLINE=1     answer from the cache only, never call an API
   LLM_MIN_INTERVAL  seconds between API calls (default 7, under the free-tier per-minute limits)
@@ -21,6 +22,7 @@ import requests
 
 PROVIDERS = {
     "gemini": {"key_env": "GEMINI_API_KEY", "model_env": "GEMINI_MODEL", "model": "gemini-3.5-flash-lite",
+               "judge_model": "gemini-3.6-flash",
                "url": "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
                "signup": "aistudio.google.com"},
     "groq": {"key_env": "GROQ_API_KEY", "model_env": "GROQ_MODEL", "model": "llama-3.3-70b-versatile",
@@ -30,7 +32,8 @@ PROVIDERS = {
 PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
 if PROVIDER not in PROVIDERS:
     raise ValueError(f"LLM_PROVIDER must be one of {', '.join(PROVIDERS)}, not {PROVIDER!r}")
-MODEL = os.getenv(PROVIDERS[PROVIDER]["model_env"], PROVIDERS[PROVIDER]["model"])
+MODEL = os.getenv(PROVIDERS[PROVIDER]["model_env"], PROVIDERS[PROVIDER]["model"])  # extraction
+JUDGE_MODEL = os.getenv("JUDGE_MODEL", PROVIDERS[PROVIDER].get("judge_model", MODEL))  # judge + coverage
 CACHE = Path(".llm_cache")
 OFFLINE = os.getenv("LLM_OFFLINE") == "1"
 MIN_INTERVAL = float(os.getenv("LLM_MIN_INTERVAL", "7"))
@@ -63,11 +66,11 @@ def _throttle() -> None:
     _last_call = time.monotonic()
 
 
-def _post(prompt: str, api_key: str) -> requests.Response:
+def _post(prompt: str, api_key: str, model: str) -> requests.Response:
     """One request to the configured provider, asking for a JSON answer at temperature 0."""
-    url = PROVIDERS[PROVIDER]["url"].format(model=MODEL)
+    url = PROVIDERS[PROVIDER]["url"].format(model=model)
     if PROVIDER == "groq":
-        body = {"model": MODEL, "temperature": 0, "response_format": {"type": "json_object"},
+        body = {"model": model, "temperature": 0, "response_format": {"type": "json_object"},
                 "messages": [{"role": "user", "content": prompt}]}
         return requests.post(url, json=body, timeout=300, headers={"Authorization": f"Bearer {api_key}"})
     body = {"contents": [{"parts": [{"text": prompt}]}],
@@ -105,16 +108,22 @@ def _quota_info(r: requests.Response) -> tuple[bool, float | None]:
     return per_day, delay
 
 
-def cache_path(prompt: str) -> Path:
-    """Where the answer to this prompt (for the current model) is cached."""
-    key = hashlib.sha256(f"{MODEL}\n{prompt}".encode()).hexdigest()[:16]
+def cache_path(prompt: str, model: str | None = None) -> Path:
+    """Where the answer to this prompt (for this model, default the extraction model) is cached."""
+    key = hashlib.sha256(f"{model or MODEL}\n{prompt}".encode()).hexdigest()[:16]
     return CACHE / f"{key}.json"
 
 
-def ask_json(prompt: str, retries: int = 8) -> dict:
-    """Send a prompt, get back parsed JSON."""
+def ask_judge(prompt: str) -> dict:
+    """Like ask_json, on the judge model."""
+    return ask_json(prompt, model=JUDGE_MODEL)
+
+
+def ask_json(prompt: str, retries: int = 8, model: str | None = None) -> dict:
+    """Send a prompt, get back parsed JSON. `model` defaults to the extraction model."""
+    model = model or MODEL
     CACHE.mkdir(exist_ok=True)
-    cached = cache_path(prompt)
+    cached = cache_path(prompt, model)
     if cached.exists():
         stats["cache_hits"] += 1
         return json.loads(cached.read_text(encoding="utf-8"))
@@ -129,12 +138,12 @@ def ask_json(prompt: str, retries: int = 8) -> dict:
     for attempt in range(retries):
         _throttle()
         stats["calls"] += 1
-        r = _post(prompt, api_key)
+        r = _post(prompt, api_key, model)
         if r.status_code == 429:
             per_day, delay = _quota_info(r)
             if per_day:
                 hours = f" Retry in about {delay / 3600:.1f} h." if delay else ""
-                raise QuotaExhausted(f"Daily free-tier quota for {MODEL} is used up.{hours}")
+                raise QuotaExhausted(f"Daily free-tier quota for {model} is used up.{hours}")
             time.sleep(delay or 15 * (attempt + 1))  # per-minute limit: wait as the server asks
             continue
         if r.status_code in (500, 503):  # overload: back off 15, 30, 60, 120, 120 ... s (~10 min in total)

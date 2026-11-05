@@ -26,7 +26,7 @@ from checker.prompts import prompt_version
 
 BENCH = Path("benchmark")
 OUT = Path("results")
-HISTORY_FIELDS = ["timestamp", "mode", "model", "prompt_version", "reports_scored", "reports_total",
+HISTORY_FIELDS = ["timestamp", "mode", "model", "judge_model", "prompt_version", "reports_scored", "reports_total",
                   "recall", "precision", "false_alarms", "cascade", "query_mismatches",
                   "api_calls", "cache_hits", "seconds", "status"]
 
@@ -81,8 +81,8 @@ def score(report: dict, result: dict) -> dict:
 
 
 def run_meta() -> dict:
-    """What a result must have been made with to be reused: model and prompt version."""
-    return {"model": llm.MODEL, "prompt_version": prompt_version()}
+    """What a result must have been made with to be reused: both models and the prompt version."""
+    return {"model": llm.MODEL, "judge_model": llm.JUDGE_MODEL, "prompt_version": prompt_version()}
 
 
 def load_result(rep: dict) -> tuple[dict | None, bool]:
@@ -140,7 +140,8 @@ def to_markdown(m: dict, run: dict) -> str:
     """metrics.md: headline metrics, per-type and per-report tables."""
     versions = ", ".join(f"`{v}`" for v in m["prompt_versions"]) or "none"
     lines = ["# Benchmark results\n",
-             f"Model `{run['model']}`, prompt version(s) {versions}, run {run['timestamp']} ({run['mode']}).",
+             f"Models: extraction `{run['model']}`, judge `{run['judge_model']}`; prompt version(s) {versions}; "
+             f"run {run['timestamp']} ({run['mode']}).",
              ""]
     if m["reports_scored"] < m["reports_total"]:
         lines += [f"> **Partial:** {m['reports_scored']} of {m['reports_total']} reports scored.", ""]
@@ -168,13 +169,23 @@ def to_markdown(m: dict, run: dict) -> str:
 def append_history(m: dict, run: dict) -> None:
     """One row per run in results/history.csv, to compare metrics across prompt versions."""
     path = OUT / "history.csv"
+    if path.exists():  # older files lack newer columns: rewrite them once (judge_model was the same model)
+        with path.open(encoding="utf-8", newline="") as f:
+            reader = csv.DictReader(f)
+            old_fields, rows = reader.fieldnames, list(reader)
+        if old_fields != HISTORY_FIELDS:
+            with path.open("w", newline="", encoding="utf-8") as f:
+                w = csv.DictWriter(f, fieldnames=HISTORY_FIELDS)
+                w.writeheader()
+                w.writerows({k: r.get(k) or (r.get("model", "") if k == "judge_model" else "")
+                             for k in HISTORY_FIELDS} for r in rows)
     new = not path.exists()
     with path.open("a", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=HISTORY_FIELDS)
         if new:
             w.writeheader()
-        w.writerow({**{k: run[k] for k in ("timestamp", "mode", "model", "api_calls", "cache_hits",
-                                            "seconds", "status")},
+        w.writerow({**{k: run[k] for k in ("timestamp", "mode", "model", "judge_model", "api_calls",
+                                            "cache_hits", "seconds", "status")},
                     "prompt_version": "+".join(m["prompt_versions"]),
                     **{k: m[k] for k in ("reports_scored", "reports_total", "false_alarms", "cascade",
                                          "query_mismatches")},
@@ -210,7 +221,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print(f"{rep['id']}: checking ...")
             try:
-                result = check_report(rep["text"], requirements, ask=llm.ask_json)
+                result = check_report(rep["text"], requirements, ask=llm.ask_json, judge_ask=llm.ask_judge)
             except llm.LLMError as e:
                 stopped = " ".join(str(e).split())[:200]  # one line, so history.csv stays readable
                 print(f"\nSTOPPED: {e}\nFinished reports are saved; run `python evaluate.py` again to resume.\n")

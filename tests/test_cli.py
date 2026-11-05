@@ -44,6 +44,7 @@ def test_offline_without_cache_exits_two(tmp_path, capsys, monkeypatch):
 
 def test_any_dataset_with_fake_llm(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(llm, "ask_json", fake_llm)
+    monkeypatch.setattr(llm, "ask_judge", fake_llm)
     out = tmp_path / "cafes.review.md"
     code = cli.main(["check", "--report", "examples/cafes/report.md", "--requirements",
                      "examples/cafes/requirements.md", "--data", "examples/cafes/cafes.csv", "--out", str(out)])

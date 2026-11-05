@@ -44,7 +44,8 @@ REPORT:
 {report}
 >>>
 
-FACTS ALREADY CHECKED AGAINST THE DATA (actual values from the database):
+FACTS ALREADY CHECKED AGAINST THE DATA (actual values from the database;
+"not checked" means the checker could not test that claim, which is not a problem in the report):
 {facts}
 
 DATA CONTEXT (straight from the database, for the countries and years the report mentions;
@@ -70,9 +71,27 @@ Return JSON:
                      "reason": "one sentence"}}]}}"""
 
 
+# How each checked numeric claim is shown to the judge. A query_mismatch is the checker's own failure,
+# never a problem in the report, so the judge must not read it as one.
+FACT_LINE = '- "{quote}" -> {status}'
+NOT_CHECKED = "not checked (checker query failed)"
+
+
+def format_facts(numeric: list[dict]) -> str:
+    """The FACTS section of the judge prompt."""
+    lines = []
+    for c in numeric:
+        if c["status"] == "query_mismatch":
+            lines.append(FACT_LINE.format(quote=c["quote"], status=NOT_CHECKED))
+            continue
+        line = FACT_LINE.format(quote=c["quote"], status=c["status"])
+        lines.append(line + (f' (actual: {c["actual"]})' if c.get("actual") is not None else ""))
+    return "\n".join(lines) or "(none)"
+
+
 def prompt_version() -> str:
-    """Short hash of both prompt templates: results made with other prompts are stale."""
-    return hashlib.sha256((EXTRACT + JUDGE).encode()).hexdigest()[:8]
+    """Short hash of the prompt templates and fact wording: results made with other prompts are stale."""
+    return hashlib.sha256((EXTRACT + JUDGE + FACT_LINE + NOT_CHECKED).encode()).hexdigest()[:8]
 
 
 def extract_prompt(report: str, schema: str = SCHEMA, table: str = TABLE,

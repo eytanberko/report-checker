@@ -134,8 +134,9 @@ def show_benchmark() -> None:
         return
     m = json.loads(path.read_text(encoding="utf-8"))
     run = m["run"]
-    st.caption(f"Model `{run['model']}` · prompt version(s) {', '.join(m['prompt_versions'])} · "
-               f"{run['timestamp']} ({run['mode']}) · {run['api_calls']} API calls, {run['cache_hits']} cached")
+    st.caption(f"Extraction `{run['model']}` · judge `{run.get('judge_model', run['model'])}` · "
+               f"prompt version(s) {', '.join(m['prompt_versions'])} · {run['timestamp']} ({run['mode']}) · "
+               f"{run['api_calls']} API calls, {run['cache_hits']} cached")
     if m["reports_scored"] < m["reports_total"]:
         st.warning(f"Partial: {m['reports_scored']} of {m['reports_total']} reports scored.")
     c1, c2, c3, c4 = st.columns(4)

@@ -35,6 +35,19 @@ flowchart LR
 | Judge | LLM checks conclusions against the verified facts and a data table built in Python (every column for the countries/years the report mentions) | ✅ `supported` / ⚠️ `unsupported` |
 | Coverage | LLM checks each client requirement; a wrong scope (period, comparison group, metric) is `partial` | ✅ / ⚠️ / ❌ |
 
+**Two models, by design.** The LLM stages need different things, so they run on different models:
+- **Extraction** (`GEMINI_MODEL`, default `gemini-3.5-flash-lite`) is mechanical: split text into claims and
+  translate each number into SQL. Every query is checked by guardrails and the database, so a cheap, fast model
+  with a high free daily quota (~500 requests) is enough.
+- **Judge + coverage** (`JUDGE_MODEL`, default `gemini-3.6-flash`) needs reasoning: weigh a cause against the
+  data context, notice an answer to the wrong question. Flash-lite missed both kinds on the benchmark while
+  quoting the very evidence it needed. It is one call per report, so the stronger model's low free quota
+  (~20 requests/day) still covers the 10-report benchmark.
+
+Spend where it changes the answer: the cheap model does the high-volume, verifiable work; the expensive one
+does the low-volume work that nothing downstream can verify. Both models are recorded with every result,
+in `metrics.md` and in `history.csv`.
+
 Anything the checker can't use (malformed LLM output, a claim without a number) becomes ❔ `unverifiable`
 with the reason, never a crash. Data verdicts take precedence: a number the data contradicts stays
 "contradicted", and an internal inconsistency it explains is added to its note.
@@ -92,6 +105,16 @@ two scoring rules and one judge change were added. *All three were added after s
   `electricity_generation`, plus the absolute change from the first to the last year (gas +28.0 points,
   solar +14.4).
 
+The re-run with the data context (recall 14/16, 1 false alarm) led to the last changes before the freeze,
+*also made after seeing results*:
+- **Query mismatches shown to the judge as "not checked (checker query failed)".** The judge had read the
+  status `query_mismatch` as a problem in the report and marked a requirement partial (report_10 R4). A failed
+  checker query is never a report problem. (Mismatched queries are also no longer used by the consistency
+  checks, since their SQL doesn't measure what the claim says.)
+- **Judge moved to `gemini-3.6-flash`.** Both remaining misses were judge reasoning errors on flash-lite: it
+  cited solar +14.4 / coal -42.0 but ignored gas +28.0, and it noted "2020 instead of 2015" yet marked the
+  requirement covered.
+
 Each run records the prompt version (a hash of both prompt templates); `legacy` marks results made with the
 first-run prompts. Scores for different prompt versions are not directly comparable.
 
@@ -110,9 +133,9 @@ set GEMINI_API_KEY=your_key            # Windows (mac/linux: export ...). Free k
 python evaluate.py
 python evaluate.py --offline           # score saved results only, no API calls
 ```
-- **LLM provider:** Gemini by default (`GEMINI_MODEL`, default `gemini-3.5-flash-lite`: the free tier allows
-  far more requests per day than the full flash models, about 500 vs 20, so the whole benchmark runs in one day
-  on one model; check your limits at aistudio.google.com/rate-limit). Groq is optional:
+- **LLM provider:** Gemini by default: extraction on `GEMINI_MODEL` (default `gemini-3.5-flash-lite`), judge on
+  `JUDGE_MODEL` (default `gemini-3.6-flash`); see "Two models, by design". Check your free-tier limits at
+  aistudio.google.com/rate-limit. Groq is optional:
   `LLM_PROVIDER=groq`, `GROQ_API_KEY` (free key at console.groq.com), `GROQ_MODEL`.
 - **Cache:** LLM answers are cached in `.llm_cache/` (committed), so re-runs are free and reproducible.
   `LLM_OFFLINE=1` never calls an API.

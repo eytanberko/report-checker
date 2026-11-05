@@ -67,3 +67,4 @@ def test_unsafe_sql_is_still_rejected_by_the_verifier(db):
     out = check_numeric(con, [{"id": "C1", "kind": "numeric", "quote": "x", "stated_value": 1,
                                "sql": "DROP TABLE energy"}], REPORT)
     assert out[0]["status"] == "unverifiable" and out[0]["note"].startswith("rejected")
+
