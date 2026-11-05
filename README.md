@@ -63,6 +63,8 @@ python -m pytest -q                    # offline tests, no API key needed
 set GEMINI_API_KEY=your_key            # Windows (mac/linux: export ...). Free key: aistudio.google.com
 python evaluate.py                     # run the benchmark
 streamlit run app.py                   # demo UI
+python -m checker check --report r.md --requirements req.md --data data.csv   # CLI: verdict + review memo
+                                       # --offline: saved/cached results only; exit 0 = clean, 1 = issues
 ```
 LLM answers are cached in `.llm_cache/`, so re-runs are free and reproducible.
 

@@ -15,6 +15,11 @@ import requests
 MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 CACHE = Path(".llm_cache")
 URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+OFFLINE = os.getenv("LLM_OFFLINE") == "1"  # answer from the cache only, never call the API
+
+
+class CacheMiss(RuntimeError):
+    """Offline mode and the answer is not in the cache."""
 
 
 def ask_json(prompt: str, retries: int = 5) -> dict:
@@ -24,6 +29,8 @@ def ask_json(prompt: str, retries: int = 5) -> dict:
     cached = CACHE / f"{key}.json"
     if cached.exists():
         return json.loads(cached.read_text(encoding="utf-8"))
+    if OFFLINE:
+        raise CacheMiss("offline mode: this prompt has no cached answer")
 
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
