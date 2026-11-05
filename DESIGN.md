@@ -196,7 +196,7 @@ A monochrome ledger-green paper world, printed in deep green ink, annotated with
 - **Body** (Source Serif 4 400, 1.0625rem/1.6): prose, memo, notes; measure 60 to 72ch.
 - **Report Text** (Source Serif 4, 1.16rem on the 2rem ruling, lining tabular figures, max 68ch): the report under review.
 - **Label** (Archivo 600, 0.74rem, 0.06em tracking, uppercase, print-2): form field labels, table column heads, legend caption, step "who" lines, signature caption.
-- **Data** (JetBrains Mono): report refs (700), requirement refs, tab numbers, numeric schedule cells, the note's data figure, model names, SQL (0.8rem/1.55).
+- **Data** (JetBrains Mono): report refs (700), requirement refs, numeric schedule cells, the note's data figure, model names, SQL (0.8rem/1.55).
 - **Hand** (Kalam 400): the signature (2rem, rotated -2deg) and the ditto mark in the run history.
 
 ### Named Rules
@@ -237,13 +237,13 @@ Square paper. Sheets, notes, SQL blocks, schedules, procedure steps and the repo
 Printed and procedural. On the report sheets a boxed reference (JetBrains Mono 700, 1.5px print border) spans two rows at left; the condensed headline and either a subtitle or a field row (uppercase label, Archivo value) sit beside it. A 2px print rule closes the header, with a 3px pad-column band beneath. The ref names the selected report ("Report 02") on the report, coverage and memo sheets; the benchmark and method sheets have no ref box.
 
 ### Index Tabs
-Card-index tabs, not buttons. Unselected tabs are desk green with a strong rule on three sides; hover lightens to tab-hover over 0.2s. The selected tab turns pad colour, gains 700 weight, and extends 1px to merge with the sheet. Each tab carries a mono number, the analyst's name and a tally of small pencil marks; an earlier-run note is set in italic. Below 1100px they become top tabs; below 760px the strip scrolls.
+Card-index tabs, not buttons. Unselected tabs are desk green with a strong rule on three sides; hover lightens to tab-hover over 0.2s. The selected tab turns pad colour, gains 700 weight, and extends 1px to merge with the sheet. Each tab is named "Report 02" (never an analyst's name: the reports are fictional samples, and the list is headed "10 sample reports to check") and states its findings in words ("1 wrong · 1 unsupported", or "clean"); an earlier-run note is set in italic. Below 1100px they become top tabs; below 760px the strip scrolls.
 
 ### Tick Marks and Claims
 Authored SVG symbols drawn once in the page and reused: agreed (check), exception (cross), does-not-foot (double bar struck through), unsupported (question), unverified (dashed circle), query failed (arrow to a bar), partial (short check with dash), missing (struck circle). Each takes `currentColor` from its pencil. A claim is underlined in its pencil's style (1.5px, offset 0.28em) with its tick after the text; hover or selection washes it in its pencil. A contradicted figure is circled in red pencil.
 
 ### Margin Note
-The evidence slip. Note paper, strong-rule border (red while it shows a contradicted claim), status line with its tick, the quoted claim, the data figure in mono, the reasoning in print-2, and the SQL in a pad-coloured block with a faint rule.
+The evidence slip. Note paper, strong-rule border (red while it shows a contradicted claim), status line with its tick, the quoted claim, the data figure in mono, the reasoning in print-2, and the SQL in a pad-coloured block with a faint rule. "Show the data" (a disclosure in blue Archivo) opens the dataset rows the claim's query read, as a small ledger table with plain column names, and names the source with a link (Our World in Data, energy dataset). Sharing is a small, labelled "Copy link" with a link icon in print-2, never presented as a source.
 
 ### Schedules
 Ledger tables. Uppercase label heads over a 2px print rule, faint cell rules with vertical separators, mono right-aligned numbers, footing with single-over double-under rules. Results are an Archivo label with a tick. Below 960px they stack into labelled rows.

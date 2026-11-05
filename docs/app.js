@@ -53,17 +53,15 @@
   function renderTabs() {
     const list = $("#tabs");
     list.innerHTML = SITE.reports.map((r) => {
+      // Findings in words: "1 wrong · 1 unsupported", or "clean".
       const n = (s) => r.claims.filter((c) => c.status === s).length;
-      const exc = n("contradicted") + n("inconsistent");
-      const other = n("unsupported");
-      const tally = [
-        exc ? `<span title="${exc} contradicted or inconsistent number${exc > 1 ? "s" : ""}">${tick("t-exception", "tk-exception")}${exc}</span>` : "",
-        other ? `<span title="${other} unsupported conclusion${other > 1 ? "s" : ""}">${tick("t-unsupported", "tk-unsupported")}${other}</span>` : "",
-        !exc && !other ? `<span>${tick("t-agreed", "tk-agreed")}clean</span>` : "",
-      ].join("");
+      const wrong = n("contradicted") + n("inconsistent");
+      const unsupported = n("unsupported");
+      const findings = [wrong ? `${wrong} wrong` : "", unsupported ? `${unsupported} unsupported` : ""]
+        .filter(Boolean).join(" · ") || "clean";
       return `<button class="tab" role="tab" id="tab-${r.id}" aria-controls="panel" aria-selected="false" tabindex="-1" data-id="${r.id}">
-        <span class="tab-num">${num(r.id)}</span><span>${esc(r.author)}</span>
-        <span class="tab-tally">${tally}${r.run.frozen ? "" : '<span class="tab-earlier">earlier run</span>'}</span></button>`;
+        <span class="tab-name">Report ${esc(r.number)}</span>
+        <span class="tab-tally">${findings}${r.run.frozen ? "" : '<span class="tab-earlier">earlier run</span>'}</span></button>`;
     }).join("");
     list.addEventListener("click", (e) => {
       const b = e.target.closest(".tab");
@@ -136,8 +134,30 @@
       ? `<div class="note-sql"><span class="sql-label">The query behind it</span><pre>${esc(c.sql)}</pre></div>`
       : isNumber ? "" : `<p class="note-why">A conclusion, judged by the judge model against the checked facts and the data.</p>`;
     return `<p class="note-status">${tick(st.tick, tickClass(c.status))}${esc(st.label)}</p>
-      <p class="note-quote">${esc(c.quote)}</p>${data}${why}${sql}
-      <p class="note-link"><a class="claim-link" href="${claimUrl(current.id, c.id)}">Copy link to this claim</a><span class="copied" role="status"></span></p>`;
+      <p class="note-quote">${esc(c.quote)}</p>${data}${why}${sql}${dataHtml(c)}
+      <p class="note-link"><a class="claim-link" href="${claimUrl(current.id, c.id)}" title="Copy a link that opens this report at this claim"><svg aria-hidden="true"><use href="#i-link"/></svg>Copy link</a><span class="copied" role="status"></span></p>`;
+  }
+
+  // "Show the data": the dataset rows the claim's query read, and where the data comes from.
+  const COLUMN_LABELS = {
+    country: "Country", year: "Year",
+    renewables_share_elec: "Renewables, % of electricity", solar_share_elec: "Solar, % of electricity",
+    wind_share_elec: "Wind, % of electricity", gas_share_elec: "Gas, % of electricity",
+    coal_share_elec: "Coal, % of electricity", oil_share_elec: "Oil, % of electricity",
+    fossil_share_elec: "Fossil fuels, % of electricity", electricity_generation: "Generation, TWh",
+    per_capita_electricity: "Per person, kWh", carbon_intensity_elec: "Carbon intensity, g CO2/kWh",
+    population: "Population",
+  };
+  function dataHtml(c) {
+    if (!c.data || !c.data.rows.length) return "";
+    const head = c.data.columns.map((k) => `<th scope="col">${esc(COLUMN_LABELS[k] || k)}</th>`).join("");
+    const body = c.data.rows.map((row) => `<tr>${row.map((v, i) => (i < 2
+      ? `<td>${esc(v)}</td>` : `<td class="num">${v == null ? "–" : fmt(v)}</td>`)).join("")}</tr>`).join("");
+    const what = c.status === "query_mismatch" ? "Show the data the checker's (wrong) query read" : "Show the data";
+    const source = SITE.links.data_source
+      ? `<p class="data-source">Source: <a href="${esc(SITE.links.data_source)}">${esc(SITE.data_source)}</a></p>` : "";
+    return `<details class="show-data"><summary>${what}</summary>
+      <div class="data-wrap"><table class="data-rows"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>${source}</details>`;
   }
 
   function showNote(id) {
@@ -203,7 +223,7 @@
     }).join("");
     labelCells("#coverage-body");
     const gaps = r.requirements.filter((q) => q.status !== "covered").length;
-    $("#c-sub").textContent = `The client's five requirements, checked against ${r.author}'s report: ${gaps ? `${gaps} not fully answered.` : "all answered."}`;
+    $("#c-sub").textContent = `The client's five requirements, checked against Report ${r.number}: ${gaps ? `${gaps} not fully answered.` : "all answered."}`;
   }
 
   function md(text) {
@@ -247,7 +267,6 @@
       : `Earlier settings · v1.0 pending`;
     $("#b-meta").innerHTML = `
       <div><dt>Client</dt><dd>Energy Policy desk</dd></div>
-      <div><dt>Prepared by</dt><dd>${esc(r.author)}</dd></div>
       <div><dt>Period</dt><dd>2015–2025</dd></div>
       <div><dt>Reviewed by</dt><dd>Report Checker</dd></div>
       <div class="${r.run.frozen ? "" : "run-older"}"><dt>Settings</dt><dd>${run}</dd></div>`;

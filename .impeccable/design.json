@@ -381,7 +381,7 @@
       },
       "data": {
         "displayName": "Data",
-        "purpose": "report refs, requirement refs, tab numbers, numeric cells, model names."
+        "purpose": "report refs, requirement refs, numeric cells, model names."
       },
       "sql": {
         "displayName": "SQL",

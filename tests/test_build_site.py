@@ -33,7 +33,7 @@ def test_runs_are_labelled_frozen_or_earlier(data):
 
 def test_memo_and_answer_key(data):
     r2 = next(r for r in data["reports"] if r["id"] == "report_02")
-    assert r2["memo"].startswith("# Review: report_02")
+    assert r2["memo"].startswith("# Review: Report 02")
     assert {p["target"] for p in r2["answer_key"]["planted"]} == {"13.4%", "exceed 50%"}
 
 
@@ -80,3 +80,36 @@ def test_earlier_run_label_clears_itself_when_a_report_is_rerun_frozen(tmp_path,
     saved["meta"] = {**cfg, "finished": "tomorrow"}                              # what evaluate.py writes
     (tmp_path / "report_07.json").write_text(json.dumps(saved), encoding="utf-8")
     assert build_site.report_entry(rep, cfg)["run"]["frozen"] is True           # label gone, no manual edit
+
+
+def test_no_analyst_names_anywhere_in_the_site_data(data):
+    import yaml
+    reports = yaml.safe_load((build_site.BENCH / "reports.yaml").read_text(encoding="utf-8"))["reports"]
+    authors = {r["author"] for r in reports}
+    blob = json.dumps(data)
+    assert not any(a in blob for a in authors) and all("author" not in r for r in data["reports"])
+    assert [r["number"] for r in data["reports"]] == [f"{i:02d}" for i in range(1, 11)]
+
+
+def test_every_queried_claim_exports_the_rows_its_query_read(data):
+    for r in data["reports"]:
+        for c in r["claims"]:
+            if not c["sql"]:
+                assert c["data"] is None
+                continue
+            rows, cols, f = c["data"]["rows"], c["data"]["columns"], c["data"]["filters"]
+            assert rows and cols[:2] == ["country", "year"] and len(cols) > 2, (r["id"], c["id"])
+            for country, year, *_ in rows:
+                assert (not f["entities"] or country in f["entities"]) and (not f["years"] or year in f["years"])
+
+
+def test_show_the_data_examples(data):
+    r2 = next(r for r in data["reports"] if r["id"] == "report_02")
+    coal = next(c for c in r2["claims"] if c["status"] == "contradicted")
+    assert coal["data"]["columns"] == ["country", "year", "coal_share_elec"]
+    assert coal["data"]["rows"] == [["Israel", 2025, 3.41]]                      # the report said 13.4
+    r10 = next(r for r in data["reports"] if r["id"] == "report_10")
+    wrong = next(c for c in r10["claims"] if c["status"] == "query_mismatch")
+    assert 2010 in wrong["data"]["filters"]["years"]                              # the rows the wrong query read
+    assert data["data_source"] == "Our World in Data, energy dataset"
+    assert data["links"]["data_source"].startswith("https://")

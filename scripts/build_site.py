@@ -17,10 +17,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+import duckdb  # noqa: E402
 import yaml  # noqa: E402
 
 from checker import llm  # noqa: E402
 from checker.core import FLAGGED, recheck  # noqa: E402
+from checker.dataset import Dataset, default_dataset  # noqa: E402
+from checker.guardrails import Catalog, _literals, _numbers  # noqa: E402
 from checker.highlight import _nest, _Span, locate  # noqa: E402
 from checker.memo import review_memo  # noqa: E402
 from checker.prompts import prompt_version  # noqa: E402
@@ -34,7 +37,10 @@ LINKS = {
     "github": "https://github.com/eytanberko/report-checker",
     "demo": "https://report-checkerwitz.streamlit.app/",
     "linkedin": "https://www.linkedin.com/in/eytan-berkowitz",
+    "data_source": "https://github.com/owid/energy-data",
 }
+DATA_SOURCE = "Our World in Data, energy dataset"
+MAX_ROWS = 30  # rows shown under "Show the data" for one claim
 
 
 def _clean(text: str) -> str:
@@ -81,7 +87,37 @@ def is_frozen(meta: dict, config: dict) -> bool:
     return all(meta.get(k) == v for k, v in config.items())
 
 
-def report_entry(rep: dict, config: dict) -> dict | None:
+def claim_rows(con: duckdb.DuckDBPyConnection, catalog: Catalog, ds: Dataset, sql: str | None) -> dict | None:
+    """The dataset rows a claim's query read: its countries and years, with the columns it used.
+
+    Read from the SQL text (no LLM): the entity and year filters and every data column it names.
+    None when the claim has no query, names no data column, or filters on nothing narrower than the whole table."""
+    if not sql or not ds.entity_col or not ds.time_col:
+        return None
+    cols = [c for c in catalog.columns
+            if c not in (ds.entity_col, ds.time_col) and re.search(r"\b" + re.escape(c) + r"\b", sql)]
+    entities = sorted(set(_literals(sql, ds.entity_col)))
+    years = sorted({int(v) for v in _numbers(sql, ds.time_col)})
+    if not cols or not (entities or years):
+        return None
+    where, params = [], []
+    if entities:
+        where.append(f'"{ds.entity_col}" IN ({", ".join("?" * len(entities))})')
+        params += entities
+    if years:
+        where.append(f'"{ds.time_col}" IN ({", ".join("?" * len(years))})')
+        params += years
+    columns = [ds.entity_col, ds.time_col, *cols]
+    select = ", ".join(f'"{c}"' for c in columns)
+    rows = con.execute(f'SELECT {select} FROM "{ds.table}" WHERE {" AND ".join(where)} '
+                       f"ORDER BY 1, 2 LIMIT {MAX_ROWS}", params).fetchall()
+    fmt = lambda v: round(v, 2) if isinstance(v, float) else v  # noqa: E731
+    return {"columns": columns, "rows": [[fmt(v) for v in row] for row in rows],
+            "filters": {"entities": entities, "years": years}}
+
+
+def report_entry(rep: dict, config: dict, con: duckdb.DuckDBPyConnection | None = None,
+                 catalog: Catalog | None = None, ds: Dataset | None = None) -> dict | None:
     path = RESULTS / f"{rep['id']}.json"
     if not path.exists():
         return None
@@ -91,17 +127,26 @@ def report_entry(rep: dict, config: dict) -> dict | None:
     meta = result.get("meta", {})
     segs, missing = segments(text, result["claims"])
     flagged_ids = {c["id"] for c in result["claims"] if c["status"] in FLAGGED}
+    if ds is None:
+        ds = default_dataset()
+        con = ds.connect()
+        catalog = ds.catalog(con)
+    number = rep["id"].split("_")[-1]
+    claims = []
+    for c in result["claims"]:
+        entry = {k: c.get(k) for k in ("id", "kind", "quote", "status", "note", "actual", "stated_value", "sql")}
+        entry["data"] = claim_rows(con, catalog, ds, c.get("sql"))
+        claims.append(entry)
     return {
         "id": rep["id"],
-        "author": rep["author"],
+        "number": number,
         "text": text,
         "segments": segs,
         "unlocated": missing,
-        "claims": [{k: c.get(k) for k in ("id", "kind", "quote", "status", "note", "actual", "stated_value", "sql")}
-                   for c in result["claims"]],
+        "claims": claims,
         "requirements": [{k: r.get(k) for k in ("id", "status", "reason", "evidence")}
                          for r in result.get("requirements", [])],
-        "memo": review_memo(result, f"{rep['id']} ({rep['author']})"),
+        "memo": review_memo(result, f"Report {number}"),
         "run": {"prompt_version": meta.get("prompt_version", "legacy"), "model": meta.get("model"),
                 "judge_model": meta.get("judge_model", meta.get("model")),
                 "frozen": is_frozen(meta, config)},
@@ -127,14 +172,18 @@ def build() -> dict:
     """Everything the site renders, as one JSON-serialisable dict."""
     reports_yaml = yaml.safe_load((BENCH / "reports.yaml").read_text(encoding="utf-8"))["reports"]
     config = frozen_config()
+    ds = default_dataset()
+    con = ds.connect()
+    catalog = ds.catalog(con)
     heldout_path = RESULTS / "heldout" / "metrics.json"
     metrics_path = RESULTS / "metrics.json"
     return {
         "links": LINKS,
+        "data_source": DATA_SOURCE,
         "config": {"tag": FROZEN_TAG, "prompt_version": config["prompt_version"],
                    "model": llm.MODEL, "judge_model": llm.JUDGE_MODEL},
         "requirements": requirements_list((BENCH / "requirements.md").read_text(encoding="utf-8")),
-        "reports": [e for e in (report_entry(r, config) for r in reports_yaml) if e],
+        "reports": [e for e in (report_entry(r, config, con, catalog, ds) for r in reports_yaml) if e],
         "metrics": json.loads(metrics_path.read_text(encoding="utf-8")) if metrics_path.exists() else None,
         "history": history_rows(),
         "heldout": json.loads(heldout_path.read_text(encoding="utf-8")) if heldout_path.exists() else None,
