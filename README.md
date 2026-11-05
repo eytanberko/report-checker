@@ -2,7 +2,7 @@
 
 **An AI reviewer that checks an analyst's report against the data, and against what the client asked, before it ships.**
 
-**Live demo: [report-checkerwitz.streamlit.app](https://report-checkerwitz.streamlit.app/)** (saved benchmark runs; live checks are off in the public demo)
+**Showcase: [eytanberko.github.io/report-checker](https://eytanberko.github.io/report-checker/)** (the reports, ticked, with the evidence and SQL behind every flag) · **App: [report-checkerwitz.streamlit.app](https://report-checkerwitz.streamlit.app/)** (saved runs; live checks are off in the public demo)
 
 ## Why I built this
 I lead a team of data analysts, and I review every product before it ships: are the numbers right,
@@ -164,6 +164,14 @@ python evaluate.py --offline           # score saved results only, no API calls
   `LLM_OFFLINE=1` never calls an API.
 - **Your own data:** `--data any.csv`. The schema description for the LLM (columns, types, ranges, example
   values, categories) is built from the file. `examples/cafes/` is a tiny synthetic example.
+
+### Showcase site (GitHub Pages, `/docs`)
+A static site (plain HTML/CSS/JS, no build step) generated from the saved results. After every benchmark run:
+```bash
+python scripts/build_site.py           # rewrites docs/data/site.js from results/ and benchmark/ (no API calls)
+```
+then commit and push; GitHub Pages serves `/docs` from `main`. A held-out result appears on the site once
+`results/heldout/metrics.json` exists. Design context: `PRODUCT.md`, `DESIGN.md`.
 
 ### Public demo (Streamlit Community Cloud)
 The app runs without any API key: it shows the saved benchmark runs (highlighting, memo, metrics) and hides

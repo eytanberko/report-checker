@@ -1,0 +1,581 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-05T16:36:55+00:00",
+  "title": "Design System: Report Checker",
+  "extensions": {
+    "colorMeta": {
+      "desk": {
+        "role": "neutral",
+        "displayName": "Green Desk",
+        "canonical": "#c9d8c2",
+        "tonalRamp": [
+          "#0a0c08",
+          "#222621",
+          "#3d453a",
+          "#5a6555",
+          "#7b8775",
+          "#9fa89b",
+          "#c6cbc3",
+          "#ecf0ea"
+        ]
+      },
+      "pad": {
+        "role": "neutral",
+        "displayName": "Ledger Pad",
+        "canonical": "#e8f0e3",
+        "tonalRamp": [
+          "#0a0c0a",
+          "#242622",
+          "#3f433d",
+          "#5d635a",
+          "#7e857a",
+          "#a2a79f",
+          "#c7cac5",
+          "#edefec"
+        ]
+      },
+      "pad-col": {
+        "role": "neutral",
+        "displayName": "Pad Column",
+        "canonical": "#e0eadb",
+        "tonalRamp": [
+          "#0a0c09",
+          "#232622",
+          "#3f443c",
+          "#5c6459",
+          "#7d8579",
+          "#a1a79e",
+          "#c7cac5",
+          "#edefec"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Faint Ruling",
+        "canonical": "#b5ccb0",
+        "tonalRamp": [
+          "#090c08",
+          "#21271f",
+          "#3a4638",
+          "#556751",
+          "#768972",
+          "#9caa99",
+          "#c4ccc2",
+          "#ebf0e9"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Ruling",
+        "canonical": "#4f7a5e",
+        "tonalRamp": [
+          "#060d08",
+          "#1c2920",
+          "#304939",
+          "#476b53",
+          "#678d74",
+          "#92ad9a",
+          "#becec2",
+          "#e6f2ea"
+        ]
+      },
+      "print": {
+        "role": "primary",
+        "displayName": "Ledger Print Green",
+        "canonical": "#183324",
+        "tonalRamp": [
+          "#080d09",
+          "#1f2722",
+          "#36473d",
+          "#4f6859",
+          "#708a7a",
+          "#98aa9f",
+          "#c1ccc5",
+          "#e9f1ec"
+        ]
+      },
+      "print-2": {
+        "role": "neutral",
+        "displayName": "Second Print",
+        "canonical": "#3d5848",
+        "tonalRamp": [
+          "#080d09",
+          "#1f2722",
+          "#37463d",
+          "#506859",
+          "#71897a",
+          "#98aa9f",
+          "#c1ccc5",
+          "#e9f1ec"
+        ]
+      },
+      "print-3": {
+        "role": "neutral",
+        "displayName": "Third Print",
+        "canonical": "#4f6858",
+        "tonalRamp": [
+          "#080c09",
+          "#202722",
+          "#38463d",
+          "#526759",
+          "#72897a",
+          "#99aa9f",
+          "#c2ccc5",
+          "#e9f1ec"
+        ]
+      },
+      "blue": {
+        "role": "primary",
+        "displayName": "Agreed Blue Pencil",
+        "canonical": "#1f4fa3",
+        "tonalRamp": [
+          "#040b1a",
+          "#16253f",
+          "#254171",
+          "#355fa8",
+          "#5581ce",
+          "#85a6de",
+          "#b6caed",
+          "#e1efff"
+        ]
+      },
+      "red": {
+        "role": "secondary",
+        "displayName": "Exception Red Pencil",
+        "canonical": "#b3221a",
+        "tonalRamp": [
+          "#1a0302",
+          "#401611",
+          "#72231c",
+          "#a93026",
+          "#d05548",
+          "#e3897c",
+          "#f1bab1",
+          "#ffe4dd"
+        ]
+      },
+      "brown": {
+        "role": "secondary",
+        "displayName": "Does-Not-Foot Brown",
+        "canonical": "#7b4416",
+        "tonalRamp": [
+          "#130803",
+          "#322114",
+          "#5a3922",
+          "#85542f",
+          "#a97550",
+          "#c39c82",
+          "#dcc4b4",
+          "#fcebe0"
+        ]
+      },
+      "ochre": {
+        "role": "secondary",
+        "displayName": "Unsupported Ochre",
+        "canonical": "#8a5a00",
+        "tonalRamp": [
+          "#120901",
+          "#31220e",
+          "#573c14",
+          "#815817",
+          "#a4793d",
+          "#bf9f76",
+          "#d9c6ae",
+          "#faecdb"
+        ]
+      },
+      "graphite": {
+        "role": "secondary",
+        "displayName": "Graphite",
+        "canonical": "#4e5752",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#232624",
+          "#3e4340",
+          "#5b635f",
+          "#7c8580",
+          "#a1a7a3",
+          "#c6cac8",
+          "#ecefee"
+        ]
+      },
+      "blue-wash": {
+        "role": "neutral",
+        "displayName": "Blue Pencil Wash",
+        "canonical": "rgba(31, 79, 163, .08)",
+        "tonalRamp": [
+          "#040b1a",
+          "#16253f",
+          "#254171",
+          "#355fa8",
+          "#5581ce",
+          "#85a6de",
+          "#b6caed",
+          "#e1efff"
+        ]
+      },
+      "red-wash": {
+        "role": "neutral",
+        "displayName": "Red Pencil Wash",
+        "canonical": "rgba(179, 34, 26, .09)",
+        "tonalRamp": [
+          "#1a0302",
+          "#401611",
+          "#72231c",
+          "#a93026",
+          "#d05548",
+          "#e3897c",
+          "#f1bab1",
+          "#ffe4dd"
+        ]
+      },
+      "brown-wash": {
+        "role": "neutral",
+        "displayName": "Brown Pencil Wash",
+        "canonical": "rgba(123, 68, 22, .1)",
+        "tonalRamp": [
+          "#130803",
+          "#322114",
+          "#5a3922",
+          "#85542f",
+          "#a97550",
+          "#c39c82",
+          "#dcc4b4",
+          "#fcebe0"
+        ]
+      },
+      "ochre-wash": {
+        "role": "neutral",
+        "displayName": "Ochre Pencil Wash",
+        "canonical": "rgba(138, 90, 0, .1)",
+        "tonalRamp": [
+          "#120901",
+          "#31220e",
+          "#573c14",
+          "#815817",
+          "#a4793d",
+          "#bf9f76",
+          "#d9c6ae",
+          "#faecdb"
+        ]
+      },
+      "graphite-wash": {
+        "role": "neutral",
+        "displayName": "Graphite Wash",
+        "canonical": "rgba(78, 87, 82, .08)",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#232624",
+          "#3e4340",
+          "#5b635f",
+          "#7c8580",
+          "#a1a7a3",
+          "#c6cac8",
+          "#ecefee"
+        ]
+      },
+      "tab-hover": {
+        "role": "neutral",
+        "displayName": "Tab Hover Green",
+        "canonical": "#d6e4d1",
+        "tonalRamp": [
+          "#0a0c09",
+          "#232621",
+          "#3d443b",
+          "#5a6557",
+          "#7b8677",
+          "#a0a89d",
+          "#c6cbc4",
+          "#ecf0eb"
+        ]
+      },
+      "note-bg": {
+        "role": "neutral",
+        "displayName": "Margin Note Paper",
+        "canonical": "#f2f7ef",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#242523",
+          "#40433f",
+          "#5f635d",
+          "#80847d",
+          "#a3a6a1",
+          "#c8cac7",
+          "#eeefed"
+        ]
+      },
+      "llm-bg": {
+        "role": "neutral",
+        "displayName": "LLM Step Tint",
+        "canonical": "#eef3fb",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#242527",
+          "#404246",
+          "#5e6167",
+          "#7f8389",
+          "#a2a5aa",
+          "#c7c9cc",
+          "#edeef0"
+        ]
+      },
+      "on-ink": {
+        "role": "neutral",
+        "displayName": "On-Ink Green",
+        "canonical": "#cfe0c8",
+        "tonalRamp": [
+          "#090c08",
+          "#222720",
+          "#3c4539",
+          "#596654",
+          "#7a8774",
+          "#9fa99b",
+          "#c5cbc3",
+          "#ecf0ea"
+        ]
+      },
+      "browser-chrome": {
+        "role": "neutral",
+        "displayName": "Browser Chrome Green",
+        "canonical": "#dbe8d5",
+        "tonalRamp": [
+          "#0a0c09",
+          "#232621",
+          "#3e443b",
+          "#5b6556",
+          "#7c8677",
+          "#a0a89d",
+          "#c6cbc4",
+          "#ecf0eb"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Cover title only; Archivo 800 condensed to 72% width."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Sheet title in each working-paper header."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Sub-heads within a sheet, note status, step names (1 to 1.25rem)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase form field labels, column heads, captions, step 'who' lines. Never a kicker above a heading."
+      },
+      "purpose": {
+        "displayName": "Purpose",
+        "purpose": "One-line pitch under the cover title, max 34ch, balanced."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Prose, memo, notes; 60 to 72ch."
+      },
+      "report-text": {
+        "displayName": "Report Text",
+        "purpose": "The report under review, set on the 2rem pad ruling."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "W/P refs, requirement refs, tab numbers, numeric cells, model names."
+      },
+      "sql": {
+        "displayName": "SQL",
+        "purpose": "Queries in the margin note."
+      },
+      "hand": {
+        "displayName": "Hand",
+        "purpose": "Signature, ditto mark and footing mark only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet-on-desk",
+        "value": "0 1px 0 rgba(24, 51, 36, .06), 0 18px 40px -26px rgba(24, 51, 36, .45)",
+        "purpose": "Every sheet lying on the desk."
+      },
+      {
+        "name": "note-slip",
+        "value": "0 10px 24px -20px rgba(24, 51, 36, .6)",
+        "purpose": "The margin note slip only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "All transitions and the circle draw."
+      },
+      {
+        "name": "circle-draw",
+        "value": "stroke-dashoffset 1 to 0, 1.1s ease-out, 0.35s delay",
+        "purpose": "The one authored motion: the red pencil circle around a contradicted figure when a report opens on it. Disabled under prefers-reduced-motion."
+      },
+      {
+        "name": "state-colour",
+        "value": "background-color .18s to .2s ease-out",
+        "purpose": "Tab hover and claim wash."
+      },
+      {
+        "name": "scroll",
+        "value": "scroll-behavior: smooth; auto under reduced motion",
+        "purpose": "Anchor jumps and scrolling the note into view below 900px."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tabs-to-top",
+        "value": "1100px",
+        "purpose": "Index tabs become a top strip; procedure wraps to 3 columns."
+      },
+      {
+        "name": "schedules-stack",
+        "value": "960px",
+        "purpose": "Stacking schedules become labelled rows."
+      },
+      {
+        "name": "single-column",
+        "value": "900px",
+        "purpose": "Note moves under the report and scrolls into view on tap."
+      },
+      {
+        "name": "phone",
+        "value": "760px",
+        "purpose": "Compact byline, scrolling tab strip, trimmed header fields, single-column procedure."
+      }
+    ],
+    "browserSurface": {
+      "colorScheme": "light",
+      "themeColor": "#dbe8d5",
+      "favicon": "Blue pencil check (#1f4fa3) on #dbe8d5, 32px rounded square",
+      "scrollbar": "scrollbar-color #4f7a5e on #e0eadb, thin",
+      "selection": "rgba(31, 79, 163, .22) behind print green",
+      "focus": "2px solid #1f4fa3 outline, offset 3px"
+    }
+  },
+  "components": [
+    {
+      "name": "Working-Paper Header",
+      "kind": "custom",
+      "refersTo": "wp-ref",
+      "description": "Printed header on every sheet: boxed W/P ref, condensed title, field row.",
+      "html": "<div class=\"ds-wp-head\"><span class=\"ds-wp-ref\">B-1</span><h2 class=\"ds-wp-title\">Report under review</h2><dl class=\"ds-wp-meta\"><div><dt>Client</dt><dd>Energy Policy desk</dd></div><div><dt>Prepared by</dt><dd>Analyst F</dd></div><div><dt>Run</dt><dd>Frozen v1.0 run</dd></div></dl></div>",
+      "css": ".ds-wp-head { display: grid; grid-template-columns: auto 1fr; column-gap: 1.25rem; row-gap: .35rem; align-items: baseline; padding: 1.1rem 1.5rem 1rem; background: linear-gradient(#e0eadb, #e0eadb) bottom / 100% 3px no-repeat, #e8f0e3; border-bottom: 2px solid #183324; color: #183324; } .ds-wp-ref { grid-row: span 2; align-self: start; font: 700 1.05rem/1 'JetBrains Mono', Consolas, monospace; border: 1.5px solid #183324; padding: .45rem .55rem .4rem; min-width: 3.4rem; text-align: center; } .ds-wp-title { margin: 0; font: 750 2rem/1.1 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 78%; letter-spacing: -.01em; } .ds-wp-meta { grid-column: 2; margin: 0; display: flex; flex-wrap: wrap; gap: .3rem 1.6rem; } .ds-wp-meta div { display: flex; gap: .45rem; align-items: baseline; } .ds-wp-meta dt { font: 600 .74rem/1.3 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 85%; letter-spacing: .06em; text-transform: uppercase; color: #3d5848; } .ds-wp-meta dd { margin: 0; font: 500 .95rem 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 92%; }"
+    },
+    {
+      "name": "Index Tabs",
+      "kind": "nav",
+      "refersTo": "index-tab",
+      "description": "Card-index tabs hanging off the sheet edge; the selected tab merges with the pad.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\"><span class=\"ds-tab-num\">05</span>Analyst E<span class=\"ds-tally\"><span style=\"color:#1f4fa3\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M3.5 13.2c1.6 1.2 3.1 2.9 4.6 5.3C11 12 15 7 20.8 3.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span>clean</span></button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"true\"><span class=\"ds-tab-num\">06</span>Analyst F<span class=\"ds-tally\"><span style=\"color:#b3221a\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M5.2 5.4c4.6 4.2 9 8.8 13.6 13.6M18.7 5c-4.7 4.4-9.2 9.1-13.5 14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\"/></svg>1</span><span style=\"color:#8a5a00\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M7.6 8.1c.3-2.6 2.3-4.2 4.6-4.1 2.6.1 4.3 1.9 4.1 4.1-.2 2.4-2.5 3.1-3.6 4.4-.7.8-.8 1.8-.8 3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\"/><circle cx=\"11.9\" cy=\"19.6\" r=\"1.4\" fill=\"currentColor\"/></svg>1</span></span></button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\"><span class=\"ds-tab-num\">07</span>Analyst G<span class=\"ds-tally\"><span style=\"color:#b3221a\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M5.2 5.4c4.6 4.2 9 8.8 13.6 13.6M18.7 5c-4.7 4.4-9.2 9.1-13.5 14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\"/></svg>1</span></span></button></div>",
+      "css": ".ds-tabs { display: grid; gap: 3px; width: 13rem; border-right: 1px solid #4f7a5e; background: #e8f0e3; padding: .5rem 0; } .ds-tab { display: grid; grid-template-columns: 1.9rem 1fr; align-items: center; gap: .1rem .35rem; width: 100%; text-align: left; cursor: pointer; position: relative; background: #c9d8c2; color: #183324; border: 1px solid #4f7a5e; border-right: 0; border-radius: 3px 0 0 3px; padding: .5rem .6rem .5rem 1rem; font: 500 .92rem/1.2 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 90%; transition: background-color .2s cubic-bezier(.16, 1, .3, 1); } .ds-tab:hover { background: #d6e4d1; } .ds-tab[aria-selected='true'] { background: #e8f0e3; width: calc(100% + 1px); font-weight: 700; z-index: 1; } .ds-tab:focus-visible { outline: 2px solid #1f4fa3; outline-offset: 3px; border-radius: 2px; } .ds-tab-num { font: 700 .82rem 'JetBrains Mono', Consolas, monospace; } .ds-tally { grid-column: 2; display: flex; gap: .55rem; font: 500 .8rem 'Archivo', sans-serif; font-stretch: 90%; color: #3d5848; font-variant-numeric: tabular-nums; } .ds-tally span { display: inline-flex; align-items: center; gap: .15rem; } .ds-tally svg { width: .85rem; height: .85rem; }"
+    },
+    {
+      "name": "Ticked Claims",
+      "kind": "custom",
+      "refersTo": "report-text",
+      "description": "Report text on the 2rem ruling; each claim underlined and ticked in its pencil, a contradicted figure circled in red.",
+      "html": "<p class=\"ds-report\">Total generation grew by <span class=\"ds-claim ds-red\" tabindex=\"0\"><span class=\"ds-circled\">17.9%<svg class=\"ds-circle\" viewBox=\"0 0 100 40\" preserveAspectRatio=\"none\" aria-hidden=\"true\"><path pathLength=\"1\" d=\"M52 3C25 2 4 8 3 20c-1 12 22 17 48 17 25 0 46-6 46-17C97 9 78 3 47 4\"/></svg></span><span class=\"ds-tick\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M5.2 5.4c4.6 4.2 9 8.8 13.6 13.6M18.7 5c-4.7 4.4-9.2 9.1-13.5 14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\"/></svg></span></span> between 2015 and 2025, <span class=\"ds-claim ds-blue\" tabindex=\"0\">reaching 82.1 TWh<span class=\"ds-tick\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M3.5 13.2c1.6 1.2 3.1 2.9 4.6 5.3C11 12 15 7 20.8 3.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></span>. <span class=\"ds-claim ds-brown\" tabindex=\"0\">Coal fell to 3.4%<span class=\"ds-tick\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M4 9.2c5.3-.5 10.6-.6 16 0M4 15.4c5.3-.4 10.6-.5 16 .1M16.5 3.8 7.6 20.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\"/></svg></span></span>, <span class=\"ds-claim ds-ochre\" tabindex=\"0\">driven mainly by solar<span class=\"ds-tick\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M7.6 8.1c.3-2.6 2.3-4.2 4.6-4.1 2.6.1 4.3 1.9 4.1 4.1-.2 2.4-2.5 3.1-3.6 4.4-.7.8-.8 1.8-.8 3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\"/><circle cx=\"11.9\" cy=\"19.6\" r=\"1.4\" fill=\"currentColor\"/></svg></span></span>.</p>",
+      "css": ".ds-report { margin: 0; max-width: 60ch; color: #183324; font: 400 1.16rem/2rem 'Source Serif 4', Georgia, serif; font-variant-numeric: lining-nums tabular-nums; background: #e8f0e3 repeating-linear-gradient(to bottom, transparent 0 calc(2rem - 1px), #b5ccb0 calc(2rem - 1px) 2rem); background-position: 0 .38rem; padding: 0 .5rem .5rem; } .ds-claim { position: relative; cursor: pointer; border-radius: 2px; text-decoration: underline 1.5px; text-underline-offset: .28em; text-decoration-skip-ink: none; transition: background-color .18s cubic-bezier(.16, 1, .3, 1); } .ds-claim:focus-visible { outline: 2px solid #1f4fa3; outline-offset: 2px; } .ds-tick { display: inline-block; width: .95em; height: .95em; margin-left: .12em; vertical-align: -.1em; color: var(--pencil); } .ds-tick svg { width: 100%; height: 100%; } .ds-blue { --pencil: #1f4fa3; text-decoration-color: rgba(31, 79, 163, .55); } .ds-blue:hover { background: rgba(31, 79, 163, .08); } .ds-red { --pencil: #b3221a; text-decoration-color: #b3221a; } .ds-red:hover { background: rgba(179, 34, 26, .09); } .ds-brown { --pencil: #7b4416; text-decoration-color: #7b4416; text-decoration-style: double; } .ds-brown:hover { background: rgba(123, 68, 22, .1); } .ds-ochre { --pencil: #8a5a00; text-decoration-color: #8a5a00; text-decoration-style: wavy; text-decoration-thickness: 1px; } .ds-ochre:hover { background: rgba(138, 90, 0, .1); } .ds-circled { position: relative; display: inline-block; white-space: nowrap; } .ds-circle { position: absolute; left: -.42em; top: -.32em; width: calc(100% + .84em); height: calc(100% + .62em); pointer-events: none; overflow: visible; } .ds-circle path { fill: none; stroke: #b3221a; stroke-width: 1.6; stroke-linecap: round; vector-effect: non-scaling-stroke; stroke-dasharray: 1; animation: ds-draw 1.1s cubic-bezier(.16, 1, .3, 1) .35s both; } @keyframes ds-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } } @media (prefers-reduced-motion: reduce) { .ds-circle path { animation: none; } }"
+    },
+    {
+      "name": "Margin Note",
+      "kind": "card",
+      "refersTo": "margin-note",
+      "description": "The evidence slip for the selected claim: status, quote, the data, the reasoning and the SQL.",
+      "html": "<div class=\"ds-note ds-note-red\"><p class=\"ds-note-status\"><span style=\"color:#b3221a\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M5.2 5.4c4.6 4.2 9 8.8 13.6 13.6M18.7 5c-4.7 4.4-9.2 9.1-13.5 14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\"/></svg></span>Exception: the data contradicts it</p><p class=\"ds-note-quote\">“Total generation grew by 17.9% between 2015 and 2025”</p><p class=\"ds-note-data\">The data says <strong>27.82</strong>; the report says <strong>17.9</strong>.</p><details class=\"ds-note-sql\" open><summary>The query behind it</summary><pre>SELECT 100.0 * (t2.gen - t1.gen) / t1.gen\nFROM energy t1, energy t2\nWHERE t1.year = 2015 AND t2.year = 2025</pre></details></div>",
+      "css": ".ds-note { max-width: 21rem; background: #f2f7ef; border: 1px solid #4f7a5e; padding: 1rem 1.05rem 1.1rem; box-shadow: 0 10px 24px -20px rgba(24, 51, 36, .6); color: #183324; font: 400 1rem/1.5 'Source Serif 4', Georgia, serif; } .ds-note-red { border-color: #b3221a; } .ds-note-status { display: flex; align-items: center; gap: .5rem; margin: 0 0 .55rem; font: 700 1rem/1.2 'Archivo', sans-serif; font-stretch: 85%; } .ds-note-status svg { width: 1.35rem; height: 1.35rem; } .ds-note-quote { margin: 0 0 .7rem; line-height: 1.45; } .ds-note-data { margin: 0 0 .6rem; } .ds-note-data strong { font: 600 1.05rem 'JetBrains Mono', Consolas, monospace; } .ds-note-sql summary { cursor: pointer; font: 600 .74rem/1.3 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 85%; letter-spacing: .06em; text-transform: uppercase; color: #3d5848; } .ds-note-sql summary:focus-visible { outline: 2px solid #1f4fa3; outline-offset: 3px; } .ds-note-sql pre { margin: .35rem 0 0; padding: .6rem .7rem; background: #e8f0e3; border: 1px solid #b5ccb0; font: 400 .8rem/1.55 'JetBrains Mono', Consolas, monospace; white-space: pre-wrap; }"
+    },
+    {
+      "name": "Tick-Mark Legend",
+      "kind": "custom",
+      "refersTo": "label",
+      "description": "The legend that sits on every sheet using tick marks.",
+      "html": "<figure class=\"ds-legend\"><figcaption>Tick marks</figcaption><ul><li><span style=\"color:#1f4fa3\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M3.5 13.2c1.6 1.2 3.1 2.9 4.6 5.3C11 12 15 7 20.8 3.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span>Agreed to the data</li><li><span style=\"color:#b3221a\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M5.2 5.4c4.6 4.2 9 8.8 13.6 13.6M18.7 5c-4.7 4.4-9.2 9.1-13.5 14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\"/></svg></span>Exception: the data contradicts it</li><li><span style=\"color:#7b4416\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M4 9.2c5.3-.5 10.6-.6 16 0M4 15.4c5.3-.4 10.6-.5 16 .1M16.5 3.8 7.6 20.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.1\" stroke-linecap=\"round\"/></svg></span>Does not foot</li><li><span style=\"color:#8a5a00\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><path d=\"M7.6 8.1c.3-2.6 2.3-4.2 4.6-4.1 2.6.1 4.3 1.9 4.1 4.1-.2 2.4-2.5 3.1-3.6 4.4-.7.8-.8 1.8-.8 3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\"/><circle cx=\"11.9\" cy=\"19.6\" r=\"1.4\" fill=\"currentColor\"/></svg></span>Conclusion the data does not support</li><li><span style=\"color:#4e5752\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"7.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-dasharray=\"3.2 3\"/></svg></span>Could not be verified</li></ul></figure>",
+      "css": ".ds-legend { margin: 0; max-width: 21rem; color: #183324; } .ds-legend figcaption { margin-bottom: .45rem; font: 600 .74rem/1.3 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 85%; letter-spacing: .06em; text-transform: uppercase; color: #3d5848; } .ds-legend ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; } .ds-legend li { display: grid; grid-template-columns: 1.4rem 1fr; gap: .45rem; font: 400 .9rem/1.35 'Source Serif 4', Georgia, serif; } .ds-legend svg { width: 1.15rem; height: 1.15rem; }"
+    },
+    {
+      "name": "Schedule",
+      "kind": "custom",
+      "refersTo": "data",
+      "description": "Ledger table with label heads, mono figures and a single-over double-under footing.",
+      "html": "<table class=\"ds-schedule\"><thead><tr><th>Type of mistake</th><th class=\"ds-num\">Caught</th></tr></thead><tbody><tr><td>Wrong number</td><td class=\"ds-num\">2 of 2</td></tr><tr><td>Wrong year</td><td class=\"ds-num\">1 of 1</td></tr></tbody><tfoot><tr><th>Total <span class=\"ds-foot\">F</span></th><td class=\"ds-num\">10 of 10</td></tr></tfoot></table>",
+      "css": ".ds-schedule { width: 100%; max-width: 32rem; border-collapse: collapse; font-variant-numeric: tabular-nums; color: #183324; background: #e8f0e3; font: 400 1rem 'Source Serif 4', Georgia, serif; } .ds-schedule thead th { text-align: left; padding: .5rem .75rem; border-bottom: 2px solid #183324; font: 600 .74rem/1.3 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 85%; letter-spacing: .06em; text-transform: uppercase; color: #3d5848; } .ds-schedule td { padding: .7rem .75rem; border-bottom: 1px solid #b5ccb0; } .ds-schedule td + td, .ds-schedule th + th { border-left: 1px solid #b5ccb0; } .ds-schedule .ds-num { text-align: right; white-space: nowrap; font-family: 'JetBrains Mono', Consolas, monospace; font-size: .92rem; } .ds-schedule thead .ds-num { font-family: 'Archivo', sans-serif; } .ds-schedule tfoot th, .ds-schedule tfoot td { padding: .6rem .75rem; border-top: 1px solid #183324; border-bottom: 3px double #183324; font: 700 1rem 'Archivo', sans-serif; font-stretch: 88%; text-align: left; } .ds-schedule tfoot td.ds-num { text-align: right; font-family: 'JetBrains Mono', Consolas, monospace; font-size: .95rem; } .ds-foot { font: 400 1.25rem/1 'Kalam', 'Segoe Print', cursive; color: #1f4fa3; margin-left: .5rem; }"
+    },
+    {
+      "name": "Procedure",
+      "kind": "custom",
+      "refersTo": "procedure-step",
+      "description": "Joined step boxes with arrow joints; LLM steps tinted, output step reversed.",
+      "html": "<ol class=\"ds-proc\"><li class=\"ds-step ds-step-llm\"><strong>Split the report into claims</strong><span class=\"ds-who\">LLM · extraction model</span></li><li class=\"ds-step\"><strong>Run the SQL on the real data</strong><span class=\"ds-who\">DuckDB · no LLM</span></li><li class=\"ds-step ds-step-out\"><strong>Verdict, ticked report, review notes</strong><span class=\"ds-who\">Output</span></li></ol>",
+      "css": ".ds-proc { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 40rem; } .ds-step { position: relative; display: grid; align-content: start; gap: .4rem; padding: 1rem 1.1rem 1.15rem; border: 1px solid #4f7a5e; margin-left: -1px; background: #e8f0e3; color: #183324; } .ds-step::after { content: ''; position: absolute; right: -.55rem; top: 1.45rem; width: 1rem; height: 1rem; background: inherit; border-top: 1px solid #4f7a5e; border-right: 1px solid #4f7a5e; transform: rotate(45deg); z-index: 1; } .ds-step strong { font: 700 1.02rem/1.25 'Archivo', sans-serif; font-stretch: 85%; } .ds-who { font: 600 .74rem/1.3 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 85%; letter-spacing: .06em; text-transform: uppercase; color: #3d5848; } .ds-step-llm { background: #eef3fb; } .ds-step-out { background: #183324; color: #e8f0e3; border-color: #183324; } .ds-step-out::after { display: none; } .ds-step-out .ds-who { color: #cfe0c8; }"
+    },
+    {
+      "name": "Sign-off",
+      "kind": "custom",
+      "refersTo": "hand",
+      "description": "Preparer's signature in blue pencil over a printed caption, with links.",
+      "html": "<div class=\"ds-signoff\"><p class=\"ds-signed\"><span class=\"ds-hand\">E. Berkowitz</span><span class=\"ds-signed-label\">Prepared and reviewed by Eytan Berkowitz</span></p><a class=\"ds-link\" href=\"#\">Source on GitHub</a></div>",
+      "css": ".ds-signoff { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1.5rem; border-top: 2px solid #183324; padding-top: 1.25rem; background: #c9d8c2; } .ds-signed { margin: 0; display: grid; gap: .1rem; } .ds-hand { font: 400 2rem/1 'Kalam', 'Segoe Print', cursive; color: #1f4fa3; transform: rotate(-2deg); transform-origin: left; display: inline-block; } .ds-signed-label { font: 600 .74rem/1.3 'Archivo', 'Arial Narrow', sans-serif; font-stretch: 85%; letter-spacing: .06em; text-transform: uppercase; color: #3d5848; } .ds-link { color: #1f4fa3; font: 600 .95rem 'Archivo', sans-serif; text-decoration-thickness: 1px; text-underline-offset: .22em; } .ds-link:hover { text-decoration-thickness: 2px; } .ds-link:focus-visible { outline: 2px solid #1f4fa3; outline-offset: 3px; border-radius: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Working-Paper File",
+    "overview": "The whole surface is an auditor's working-paper file on one analyst report. Each section is a sheet of pale ledger-green pad laid on a darker green desk, headed by a printed working-paper block (a boxed W/P reference such as B-1, a condensed title, a row of form fields: client, prepared by, period, reviewed by, run). Inside, the analyst's report sits on the pad's printed ruling and every figure carries a coloured-pencil tick mark that points to its evidence in the margin.\n\nDensity is that of a real working paper: compact form labels, schedules with rules and footings, notes in the margin. The voice is calm and procedural. Colour is almost entirely the green of the paper and its print; the pencils (blue, red, brown, ochre, graphite) carry meaning and nothing else. The world refuses the AI-showcase default of hero headline, feature cards and metric tiles; the cover is the file's label, and the work leads.",
+    "keyCharacteristics": [
+      "Ledger-green pad sheets on a green desk, edged by a strong green rule and a soft paper shadow.",
+      "Printed working-paper header on every sheet: boxed monospace W/P ref, condensed Archivo title, uppercase field labels.",
+      "Coloured-pencil tick marks drawn as authored SVG strokes; each status has its own pencil, mark shape and underline style.",
+      "Red only where the data contradicts a figure.",
+      "Four type hands with fixed jobs: printed form, the report's text, data, and the preparer's handwriting.",
+      "One authored motion: the red pencil circle drawing around a contradicted figure."
+    ],
+    "rules": [
+      {
+        "name": "The Red Pencil Rule",
+        "body": "Red marks a figure the data contradicts. It is never decoration, never a brand accent, never an error style for anything else.",
+        "section": "colors"
+      },
+      {
+        "name": "The Pencil Per Status Rule",
+        "body": "A status is encoded three ways at once: its pencil colour, its tick-mark shape, and its underline style (solid, double, wavy, dotted, dashed). Never rely on colour alone, and never give two statuses the same pencil and mark.",
+        "section": "colors"
+      },
+      {
+        "name": "The Four Hands Rule",
+        "body": "Each face has one job. Archivo prints the form; Source Serif carries sentences; JetBrains Mono is reserved for data, references and SQL; Kalam appears only as the signature, the ditto mark and the footing mark.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Every figure that can be compared vertically or read against data uses tabular numerals (schedules, tab tallies, report text).",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper On Desk Rule",
+        "body": "Only paper casts a shadow, and only the green-ink shadow above. Controls, tabs and tables are printed on the paper and stay flat.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do head every sheet with the working-paper block: boxed mono W/P ref, condensed Archivo title, field row or subtitle.",
+      "Do encode each status by pencil colour, tick shape and underline style together, and show the tick-mark legend on the sheet that uses the marks.",
+      "Do draw tick marks from the authored SVG symbol set, coloured by `currentColor`.",
+      "Do set every comparable figure in tabular numerals and data, refs and SQL in JetBrains Mono.",
+      "Do close totals with a single rule over and a 3px double rule under.",
+      "Do keep the red circle as the only drawn motion, and disable it under reduced motion."
+    ],
+    "donts": [
+      "Don't use red for anything except a figure the data contradicts.",
+      "Don't use Kalam beyond the signature, the ditto mark and the footing mark.",
+      "Don't add hero headlines, feature cards or metric tiles; numbers live in sentences and schedules.",
+      "Don't put an uppercase label above a heading as a section kicker; the uppercase label names a form field, a column or a caption.",
+      "Don't add shadows beyond the sheet and the note slip, or round anything other than tabs, claims and focus.",
+      "Don't introduce a dark theme; the file is paper."
+    ]
+  }
+}

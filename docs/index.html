@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report Checker</title>
+<meta name="description" content="An AI reviewer that checks an analyst's report against the data, and against what the client asked, before it ships. Every flag shows what the data says and the SQL behind it.">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#dbe8d5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23dbe8d5'/%3E%3Cpath d='M7 17.5l5.5 5.5L25 9' fill='none' stroke='%231f4fa3' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/Archivo-normal-100_900.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/SourceSerif4-normal-200_900.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Pencil tick marks, drawn once and reused (see the legend on every sheet). -->
+<svg class="defs" aria-hidden="true" focusable="false">
+  <symbol id="t-agreed" viewBox="0 0 24 24"><path d="M3.5 13.2c1.6 1.2 3.1 2.9 4.6 5.3C11 12 15 7 20.8 3.6" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="t-exception" viewBox="0 0 24 24"><path d="M5.2 5.4c4.6 4.2 9 8.8 13.6 13.6M18.7 5c-4.7 4.4-9.2 9.1-13.5 14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></symbol>
+  <symbol id="t-nofoot" viewBox="0 0 24 24"><path d="M4 9.2c5.3-.5 10.6-.6 16 0M4 15.4c5.3-.4 10.6-.5 16 .1M16.5 3.8 7.6 20.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></symbol>
+  <symbol id="t-unsupported" viewBox="0 0 24 24"><path d="M7.6 8.1c.3-2.6 2.3-4.2 4.6-4.1 2.6.1 4.3 1.9 4.1 4.1-.2 2.4-2.5 3.1-3.6 4.4-.7.8-.8 1.8-.8 3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="11.9" cy="19.6" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="t-unverified" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.6" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3.2 3"/></symbol>
+  <symbol id="t-query" viewBox="0 0 24 24"><path d="M4.5 12h11M12 7.5l4.5 4.5L12 16.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.5 5v14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="t-partial" viewBox="0 0 24 24"><path d="M3.5 13.2c1.6 1.2 3.1 2.9 4.6 5.3C10.5 13.6 13 10.5 16 8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.6 14.5h3.4" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></symbol>
+  <symbol id="t-missing" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.4" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M6.8 17.2 17.2 6.8" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></symbol>
+</svg>
+
+<a class="skip" href="#report">Skip to the report</a>
+<noscript><p class="noscript">This page draws the reports and results with JavaScript. The same material is on <a href="https://github.com/eytanberko/report-checker">GitHub</a>.</p></noscript>
+
+<header class="cover">
+  <div class="cover-inner">
+    <div class="cover-title">
+      <h1>Report Checker</h1>
+      <p class="purpose">An AI reviewer that checks an analyst's report against the data, and against what the client asked, before it ships.</p>
+      <p class="byline-compact">By Eytan Berkowitz, who leads a team of data analysts and reviews every report before it reaches a client. <a href="https://github.com/eytanberko/report-checker">Source on GitHub</a></p>
+    </div>
+    <dl class="cover-fields">
+      <div><dt>Prepared by</dt><dd>Eytan Berkowitz</dd></div>
+      <div><dt>Why</dt><dd>I lead a team of data analysts and review every report before it reaches a client. This automates the parts of that review that can be automated, and shows its evidence for every flag.</dd></div>
+      <div class="cover-links"><dt>File</dt><dd id="cover-links"><a href="https://github.com/eytanberko/report-checker"><svg aria-hidden="true"><use href="#i-github"/></svg>Source on GitHub</a></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main>
+
+  <!-- B: the report under review, ticked -->
+  <section class="sheet sheet-review" id="report" aria-labelledby="b-title">
+    <div class="wp-head">
+      <span class="wp-ref" id="b-ref">B-1</span>
+      <h2 id="b-title">Report under review</h2>
+      <dl class="wp-meta" id="b-meta"></dl>
+    </div>
+
+    <div class="review-grid">
+      <nav class="tabs" aria-label="Benchmark reports">
+        <p class="tabs-caption" id="tabs-caption">10 reports, one client request</p>
+        <div role="tablist" aria-labelledby="tabs-caption" aria-orientation="vertical" id="tabs"></div>
+      </nav>
+
+      <div class="paper" role="tabpanel" id="panel" aria-labelledby="">
+        <p class="paper-instruction" id="instruction"><span class="wide-only">Every figure and conclusion is ticked. Point at a tick, or tab to it, to see what the data says and the query that says it.</span><span class="narrow-only">Every claim is ticked. Tap one to see what the data says.</span></p>
+        <div class="report-text" id="report-text"></div>
+      </div>
+
+      <aside class="margin" aria-label="Evidence for the selected claim">
+        <div class="note" id="note" aria-live="polite"></div>
+      </aside>
+
+      <div class="answer-key" id="answer-key"></div>
+
+      <figure class="legend">
+          <figcaption>Tick marks</figcaption>
+          <ul>
+            <li><svg class="tk tk-agreed" aria-hidden="true"><use href="#t-agreed"/></svg>Agreed to the data</li>
+            <li><svg class="tk tk-exception" aria-hidden="true"><use href="#t-exception"/></svg>Exception: the data contradicts it</li>
+            <li><svg class="tk tk-nofoot" aria-hidden="true"><use href="#t-nofoot"/></svg>Does not foot: the report's own numbers disagree</li>
+            <li><svg class="tk tk-unsupported" aria-hidden="true"><use href="#t-unsupported"/></svg>Conclusion the data does not support</li>
+            <li><svg class="tk tk-unverified" aria-hidden="true"><use href="#t-unverified"/></svg>Could not be verified</li>
+            <li><svg class="tk tk-query" aria-hidden="true"><use href="#t-query"/></svg>Not checked: the checker's query failed (not the analyst's error)</li>
+          </ul>
+        </figure>
+    </div>
+  </section>
+
+  <!-- C: requirements coverage -->
+  <section class="sheet" id="coverage" aria-labelledby="c-title">
+    <div class="wp-head">
+      <span class="wp-ref" id="c-ref">C-1</span>
+      <h2 id="c-title">Did it answer what the client asked?</h2>
+      <p class="wp-sub" id="c-sub"></p>
+    </div>
+    <div class="table-wrap">
+      <table class="schedule coverage stack">
+        <thead><tr><th scope="col">Ref</th><th scope="col">The client asked for</th><th scope="col">Result</th><th scope="col">Reviewer's reason</th></tr></thead>
+        <tbody id="coverage-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- D: review memo -->
+  <section class="sheet" id="memo" aria-labelledby="d-title">
+    <div class="wp-head">
+      <span class="wp-ref" id="d-ref">D-1</span>
+      <h2 id="d-title">Review notes to the analyst</h2>
+      <p class="wp-sub">Written automatically from the checks above, most important first: the note a team lead sends back before anything reaches the client.</p>
+    </div>
+    <article class="memo" id="memo-body"></article>
+  </section>
+
+  <!-- E: benchmark -->
+  <section class="sheet" id="benchmark" aria-labelledby="e-title">
+    <div class="wp-head">
+      <span class="wp-ref">E-1</span>
+      <h2 id="e-title">How well does it catch errors?</h2>
+      <p class="wp-sub" id="e-sub"></p>
+    </div>
+
+    <div class="bench-lead">
+      <div class="plain" id="plain"></div>
+      <div class="caveats">
+        <h3>Read these numbers with care</h3>
+        <ul id="caveats"></ul>
+      </div>
+    </div>
+
+    <h3 class="schedule-title" id="types-title">Caught, by type of mistake</h3>
+    <p class="schedule-legend"><svg class="tk tk-agreed" aria-hidden="true"><use href="#t-agreed"/></svg>caught <svg class="tk tk-unverified" aria-hidden="true"><use href="#t-unverified"/></svg>missed <span class="foot-mark">F</span>footed: the total agrees to the recall figure above</p>
+    <div class="table-wrap">
+      <table class="schedule types stack" aria-labelledby="types-title">
+        <thead><tr><th scope="col">Type of mistake</th><th scope="col">Example from the reports</th><th scope="col">Each planted mistake</th><th scope="col" class="num">Caught</th></tr></thead>
+        <tbody id="types-body"></tbody>
+        <tfoot id="types-foot"></tfoot>
+      </table>
+    </div>
+
+    <div class="heldout" id="heldout"></div>
+
+    <h3 class="schedule-title" id="history-title">Every run, and what changed between them</h3>
+    <div class="table-wrap">
+      <table class="schedule history stack" aria-labelledby="history-title">
+        <thead><tr><th scope="col">Run</th><th scope="col">Models</th><th scope="col" class="num">Reports</th><th scope="col" class="num">Recall</th><th scope="col" class="num">Precision</th><th scope="col" class="num">False alarms</th></tr></thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- F: how it works -->
+  <section class="sheet" id="method" aria-labelledby="f-title">
+    <div class="wp-head">
+      <span class="wp-ref">F-1</span>
+      <h2 id="f-title">How it works</h2>
+      <p class="wp-sub">The LLM never decides whether a number is correct. It only turns sentences into SQL; the database decides.</p>
+    </div>
+    <ol class="procedure">
+      <li class="step step-llm"><strong>Split the report into claims</strong><span class="who">LLM · extraction model</span><span>One fact or one conclusion each, and one SQL query for every number.</span></li>
+      <li class="step step-code"><strong>Guardrails on each query</strong><span class="who">Python · no LLM</span><span>Columns, countries and years must exist and match the sentence; a bad query is marked as the checker's mistake, never the analyst's.</span></li>
+      <li class="step step-code"><strong>Run the SQL on the real data</strong><span class="who">DuckDB · no LLM</span><span>The stated number must match within its rounding. This is where an exception gets its red circle.</span></li>
+      <li class="step step-code"><strong>Check the numbers against each other</strong><span class="who">Python · no LLM</span><span>A change that does not follow from its own endpoints, shares above 100%, the same figure stated twice.</span></li>
+      <li class="step step-llm"><strong>Judge conclusions and coverage</strong><span class="who">LLM · judge model</span><span>Against the verified facts and a table of the underlying data, built in Python.</span></li>
+      <li class="step step-out"><strong>Verdict, ticked report, review notes</strong><span class="who">Output</span><span>Every flag carries what the data says and the query behind it.</span></li>
+    </ol>
+    <div class="method-notes">
+      <p><strong>Two models, on purpose.</strong> Extraction is mechanical and fully checked downstream, so it runs on a fast, cheap model (<span id="m-extract"></span>). Judging conclusions needs reasoning nothing downstream can verify, so it runs on a stronger one (<span id="m-judge"></span>).</p>
+      <p><strong>The data.</strong> Our World in Data's energy dataset: electricity mix by country, 2010 to 2025, 17 countries. The ten reports were written by me in the style of my team's work, with mistakes planted from errors I see in real reviews.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="signoff">
+  <div class="signoff-inner">
+    <p class="signed"><span class="hand">E. Berkowitz</span><span class="signed-label">Prepared and reviewed by Eytan Berkowitz</span></p>
+    <ul class="signoff-links" id="signoff-links">
+      <li><a href="https://github.com/eytanberko/report-checker"><svg aria-hidden="true"><use href="#i-github"/></svg>Source, benchmark and results on GitHub</a></li>
+      <li><a href="https://report-checkerwitz.streamlit.app/">The Streamlit app</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="data/site.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "docs/index.html"
+        ],
+        "createdAt": "2026-11-05T16:18:46.244Z",
+        "reason": "Claude verified in screenshots: .wp-head uses negative margins with its own inner padding; the cover-fields last row's border is removed by :last-child; rendered text is inset"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "docs/index.html"
+        ],
+        "createdAt": "2026-11-05T16:18:46.742Z",
+        "reason": "Claude verified: sizes set via font shorthand with clamp(); rendered h1 ~84px, h2 ~32px, body 17px at 1440"
+      }
+    ]
+  }
+}

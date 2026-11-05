@@ -20,3 +20,7 @@ env/
 
 # NOTE: .llm_cache/ and results/ are committed on purpose: the demo and the benchmark
 # scores work from a fresh clone without an API key.
+
+# Impeccable runtime captures (the surface brief and design files are committed)
+.impeccable/review/
+.impeccable/questions/
