@@ -1,0 +1,46 @@
+{
+  "judgments": [
+    {
+      "id": "C1",
+      "verdict": "supported",
+      "reason": "The data shows renewables increased significantly to 16.9% while fossil fuels still account for 83.1% of the electricity mix in 2025."
+    },
+    {
+      "id": "C9",
+      "verdict": "supported",
+      "reason": "The data confirms that gas supplies 79.7% of Israel's electricity, grounding the risk of high dependence in the actual figures."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Renewables reached 16.9% in 2025, gaining 15.0 percentage points from 2015.",
+      "reason": "The report explicitly states Israel's 2025 renewables share and the absolute change since 2015."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal's share fell to 3.4% in 2025, while gas supplied 79.7%.",
+      "reason": "The report clearly details the current status of coal in the electricity mix."
+    },
+    {
+      "id": "R3",
+      "status": "partial",
+      "evidence": "Greece recorded a renewables share of 48.8% in 2025. Cyprus recorded 27.8% in the same year.",
+      "reason": "It includes two Mediterranean peers, but the figure cited for Greece contains a minor factual contradiction with the database (48.8% vs actual 49.7%)."
+    },
+    {
+      "id": "R4",
+      "status": "partial",
+      "evidence": "Israel's total electricity generation grew at a compound annual rate of 2.78% between 2015 and 2025.",
+      "reason": "It attempts to answer generation growth, but uses an incorrect compound annual growth rate that contradicts the verified database value of 2.49%."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "The priority risk is reliance on gas: its dominant share makes supply interruptions a potential vulnerability given the scale of gas dependence.",
+      "reason": "The report identifies a key data-grounded risk regarding gas dominance."
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "run": {
+    "model": "gemini-3.5-flash-lite",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
+    "prompt_version": "38701a08",
+    "cache_salt": "",
+    "mode": "live",
+    "timestamp": "2026-11-06 08:31 UTC",
+    "api_calls": 8,
+    "cache_hits": 0,
+    "seconds": 51.7,
+    "status": "complete"
+  },
+  "reports_scored": 4,
+  "reports_total": 4,
+  "planted": 7,
+  "caught": 6,
+  "recall": 0.8571428571428571,
+  "precision": 1.0,
+  "false_alarms": 0,
+  "cascade": 2,
+  "query_mismatches": 0,
+  "by_type": [
+    {
+      "type": "wrong_number",
+      "caught": 0,
+      "planted": 1
+    },
+    {
+      "type": "wrong_period",
+      "caught": 1,
+      "planted": 1
+    },
+    {
+      "type": "wrong_calculation",
+      "caught": 1,
+      "planted": 1
+    },
+    {
+      "type": "wrong_entity",
+      "caught": 1,
+      "planted": 1
+    },
+    {
+      "type": "plausible_calculation",
+      "caught": 1,
+      "planted": 1
+    },
+    {
+      "type": "misread_requirement",
+      "caught": 1,
+      "planted": 1
+    },
+    {
+      "type": "unsupported_conclusion",
+      "caught": 1,
+      "planted": 1
+    }
+  ],
+  "by_report": [
+    {
+      "report": "holdout_01",
+      "planted": 0,
+      "scored": true,
+      "caught": 0,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "holdout_02",
+      "planted": 3,
+      "scored": true,
+      "caught": 2,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [
+        "16.8%"
+      ],
+      "false_alarm_details": []
+    },
+    {
+      "report": "holdout_03",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 2,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "holdout_04",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    }
+  ],
+  "prompt_versions": [
+    "38701a08"
+  ]
+}

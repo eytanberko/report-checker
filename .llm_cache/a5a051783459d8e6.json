@@ -1,0 +1,41 @@
+{
+  "judgments": [
+    {
+      "id": "C10",
+      "verdict": "unsupported",
+      "reason": "The data context does not contain electricity tariffs, so the claim that a decline in carbon intensity proves tariffs fell is an unsupported assertion."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Israel's renewables share increased from 1.9% in 2015 to 16.9% in 2025.",
+      "reason": "The report accurately states Israel's renewables share for both 2015 and 2025."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal remained present at 3.4% in 2025, alongside a gas share of 79.7%.",
+      "reason": "The report correctly provides the status of coal in Israel's electricity mix for 2025."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "The latest available renewables shares were 24.1% for Jordan in 2024 and 13.0% for Egypt in 2025.",
+      "reason": "The report compares Israel with two Mediterranean peers using their latest available year."
+    },
+    {
+      "id": "R4",
+      "status": "partial",
+      "evidence": "per-capita generation rose from 7976 kWh in 2015 to 8627 kWh in 2025, an increase of 8.2%.",
+      "reason": "The requirement asked for total electricity generation growth, but the report answered with per-capita generation growth."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "Risk: fossil fuels still supplied 83.1% in 2025, leaving substantial exposure to fossil-fuel supply disruptions.",
+      "reason": "The report identifies a key risk grounded directly in the 2025 fossil fuel share data."
+    }
+  ]
+}

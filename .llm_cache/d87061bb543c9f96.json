@@ -1,0 +1,81 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Israel's renewables share reached 16.8% in 2025",
+      "kind": "numeric",
+      "stated_value": 16.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C2",
+      "quote": "compared with 1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C3",
+      "quote": "Coal remained in the mix at 26.1% in 2025",
+      "kind": "numeric",
+      "stated_value": 26.1,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C4",
+      "quote": "gas accounted for 79.7% [in 2025]",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C5",
+      "quote": "making it the dominant electricity source",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C6",
+      "quote": "Mediterranean comparisons show renewables at 55.9% in Spain ... in 2025",
+      "kind": "numeric",
+      "stated_value": 55.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Spain' AND year = 2025"
+    },
+    {
+      "id": "C7",
+      "quote": "and 43.3% in Turkey in 2025",
+      "kind": "numeric",
+      "stated_value": 43.3,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Turkey' AND year = 2025"
+    },
+    {
+      "id": "C8",
+      "quote": "both above Israel",
+      "kind": "numeric",
+      "stated_value": 1,
+      "sql": "SELECT CASE WHEN (SELECT renewables_share_elec FROM energy WHERE country = 'Spain' AND year = 2025) > (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) AND (SELECT renewables_share_elec FROM energy WHERE country = 'Turkey' AND year = 2025) > (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) THEN 1 ELSE 0 END"
+    },
+    {
+      "id": "C9",
+      "quote": "Total electricity generation increased by 27.8 TWh between 2015 and 2025",
+      "kind": "numeric",
+      "stated_value": 27.8,
+      "sql": "SELECT (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C10",
+      "quote": "The transition therefore combines renewable expansion with continuing fossil dependence.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C11",
+      "quote": "A key risk is concentration in gas: potential interruptions to gas supply could disrupt electricity production.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    }
+  ]
+}

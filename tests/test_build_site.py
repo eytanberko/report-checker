@@ -38,8 +38,12 @@ def test_memo_and_answer_key(data):
     assert {p["target"] for p in r2["answer_key"]["planted"]} == {"13.4%", "exceed 50%"}
 
 
-def test_heldout_is_a_placeholder_until_it_exists(data):
-    assert data["heldout"] is None
+def test_heldout_result_is_the_frozen_run_on_all_four_reports(data):
+    held = data["heldout"]
+    assert [r["id"] for r in held["reports"]] == [f"holdout_{i:02d}" for i in range(1, 5)]
+    assert all(r["run"]["frozen"] for r in held["reports"])
+    caught = sum(p["caught"] for r in held["reports"] for p in r["answer_key"]["planted"])
+    assert caught == held["metrics"]["caught"] and held["metrics"]["run"]["status"] == "complete"
 
 
 def test_profile_links(data):

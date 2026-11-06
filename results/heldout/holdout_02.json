@@ -1,0 +1,154 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Israel's renewables share reached 16.8% in 2025",
+      "kind": "numeric",
+      "stated_value": 16.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 16.93,
+      "note": ""
+    },
+    {
+      "id": "C2",
+      "quote": "compared with 1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015",
+      "status": "verified",
+      "actual": 1.9,
+      "note": ""
+    },
+    {
+      "id": "C3",
+      "quote": "Coal remained in the mix at 26.1% in 2025",
+      "kind": "numeric",
+      "stated_value": 26.1,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "contradicted",
+      "actual": 3.41,
+      "note": "data says 3.41, report says 26.1; also inconsistent: shares for Israel 2025 add up to more than 100%: 16.8 (renewables_share_elec) + 79.7 (gas_share_elec) + 26.1 (coal_share_elec)"
+    },
+    {
+      "id": "C4",
+      "quote": "gas accounted for 79.7% [in 2025]",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 79.66,
+      "note": ""
+    },
+    {
+      "id": "C5",
+      "quote": "making it the dominant electricity source",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null,
+      "status": "supported",
+      "actual": null,
+      "note": "Data shows gas share at 79.7% in 2025, which makes it clearly the dominant electricity source."
+    },
+    {
+      "id": "C6",
+      "quote": "Mediterranean comparisons show renewables at 55.9% in Spain ... in 2025",
+      "kind": "numeric",
+      "stated_value": 55.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Spain' AND year = 2025",
+      "status": "verified",
+      "actual": 55.86,
+      "note": ""
+    },
+    {
+      "id": "C7",
+      "quote": "and 43.3% in Turkey in 2025",
+      "kind": "numeric",
+      "stated_value": 43.3,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Turkey' AND year = 2025",
+      "status": "verified",
+      "actual": 43.26,
+      "note": ""
+    },
+    {
+      "id": "C8",
+      "quote": "both above Israel",
+      "kind": "numeric",
+      "stated_value": 1.0,
+      "sql": "SELECT CASE WHEN (SELECT renewables_share_elec FROM energy WHERE country = 'Spain' AND year = 2025) > (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) AND (SELECT renewables_share_elec FROM energy WHERE country = 'Turkey' AND year = 2025) > (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) THEN 1 ELSE 0 END",
+      "status": "verified",
+      "actual": 1.0,
+      "note": ""
+    },
+    {
+      "id": "C9",
+      "quote": "Total electricity generation increased by 27.8 TWh between 2015 and 2025",
+      "kind": "numeric",
+      "stated_value": 27.8,
+      "sql": "SELECT (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)",
+      "status": "contradicted",
+      "actual": 17.87,
+      "note": "data says 17.87, report says 27.8"
+    },
+    {
+      "id": "C10",
+      "quote": "The transition therefore combines renewable expansion with continuing fossil dependence.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null,
+      "status": "supported",
+      "actual": null,
+      "note": "Renewables grew significantly to 16.9%, but fossil fuels (mostly gas) still account for 83.1% of the mix in 2025."
+    },
+    {
+      "id": "C11",
+      "quote": "A key risk is concentration in gas: potential interruptions to gas supply could disrupt electricity production.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null,
+      "status": "supported",
+      "actual": null,
+      "note": "The heavy reliance on gas (79.7%) creates a structural concentration risk grounded in the electricity mix data."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Israel's renewables share reached 16.8% in 2025, compared with 1.9% in 2015.",
+      "reason": "The report accurately states the 2025 renewables share and its change since 2015."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal remained in the mix at 26.1% in 2025.",
+      "reason": "The report addresses the status of coal in 2025, although the specific percentage contradicts the database value."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "Mediterranean comparisons show renewables at 55.9% in Spain and 43.3% in Turkey in 2025, both above Israel.",
+      "reason": "It compares Israel with two Mediterranean peers (Spain and Turkey) using the latest available year (2025)."
+    },
+    {
+      "id": "R4",
+      "status": "covered",
+      "evidence": "Total electricity generation increased by 27.8 TWh between 2015 and 2025.",
+      "reason": "The report provides the growth figure for total electricity generation over the requested period."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "A key risk is concentration in gas: potential interruptions to gas supply could disrupt electricity production.",
+      "reason": "The report identifies one key risk grounded in the high gas share shown by the data."
+    }
+  ],
+  "meta": {
+    "model": "gemini-3.5-flash-lite",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
+    "prompt_version": "38701a08",
+    "cache_salt": "",
+    "finished": "2026-11-06T08:32:14+00:00"
+  }
+}

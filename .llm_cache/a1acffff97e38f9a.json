@@ -1,0 +1,102 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Israel generated 16.9% of its electricity from renewables in 2025",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C2",
+      "quote": "up from 1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C3",
+      "quote": "a gain of 15.0 percentage points",
+      "kind": "numeric",
+      "stated_value": 15.0,
+      "sql": "SELECT (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C4",
+      "quote": "Its share fell from 45.4% in 2015",
+      "kind": "numeric",
+      "stated_value": 45.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C5",
+      "quote": "to 3.4% in 2025",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C6",
+      "quote": "gas rose by 28.0 percentage points",
+      "kind": "numeric",
+      "stated_value": 28.0,
+      "sql": "SELECT (SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C7",
+      "quote": "indicating that gas absorbed more of coal's decline than renewables did.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C8",
+      "quote": "In 2025, renewables supplied 49.7% in Greece",
+      "kind": "numeric",
+      "stated_value": 49.7,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Greece' AND year = 2025"
+    },
+    {
+      "id": "C9",
+      "quote": "and 27.8% in Cyprus",
+      "kind": "numeric",
+      "stated_value": 27.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Cyprus' AND year = 2025"
+    },
+    {
+      "id": "C10",
+      "quote": "both above Israel.",
+      "kind": "numeric",
+      "stated_value": 1.0,
+      "sql": "SELECT CASE WHEN (SELECT renewables_share_elec FROM energy WHERE country = 'Greece' AND year = 2025) > (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) AND (SELECT renewables_share_elec FROM energy WHERE country = 'Cyprus' AND year = 2025) > (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) THEN 1 ELSE 0 END"
+    },
+    {
+      "id": "C11",
+      "quote": "Total generation increased by 17.9 TWh between 2015 and 2025",
+      "kind": "numeric",
+      "stated_value": 17.9,
+      "sql": "SELECT (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C12",
+      "quote": "or 27.8%.",
+      "kind": "numeric",
+      "stated_value": 27.8,
+      "sql": "SELECT 100.0 * ((SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)) / (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C13",
+      "quote": "With gas supplying 79.7% in 2025",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C14",
+      "quote": "dependence on this fuel leaves electricity production exposed to potential gas-supply disruptions.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    }
+  ]
+}

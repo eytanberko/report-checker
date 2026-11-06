@@ -1,0 +1,67 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Israel's transition has advanced, but fossil fuels still dominate.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C2",
+      "quote": "Renewables reached 16.9% in 2025",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C3",
+      "quote": "gaining 15.0 percentage points from 2015",
+      "kind": "numeric",
+      "stated_value": 15.0,
+      "sql": "SELECT (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C4",
+      "quote": "Coal's share fell to 3.4% in 2025",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C5",
+      "quote": "while gas supplied 79.7%",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C6",
+      "quote": "Greece recorded a renewables share of 48.8% in 2025",
+      "kind": "numeric",
+      "stated_value": 48.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Greece' AND year = 2025"
+    },
+    {
+      "id": "C7",
+      "quote": "Cyprus recorded 27.8% in the same year",
+      "kind": "numeric",
+      "stated_value": 27.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Cyprus' AND year = 2025"
+    },
+    {
+      "id": "C8",
+      "quote": "Israel's total electricity generation grew at a compound annual rate of 2.78% between 2015 and 2025.",
+      "kind": "numeric",
+      "stated_value": 2.78,
+      "sql": "SELECT 100.0 * (POWER((SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025) / (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015), 1.0 / (2025 - 2015)) - 1)"
+    },
+    {
+      "id": "C9",
+      "quote": "The priority risk is reliance on gas: its dominant share makes supply interruptions a potential vulnerability given the scale of gas dependence.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    }
+  ]
+}

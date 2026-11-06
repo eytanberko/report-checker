@@ -160,7 +160,18 @@ From this tag on there are no prompt, scoring-rule or model changes. Everything 
 benchmark, so only the held-out set can show how well it generalises.
 
 ### Held-out test (run once, after the freeze)
-Pending: `benchmark/holdout.yaml` (4 reports, 7 planted errors) runs once with this configuration, after this tag.
+`benchmark/holdout.yaml`: 4 reports (1 clean, 3 with 7 planted errors) that were never used for tuning. Run
+once with `v1.1-frozen` on 2026-11-06 (8 API calls, no retries), published as it came, with no changes
+afterwards ([`results/heldout/metrics.md`](results/heldout/metrics.md)):
+
+- **Recall 6/7 (86%), precision 100%, 0 false alarms.** 2 cascade flags (holdout_03: R3 and R4 marked partial
+  because their figures were wrong).
+- **The miss: holdout_02, renewables "16.8%"** (data: 16.93%). It passed the numeric tolerance: the rounding
+  allowance is 0.05, but the 1% relative slack allows up to 0.17 here, and the gap is 0.13. For shares the
+  relative slack is too loose. This is a rule weakness in the deterministic check, not an LLM error.
+  It stays as measured; any fix would be a new version, scored on new held-out data.
+- With 4 reports, one mistake more or less moves the result a lot.
+
 
 Infrastructure changes after the v1.0 freeze (no effect on prompts, rules or scores):
 - **Overload retries:** on 500/503 the client waits 2, 4, then 8 minutes, at most 3 retries per report, then
