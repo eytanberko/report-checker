@@ -1,5 +1,7 @@
 # 🔎 Report Checker
 
+[![CI](https://github.com/eytanberko/report-checker/actions/workflows/ci.yml/badge.svg)](https://github.com/eytanberko/report-checker/actions/workflows/ci.yml)
+
 **An AI reviewer that checks an analyst's report against the data, and against what the client asked, before it ships.**
 
 **Showcase: [eytanberko.github.io/report-checker](https://eytanberko.github.io/report-checker/)** (the reports, ticked, with the evidence and SQL behind every flag) · **App: [report-checkerwitz.streamlit.app](https://report-checkerwitz.streamlit.app/)** (saved runs; live checks are off in the public demo)
@@ -144,6 +146,7 @@ first-run prompts. Scores for different prompt versions are not directly compara
 ```bash
 pip install -r requirements-dev.txt    # app + tests + lint (the app alone: requirements.txt)
 python -m pytest -q                    # offline tests, no API key needed
+ruff check . && mypy                   # lint + type check (CI runs all three on every push)
 streamlit run app.py                   # demo UI: saved runs work offline; "Run live check" calls the API
                                        # (hidden when no API key is set, e.g. in the public demo)
 

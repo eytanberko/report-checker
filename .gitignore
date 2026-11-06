@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.coverage
 *.egg-info/
 
 # Virtual environments
@@ -24,3 +26,6 @@ env/
 # Impeccable runtime captures (the surface brief and design files are committed)
 .impeccable/review/
 .impeccable/questions/
+
+# Local notes (not published)
+CODE_TOUR.he.md
