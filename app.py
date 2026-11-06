@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
@@ -13,7 +14,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # find `checker` however the app is launched
 from checker import llm  # noqa: E402
 from checker.core import FLAGGED, check_report, recheck  # noqa: E402
-from checker.dataset import BadCSV, Dataset, load_upload  # noqa: E402
+from checker.dataset import BadCSV, Dataset, default_dataset, load_upload  # noqa: E402
 from checker.highlight import render_html, verdict  # noqa: E402
 from checker.memo import review_memo  # noqa: E402
 
@@ -29,7 +30,24 @@ ROOT = Path(__file__).resolve().parent  # repo root: works from any working dire
 DEMO_NOTE = "Live checks are disabled in the public demo; saved runs are shown."
 OWN_NOTE = ("Live checks are disabled in the public demo, so this tab cannot run here. "
             "Run the app locally with your own free API key (README, \"Check your own report\").")
-EXAMPLE = ROOT / "examples" / "cafes"
+
+
+@dataclass
+class Example:
+    """What one "Try your own" toggle fills in; csv None means the benchmark's energy data."""
+    label: str
+    report: Path
+    requirements: Path
+    csv: Path | None = None
+
+
+EXAMPLES = {
+    "cafes": Example("Fill in the café example (invented numbers, with mistakes)",
+                     ROOT / "examples" / "cafes" / "report.md", ROOT / "examples" / "cafes" / "requirements.md",
+                     ROOT / "examples" / "cafes" / "cafes.csv"),
+    "energy": Example("Fill in the energy example (the benchmark's data, a correct report)",
+                      ROOT / "examples" / "energy" / "report.md", ROOT / "benchmark" / "requirements.md"),
+}
 UPLOADS = Path(tempfile.gettempdir()) / "report-checker-uploads"
 # Someone is waiting at the screen: on 500/503 retry twice after a short wait, then say so (the CLI waits minutes).
 APP_OVERLOAD_WAITS = (10, 30)
@@ -77,25 +95,48 @@ def show_answer_key(rep: dict) -> None:
         st.markdown(line)
 
 
-def run_live(report: str, requirements: str, dataset: Dataset | None = None) -> dict | None:
-    """One live check; on failure, a plain error message on the page and None."""
+def run_live(where: str, key: tuple, report: str, requirements: str, dataset: Dataset | None = None) -> dict | None:
+    """One live check. On failure the reason is kept for offer_saved() and None is returned."""
     waits, llm.OVERLOAD_WAITS = llm.OVERLOAD_WAITS, APP_OVERLOAD_WAITS
+    st.session_state.pop("failed", None)
     with st.spinner("Extracting claims, running SQL, reviewing conclusions..."):
         try:
             return check_report(report, requirements, dataset=dataset)
         except llm.QuotaExhausted as e:
-            st.error(f"**The API quota for today is used up.** {e} "
-                     "Try again after the daily reset, or use another key.")
+            message = (f"**The API quota for today is used up.** {e} "
+                       "Try again after the daily reset, or use another key.")
         except llm.Overloaded:
-            st.error("**The model's server is overloaded (503)** and stayed so through two retries. "
-                     "This is on the provider's side; try again in a few minutes.")
+            message = ("**The AI service is busy right now (503)** and stayed busy through two retries. "
+                       "This is on the provider's side, not in the checker; try again in a few minutes.")
         except llm.LLMError as e:
-            st.error(f"**Live check failed:** {e}")
+            message = f"**The live check could not finish:** {e}"
         except Exception as e:  # network errors and the like: say what happened rather than show a traceback
-            st.error(f"**Live check failed:** {type(e).__name__}: {e}")
+            message = f"**The live check could not finish:** {type(e).__name__}: {e}"
         finally:
             llm.OVERLOAD_WAITS = waits
+    st.session_state["failed"] = {"where": where, "key": key, "message": message, "show": False}
     return None
+
+
+def offer_saved(where: str, key: tuple, example: str) -> None:
+    """After a failed live run here: the reason, and a button that shows a saved example run instead."""
+    failed = st.session_state.get("failed")
+    if not failed or failed["where"] != where or failed["key"] != key:
+        return
+    st.error(failed["message"])
+    if st.button("Show a saved example instead", key=f"saved_{where}"):
+        failed["show"] = True
+    if failed["show"]:
+        show_saved_example(example)
+
+
+def show_saved_example(name: str) -> None:
+    """A run of one of the examples saved by scripts/save_examples.py: no API call."""
+    saved = json.loads((ROOT / "examples" / name / "saved_result.json").read_text(encoding="utf-8"))
+    meta = saved["meta"]
+    st.info(f"Saved example: the {name} example as checked live on {meta['date']} with `{meta['model']}` "
+            "(no API call). This is not the check that just failed.")
+    show_result(saved["result"], EXAMPLES[name].report.read_text(encoding="utf-8"), f"{name}-example")
 
 
 def show_result(result: dict, report: str, name: str) -> None:
@@ -156,10 +197,11 @@ with tab_check:
     if not LIVE:
         st.info(DEMO_NOTE)
     elif st.button(label, type="primary", disabled=not report.strip()):
-        result = run_live(report, requirements)
+        result = run_live("check", (choice, report, requirements), report, requirements)
         if result is not None:
             live[choice] = {"report": report, "requirements": requirements, "result": result}
             st.session_state["live"] = live
+    offer_saved("check", (choice, report, requirements), "energy")
 
     run = live.get(choice)
     if run and run["report"] == report and run["requirements"] == requirements:
@@ -174,28 +216,54 @@ with tab_check:
         st.caption("No saved run for this report yet." + (" Run a live check." if LIVE else ""))
 
 
+def pick_example(name: str) -> None:
+    """One example at a time: turning one on turns the other off."""
+    for other in EXAMPLES:
+        if other != name:
+            st.session_state[f"own_{other}"] = False
+
+
+def reset_example(name: str) -> None:
+    """Put the example's report and requirements back as they were, and forget its run."""
+    for k in (f"own_report_{name}", f"own_reqs_{name}", "own", "failed"):
+        st.session_state.pop(k, None)
+
+
 def try_your_own() -> None:
-    """Your own CSV, report and requirements: the schema is built from the file, then one live check."""
+    """Your own CSV, report and requirements (or an example): the schema is built from the file, then one live check."""
     st.caption("Upload a CSV, paste a report written from it and the client's requirements. The description of the "
                "data that the model sees (columns, types, ranges, categories) is built from the file.")
-    example = st.toggle("Fill in the café example (examples/cafes, invented numbers)", key="own_example")
+    for key_name, option in EXAMPLES.items():
+        st.toggle(option.label, key=f"own_{key_name}", on_change=pick_example, args=(key_name,))
+    example = next((n for n in EXAMPLES if st.session_state.get(f"own_{n}")), "")
+    ex = EXAMPLES.get(example)
     left, right = st.columns(2)
     with left:
-        if example:
-            name, data = "cafes.csv", (EXAMPLE / "cafes.csv").read_bytes()
-            st.caption("Data: `examples/cafes/cafes.csv`")
+        if ex and ex.csv is None:
+            name, data = "energy", b""
+            st.caption("Data: `data/energy.csv` (Our World in Data), the benchmark's data")
+        elif ex and ex.csv:
+            name, data = ex.csv.name, ex.csv.read_bytes()
+            st.caption(f"Data: `{ex.csv.relative_to(ROOT).as_posix()}`")
         else:
             upload = st.file_uploader("Data (CSV)", type="csv", key="own_csv")
             name, data = (upload.name, upload.getvalue()) if upload else ("", b"")
-        report = st.text_area("Report text", (EXAMPLE / "report.md").read_text(encoding="utf-8") if example else "",
+        report = st.text_area("Report text", ex.report.read_text(encoding="utf-8") if ex else "",
                               height=200, key=f"own_report_{example}")
     with right:
         requirements = st.text_area("Client requirements",
-                                    (EXAMPLE / "requirements.md").read_text(encoding="utf-8") if example else "",
+                                    ex.requirements.read_text(encoding="utf-8") if ex else "",
                                     height=200, key=f"own_reqs_{example}")
+    if ex:
+        st.button("Reset example", key="own_reset", on_click=reset_example, args=(example,),
+                  help="Put the example's report and requirements back as they were")
 
     ds = None
-    if name:
+    if ex and ex.csv is None:
+        ds = default_dataset()
+        with st.expander("Schema of the energy data (hand-written; what the model is told about the data)"):
+            st.code(ds.description, language="markdown")
+    elif name:
         try:
             ds = load_upload(name, data, UPLOADS)
         except BadCSV as e:
@@ -211,11 +279,12 @@ def try_your_own() -> None:
                                      ("the requirements", requirements.strip())) if not ok]
     if missing:
         st.caption("Still needed: " + ", ".join(missing) + ".")
-    key = (hashlib.sha256(data).hexdigest(), report, requirements)
+    key = (name, hashlib.sha256(data).hexdigest(), report, requirements)
     if st.button("Run check", type="primary", disabled=bool(missing), key="own_run") and ds is not None:
-        result = run_live(report, requirements, ds)
+        result = run_live("own", key, report, requirements, ds)
         if result is not None:
             st.session_state["own"] = {"key": key, "result": result}
+    offer_saved("own", key, example or "cafes")
     run = st.session_state.get("own")
     if run and run["key"] == key:
         st.success("Live run")

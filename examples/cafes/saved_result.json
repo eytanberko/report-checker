@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "model": "gemini-3.5-flash-lite",
+    "judge_model": "gemini-3.5-flash-lite",
+    "prompt_version": "38701a08",
+    "date": "06 Nov 2026"
+  },
+  "result": {
+    "claims": [
+      {
+        "id": "C1",
+        "quote": "Haifa sold 412 thousand cups in 2024, up from 350 thousand in 2022, an increase of 25%.",
+        "kind": "numeric",
+        "stated_value": 25.0,
+        "sql": "SELECT 100.0 * (MAX(CASE WHEN year = 2024 THEN cups_sold_k END) - MAX(CASE WHEN year = 2022 THEN cups_sold_k END)) / MAX(CASE WHEN year = 2022 THEN cups_sold_k END) FROM cafes WHERE city = 'Haifa'",
+        "status": "contradicted",
+        "actual": 17.71,
+        "note": "data says 17.71, report says 25"
+      },
+      {
+        "id": "C2",
+        "quote": "Haifa's revenue reached 1,480 thousand USD in 2024.",
+        "kind": "numeric",
+        "stated_value": 1480.0,
+        "sql": "SELECT revenue_k_usd FROM cafes WHERE city = 'Haifa' AND year = 2024",
+        "status": "contradicted",
+        "actual": 1318.0,
+        "note": "data says 1318.00, report says 1480"
+      },
+      {
+        "id": "C3",
+        "quote": "Tel Aviv sold 610 thousand cups in 2024, more than any other city.",
+        "kind": "numeric",
+        "stated_value": 1.0,
+        "sql": "SELECT CASE WHEN (SELECT cups_sold_k FROM cafes WHERE city = 'Tel Aviv' AND year = 2024) = (SELECT MAX(cups_sold_k) FROM cafes WHERE year = 2024) AND (SELECT COUNT(DISTINCT cups_sold_k) FROM cafes WHERE year = 2024 AND cups_sold_k >= (SELECT cups_sold_k FROM cafes WHERE city = 'Tel Aviv' AND year = 2024)) = 1 THEN 1 ELSE 0 END",
+        "status": "verified",
+        "actual": 1.0,
+        "note": ""
+      },
+      {
+        "id": "C4",
+        "quote": "Jerusalem sold 345 thousand cups in 2024.",
+        "kind": "numeric",
+        "stated_value": 345.0,
+        "sql": "SELECT cups_sold_k FROM cafes WHERE city = 'Jerusalem' AND year = 2024",
+        "status": "unverifiable",
+        "actual": null,
+        "note": "no data for this claim"
+      }
+    ],
+    "requirements": [
+      {
+        "id": "R1",
+        "status": "partial",
+        "evidence": "Haifa sold 412 thousand cups in 2024... Tel Aviv sold 610 thousand cups in 2024... Jerusalem sold 345 thousand cups in 2024.",
+        "reason": "The report provides cups sold for the latest year for multiple cities, but misses Jerusalem's 2024 data since it is incomplete or unverifiable."
+      },
+      {
+        "id": "R2",
+        "status": "covered",
+        "evidence": "Haifa sold 412 thousand cups in 2024, up from 350 thousand in 2022, an increase of 25%.",
+        "reason": "The report explicitly states the growth of Haifa between 2022 and 2024, although the stated 25% percentage increase is factually contradicted by the database."
+      }
+    ]
+  }
+}
