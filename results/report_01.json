@@ -128,7 +128,7 @@
       "sql": null,
       "status": "supported",
       "actual": null,
-      "note": "The risk is logically grounded in the data showing natural gas represents 79.7% of electricity generation in 2025."
+      "note": "The data context confirms that gas share of electricity in Israel reached 79.7% in 2025, which supports the claim of heavy reliance on a single fuel."
     }
   ],
   "requirements": [
@@ -136,37 +136,39 @@
       "id": "R1",
       "status": "covered",
       "evidence": "Israel generated 16.9% of its electricity from renewables in 2025, up from 1.9% in 2015, an increase of 15 percentage points.",
-      "reason": "The report states the 2025 renewable share and quantifies the change since 2015."
+      "reason": "The report explicitly states Israel's 2025 renewables share and the change since 2015."
     },
     {
       "id": "R2",
       "status": "covered",
       "evidence": "Coal fell from 45.4% of generation in 2015 to just 3.4% in 2025",
-      "reason": "The report outlines the drop and current status of coal in Israel's electricity mix."
+      "reason": "The report clearly describes the status and decline of coal in Israel's electricity mix."
     },
     {
       "id": "R3",
       "status": "covered",
       "evidence": "Among Mediterranean peers, Greece reached 49.7% renewables in 2025 and Cyprus 27.8%.",
-      "reason": "The report compares Israel's renewables share with two Mediterranean peers for the latest year, 2025."
+      "reason": "The report compares Israel with two Mediterranean peers using their latest available year."
     },
     {
       "id": "R4",
       "status": "covered",
       "evidence": "Total generation grew from 64.2 TWh to 82.1 TWh, about 28%.",
-      "reason": "The report provides the absolute and percentage growth of total electricity generation between 2015 and 2025."
+      "reason": "The report provides the exact growth of Israel's total electricity generation between 2015 and 2025."
     },
     {
       "id": "R5",
       "status": "covered",
       "evidence": "Key risk: with roughly 80% of electricity coming from gas, Israel depends heavily on a single fuel.",
-      "reason": "The report highlights a clear risk supported by the high gas share in the generation data."
+      "reason": "The report identifies a key risk for the coming years that is directly grounded in the data."
     }
   ],
   "meta": {
     "model": "gemini-3.5-flash-lite",
-    "judge_model": "gemini-3.6-flash",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
     "prompt_version": "38701a08",
-    "finished": "2026-11-05T09:29:44+00:00"
+    "cache_salt": "",
+    "finished": "2026-11-06T08:14:31+00:00"
   }
 }

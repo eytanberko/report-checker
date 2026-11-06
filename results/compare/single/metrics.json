@@ -1,0 +1,195 @@
+{
+  "run": {
+    "model": "gemini-3.5-flash-lite",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
+    "prompt_version": "38701a08",
+    "cache_salt": "",
+    "mode": "live",
+    "timestamp": "2026-11-05 23:57 UTC",
+    "api_calls": 4,
+    "cache_hits": 4,
+    "seconds": 24.3,
+    "status": "complete"
+  },
+  "reports_scored": 10,
+  "reports_total": 10,
+  "planted": 16,
+  "caught": 14,
+  "recall": 0.875,
+  "precision": 1.0,
+  "false_alarms": 0,
+  "cascade": 6,
+  "query_mismatches": 3,
+  "by_type": [
+    {
+      "type": "wrong_number",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "unsupported_conclusion",
+      "caught": 1,
+      "planted": 2
+    },
+    {
+      "type": "wrong_calculation",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "wrong_period",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "missing_requirement",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "wrong_entity",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "misread_requirement",
+      "caught": 1,
+      "planted": 2
+    },
+    {
+      "type": "plausible_calculation",
+      "caught": 2,
+      "planted": 2
+    }
+  ],
+  "by_report": [
+    {
+      "report": "report_01",
+      "planted": 0,
+      "scored": true,
+      "caught": 0,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_02",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_03",
+      "planted": 3,
+      "scored": true,
+      "caught": 3,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_04",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 2,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_05",
+      "planted": 0,
+      "scored": true,
+      "caught": 0,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 2,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_06",
+      "planted": 3,
+      "scored": true,
+      "caught": 2,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [
+        "driven mainly by the growth of solar"
+      ],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_07",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_08",
+      "planted": 0,
+      "scored": true,
+      "caught": 0,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_09",
+      "planted": 2,
+      "scored": true,
+      "caught": 1,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [
+        "R1"
+      ],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_10",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 1,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    }
+  ],
+  "prompt_versions": [
+    "38701a08"
+  ]
+}

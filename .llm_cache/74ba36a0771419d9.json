@@ -1,0 +1,41 @@
+{
+  "judgments": [
+    {
+      "id": "C5",
+      "verdict": "supported",
+      "reason": "The data shows that solar grew by 14.5 percentage points while coal fell by 42.0 percentage points, replacing coal as part of the broader fossil fuel reduction."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Israel's renewables share went from 1.9% in 2015 to 16.9% in 2025.",
+      "reason": "The report explicitly states Israel's renewables share for both 2015 and 2025."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal fell from 45.4% to 3.4% over the same period.",
+      "reason": "The report provides the exact status and change of coal in Israel's electricity mix from 2015 to 2025."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "Compared with peers, Greece (49.7%) and Cyprus (27.8%) are well ahead on renewables in 2025.",
+      "reason": "The report successfully compares Israel with two Mediterranean peers using their latest 2025 figures."
+    },
+    {
+      "id": "R4",
+      "status": "partial",
+      "evidence": "Total generation grew by 17.9% between 2015 and 2025, reaching 82.1 TWh.",
+      "reason": "While the report cites 17.9%, the data context indicates the actual electricity generation growth was 27.82% (though absolute generation reached 82.1 TWh)."
+    },
+    {
+      "id": "R5",
+      "status": "missing",
+      "evidence": null,
+      "reason": "The report fails to mention any key risk for the coming years grounded in the data."
+    }
+  ]
+}

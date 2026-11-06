@@ -118,7 +118,7 @@
       "sql": null,
       "status": "supported",
       "actual": null,
-      "note": "The data confirms gas share reached 79.7% in 2025, which reasonably supports the conclusion of low supply diversity."
+      "note": "The data context confirms that gas share reached 79.7% in Israel by 2025, which grounds the risk of low generation diversity."
     }
   ],
   "requirements": [
@@ -126,13 +126,13 @@
       "id": "R1",
       "status": "covered",
       "evidence": "Renewables supplied 16.9% of Israel's electricity in 2025, about 15 percentage points more than in 2015 (1.9%).",
-      "reason": "The report provides Israel's 2025 renewables share and its change since 2015."
+      "reason": "The report provides both the 2025 renewables share and the exact change since 2015."
     },
     {
       "id": "R2",
       "status": "covered",
       "evidence": "Coal dropped to 3.4% in 2025 from 45.4% ten years earlier.",
-      "reason": "The report clearly states the status and reduction of coal in Israel's electricity mix."
+      "reason": "The report clearly states the current status and recent trend of coal in Israel's electricity mix."
     },
     {
       "id": "R3",
@@ -144,19 +144,21 @@
       "id": "R4",
       "status": "covered",
       "evidence": "Generation increased by roughly 28%, from 64.2 TWh to 82.1 TWh.",
-      "reason": "The report gives the total electricity generation values for 2015 and 2025 along with the percentage growth."
+      "reason": "The report gives the exact growth percentage and absolute generation values between 2015 and 2025."
     },
     {
       "id": "R5",
       "status": "covered",
       "evidence": "The main risk: gas reached 79.7% of generation, leaving little diversity in supply.",
-      "reason": "The report identifies supply concentration in natural gas as a key risk, supported by the 2025 share data."
+      "reason": "The report identifies a specific key risk for the coming years that is directly grounded in the provided electricity mix data."
     }
   ],
   "meta": {
     "model": "gemini-3.5-flash-lite",
-    "judge_model": "gemini-3.6-flash",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
     "prompt_version": "38701a08",
-    "finished": "2026-11-05T09:37:08+00:00"
+    "cache_salt": "",
+    "finished": "2026-11-06T08:14:32+00:00"
   }
 }

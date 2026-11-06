@@ -88,7 +88,7 @@
       "sql": null,
       "status": "supported",
       "actual": null,
-      "note": "The data confirms Israel's 2025 renewables share is 16.9%, significantly lower than Germany's 59.1% and the Netherlands' 51.2%."
+      "note": "The data shows Israel's 2025 renewables share at 16.9%, significantly lower than Germany's 59.1% and the Netherlands' 51.2%."
     },
     {
       "id": "C10",
@@ -106,36 +106,39 @@
       "id": "R1",
       "status": "covered",
       "evidence": "Renewables reached 16.9% of Israel's electricity in 2025, up from 1.9% in 2015",
-      "reason": "The report explicitly states Israel's renewables share in 2025 and its change since 2015."
+      "reason": "The report provides both the 2025 share and the 2015 baseline for Israel's renewable electricity."
     },
     {
       "id": "R2",
       "status": "covered",
       "evidence": "Coal is down to 3.4% in 2025.",
-      "reason": "The report clearly states the current status of coal in Israel's electricity mix."
+      "reason": "The report explicitly states the current status and share of coal in the electricity mix for 2025."
     },
     {
       "id": "R3",
       "status": "partial",
       "evidence": "Compared with Germany (59.1%) and the Netherlands (51.2%) in 2025, Israel is far behind on renewables.",
-      "reason": "The requirement asked for Mediterranean peers, but Germany and the Netherlands are not Mediterranean countries."
+      "reason": "The requirement asks for Mediterranean peers, but Germany and the Netherlands are northern/western European nations, not Mediterranean."
     },
     {
       "id": "R4",
-      "status": "partial",
+      "status": "covered",
       "evidence": "Generation grew about 28% to 82.1 TWh.",
-      "reason": "The report states generation grew to 82.1 TWh and mentions a percentage growth, but the percentage growth claim was flagged as a query mismatch against the exact data."
+      "reason": "The report covers the growth of Israel's total electricity generation between 2015 and 2025 with percentage and absolute figures."
     },
     {
       "id": "R5",
       "status": "covered",
       "evidence": "Key risk: 79.7% of Israel's electricity comes from gas.",
-      "reason": "The report provides a key risk grounded in the verified data regarding high gas dependency."
+      "reason": "The report identifies a specific, data-grounded key risk regarding high reliance on natural gas."
     }
   ],
   "meta": {
     "model": "gemini-3.5-flash-lite",
-    "prompt_version": "1f18b8c3",
-    "finished": "2026-11-05T09:20:46+00:00"
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
+    "prompt_version": "38701a08",
+    "cache_salt": "",
+    "finished": "2026-11-06T08:14:33+00:00"
   }
 }

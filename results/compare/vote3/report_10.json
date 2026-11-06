@@ -1,0 +1,144 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Renewables reached 16.9% of Israel's electricity in 2025",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 16.93,
+      "note": ""
+    },
+    {
+      "id": "C2",
+      "quote": "up from 1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015",
+      "status": "verified",
+      "actual": 1.9,
+      "note": ""
+    },
+    {
+      "id": "C3",
+      "quote": "so renewables grew by 891%",
+      "kind": "numeric",
+      "stated_value": 891.0,
+      "sql": "SELECT 100.0 * (MAX(CASE WHEN year = 2025 THEN renewables_share_elec END) - MAX(CASE WHEN year = 2015 THEN renewables_share_elec END)) / MAX(CASE WHEN year = 2015 THEN renewables_share_elec END) FROM energy WHERE country = 'Israel'",
+      "status": "contradicted",
+      "actual": 791.57,
+      "note": "data says 791.57, report says 891"
+    },
+    {
+      "id": "C4",
+      "quote": "Coal is down to 3.4% in 2025",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 3.41,
+      "note": ""
+    },
+    {
+      "id": "C5",
+      "quote": "Generation grew about 28% to 82.1 TWh",
+      "kind": "numeric",
+      "stated_value": 28.0,
+      "sql": "SELECT 100.0 * (MAX(CASE WHEN year = 2025 THEN electricity_generation END) - MIN(CASE WHEN year = 2010 THEN electricity_generation END)) / MIN(CASE WHEN year = 2010 THEN electricity_generation END) FROM energy WHERE country = 'Israel'",
+      "status": "query_mismatch",
+      "actual": null,
+      "note": "query uses year 2010, which the claim's sentence doesn't state or imply"
+    },
+    {
+      "id": "C6",
+      "quote": "to 82.1 TWh",
+      "kind": "numeric",
+      "stated_value": 82.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 82.1,
+      "note": ""
+    },
+    {
+      "id": "C7",
+      "quote": "Compared with Germany (59.1%) ... in 2025, Israel is far behind on renewables",
+      "kind": "numeric",
+      "stated_value": 59.1,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Germany' AND year = 2025",
+      "status": "verified",
+      "actual": 59.09,
+      "note": ""
+    },
+    {
+      "id": "C8",
+      "quote": "and the Netherlands (51.2%) in 2025",
+      "kind": "numeric",
+      "stated_value": 51.2,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Netherlands' AND year = 2025",
+      "status": "verified",
+      "actual": 51.2,
+      "note": ""
+    },
+    {
+      "id": "C9",
+      "quote": "Israel is far behind on renewables",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null,
+      "status": "supported",
+      "actual": null,
+      "note": "The data shows Israel's 2025 renewables share at 16.9%, significantly lower than Germany (59.1%) and the Netherlands (51.2%)."
+    },
+    {
+      "id": "C10",
+      "quote": "Key risk: 79.7% of Israel's electricity comes from gas",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 79.66,
+      "note": ""
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Renewables reached 16.9% of Israel's electricity in 2025, up from 1.9% in 2015",
+      "reason": "The report provides both the 2025 share and the change since 2015 for Israel's renewables."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal is down to 3.4% in 2025.",
+      "reason": "The report clearly states the current status and share of coal in Israel's electricity mix for 2025."
+    },
+    {
+      "id": "R3",
+      "status": "partial",
+      "evidence": "Compared with Germany (59.1%) and the Netherlands (51.2%) in 2025, Israel is far behind on renewables.",
+      "reason": "The requirement asked for Mediterranean peers, but Germany and the Netherlands are located in Central/Western Europe rather than the Mediterranean."
+    },
+    {
+      "id": "R4",
+      "status": "covered",
+      "evidence": "Generation grew about 28% to 82.1 TWh.",
+      "reason": "The report provides the total electricity generation growth percentage between 2015 and 2025 alongside the absolute 2025 figure."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "Key risk: 79.7% of Israel's electricity comes from gas.",
+      "reason": "The report identifies a concrete, data-grounded key risk regarding high gas dependency for the coming years."
+    }
+  ],
+  "meta": {
+    "model": "gemini-3.5-flash-lite",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 3,
+    "prompt_version": "38701a08",
+    "cache_salt": "",
+    "finished": "2026-11-06T00:17:48+00:00"
+  }
+}

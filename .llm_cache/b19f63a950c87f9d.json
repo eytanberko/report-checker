@@ -1,0 +1,46 @@
+{
+  "judgments": [
+    {
+      "id": "C4",
+      "verdict": "supported",
+      "reason": "The data confirms that coal still provides 3.4% of electricity in 2025, meaning it has not been completely eliminated."
+    },
+    {
+      "id": "C7",
+      "verdict": "supported",
+      "reason": "Gas generation accounts for 79.7% of the total in 2025, which mathematically grounds the risk that a supply disruption would impact most of the power system."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "partial",
+      "evidence": "Renewables rose by 15% between 2015 and 2025, reaching 16.9% of Israel's electricity.",
+      "reason": "The report gives the 2025 share and absolute percentage point change, but incorrectly characterizes the percentage point increase as a percentage growth rate."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "In 2025 coal still provided 14.3% of Israel's electricity, so the phase-out is far from complete.",
+      "reason": "The report provides Israel's coal share for 2025, though the stated value (14.3%) is contradicted by the database (3.4%)."
+    },
+    {
+      "id": "R3",
+      "status": "missing",
+      "evidence": null,
+      "reason": "The report completely fails to include a comparison with at least two Mediterranean peers."
+    },
+    {
+      "id": "R4",
+      "status": "covered",
+      "evidence": "Total generation increased from 64.2 TWh to 82.1 TWh over the decade.",
+      "reason": "The report accurately states the total electricity generation growth between 2015 and 2025."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "Israel's reliance on gas (79.7% of generation in 2025) is the main vulnerability: any disruption to gas supply would hit most of the power system.",
+      "reason": "The report identifies heavy reliance on gas as a key risk and explicitly grounds it in the 2025 generation data."
+    }
+  ]
+}

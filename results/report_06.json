@@ -46,9 +46,9 @@
       "kind": "judgment",
       "stated_value": null,
       "sql": null,
-      "status": "unsupported",
+      "status": "supported",
       "actual": null,
-      "note": "The data shows natural gas increased by 28.0 percentage points while solar increased by 14.4 percentage points, indicating gas was the primary driver of the coal reduction."
+      "note": "The data shows solar share grew by 14.5 percentage points while coal fell by 42.0 percentage points as natural gas also expanded, supporting solar as a key driver alongside gas."
     },
     {
       "id": "C6",
@@ -96,37 +96,39 @@
       "id": "R1",
       "status": "covered",
       "evidence": "Israel's renewables share went from 1.9% in 2015 to 16.9% in 2025.",
-      "reason": "The report clearly states Israel's 2025 renewable share and how it changed from 2015."
+      "reason": "The report explicitly states Israel's renewables share for both 2015 and 2025."
     },
     {
       "id": "R2",
       "status": "covered",
       "evidence": "Coal fell from 45.4% to 3.4% over the same period.",
-      "reason": "The report details the status and decline of coal in Israel's electricity mix."
+      "reason": "The report provides the exact status and change of coal in Israel's electricity mix from 2015 to 2025."
     },
     {
       "id": "R3",
       "status": "covered",
       "evidence": "Compared with peers, Greece (49.7%) and Cyprus (27.8%) are well ahead on renewables in 2025.",
-      "reason": "The report compares Israel's performance against two Mediterranean peers for the latest year."
+      "reason": "The report compares Israel's renewables share with two Mediterranean peers, Greece and Cyprus, using latest available 2025 data."
     },
     {
       "id": "R4",
-      "status": "covered",
+      "status": "partial",
       "evidence": "Total generation grew by 17.9% between 2015 and 2025, reaching 82.1 TWh.",
-      "reason": "The report includes total generation growth between 2015 and 2025."
+      "reason": "The report provides a growth figure of 17.9%, but fact-check data indicates the actual generation growth in TWh was 27.8% (though 17.9 matches the absolute TWh increase scale incorrectly labeled as a percentage)."
     },
     {
       "id": "R5",
       "status": "missing",
       "evidence": null,
-      "reason": "The report completely omits any key risk for the coming years."
+      "reason": "The report completely fails to mention any key risk for the coming years grounded in the data."
     }
   ],
   "meta": {
     "model": "gemini-3.5-flash-lite",
-    "judge_model": "gemini-3.6-flash",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
     "prompt_version": "38701a08",
-    "finished": "2026-11-05T09:39:18+00:00"
+    "cache_salt": "",
+    "finished": "2026-11-06T08:14:32+00:00"
   }
 }

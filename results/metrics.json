@@ -1,24 +1,26 @@
 {
   "run": {
     "model": "gemini-3.5-flash-lite",
-    "judge_model": "gemini-3.6-flash",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
     "prompt_version": "38701a08",
+    "cache_salt": "",
     "mode": "live",
-    "timestamp": "2026-11-05 09:29 UTC",
-    "api_calls": 21,
-    "cache_hits": 7,
-    "seconds": 703.8,
-    "status": "stopped: Daily free-tier quota for gemini-3.6-flash is used up. Retry in about 22.3 h."
+    "timestamp": "2026-11-06 08:14 UTC",
+    "api_calls": 0,
+    "cache_hits": 20,
+    "seconds": 1.9,
+    "status": "complete"
   },
-  "reports_scored": 6,
+  "reports_scored": 10,
   "reports_total": 10,
-  "planted": 10,
-  "caught": 10,
-  "recall": 1.0,
+  "planted": 16,
+  "caught": 14,
+  "recall": 0.875,
   "precision": 1.0,
   "false_alarms": 0,
-  "cascade": 1,
-  "query_mismatches": 2,
+  "cascade": 6,
+  "query_mismatches": 3,
   "by_type": [
     {
       "type": "wrong_number",
@@ -27,7 +29,7 @@
     },
     {
       "type": "unsupported_conclusion",
-      "caught": 2,
+      "caught": 1,
       "planted": 2
     },
     {
@@ -37,8 +39,8 @@
     },
     {
       "type": "wrong_period",
-      "caught": 1,
-      "planted": 1
+      "caught": 2,
+      "planted": 2
     },
     {
       "type": "missing_requirement",
@@ -47,8 +49,18 @@
     },
     {
       "type": "wrong_entity",
+      "caught": 2,
+      "planted": 2
+    },
+    {
+      "type": "misread_requirement",
       "caught": 1,
-      "planted": 1
+      "planted": 2
+    },
+    {
+      "type": "plausible_calculation",
+      "caught": 2,
+      "planted": 2
     }
   ],
   "by_report": [
@@ -69,7 +81,7 @@
       "planted": 2,
       "scored": true,
       "caught": 2,
-      "cascade": 0,
+      "cascade": 1,
       "false_alarms": 0,
       "query_mismatches": 0,
       "prompt_version": "38701a08",
@@ -81,7 +93,7 @@
       "planted": 3,
       "scored": true,
       "caught": 3,
-      "cascade": 1,
+      "cascade": 0,
       "false_alarms": 0,
       "query_mismatches": 0,
       "prompt_version": "38701a08",
@@ -93,7 +105,7 @@
       "planted": 2,
       "scored": true,
       "caught": 2,
-      "cascade": 0,
+      "cascade": 2,
       "false_alarms": 0,
       "query_mismatches": 0,
       "prompt_version": "38701a08",
@@ -116,7 +128,33 @@
       "report": "report_06",
       "planted": 3,
       "scored": true,
-      "caught": 3,
+      "caught": 2,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [
+        "driven mainly by the growth of solar"
+      ],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_07",
+      "planted": 2,
+      "scored": true,
+      "caught": 2,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
+    },
+    {
+      "report": "report_08",
+      "planted": 0,
+      "scored": true,
+      "caught": 0,
       "cascade": 0,
       "false_alarms": 0,
       "query_mismatches": 0,
@@ -125,24 +163,30 @@
       "false_alarm_details": []
     },
     {
-      "report": "report_07",
-      "planted": 2,
-      "scored": false
-    },
-    {
-      "report": "report_08",
-      "planted": 0,
-      "scored": false
-    },
-    {
       "report": "report_09",
       "planted": 2,
-      "scored": false
+      "scored": true,
+      "caught": 1,
+      "cascade": 1,
+      "false_alarms": 0,
+      "query_mismatches": 0,
+      "prompt_version": "38701a08",
+      "missed": [
+        "R1"
+      ],
+      "false_alarm_details": []
     },
     {
       "report": "report_10",
       "planted": 2,
-      "scored": false
+      "scored": true,
+      "caught": 2,
+      "cascade": 0,
+      "false_alarms": 0,
+      "query_mismatches": 1,
+      "prompt_version": "38701a08",
+      "missed": [],
+      "false_alarm_details": []
     }
   ],
   "prompt_versions": [

@@ -88,7 +88,7 @@
       "sql": null,
       "status": "supported",
       "actual": null,
-      "note": "The claim is supported by the data showing natural gas accounts for nearly 80% (79.7%) of Israel's electricity generation in 2025."
+      "note": "The data context confirms that gas supplies 79.7% of Israel's electricity in 2025, which grounds the risk of high supply concentration."
     },
     {
       "id": "C10",
@@ -106,37 +106,39 @@
       "id": "R1",
       "status": "covered",
       "evidence": "Israel's renewables share reached 16.9% in 2025 (1.9% in 2015).",
-      "reason": "The report provides Israel's 2025 renewable electricity share and details how it changed from 2015."
+      "reason": "The report provides both the 2025 renewables share and the change since 2015 accurately."
     },
     {
       "id": "R2",
       "status": "covered",
       "evidence": "Coal is nearly gone at 3.4% of electricity in 2025, down from 45.4% in 2015.",
-      "reason": "The report explicitly outlines the current status of coal and its reduction since 2015."
+      "reason": "The report clearly states the status and historical evolution of coal in the electricity mix."
     },
     {
       "id": "R3",
-      "status": "covered",
+      "status": "partial",
       "evidence": "In the region, Cyprus reached 49.7% renewables in 2025, and Egypt 13.0%.",
-      "reason": "The report compares Israel's renewable performance against two Mediterranean peers for 2025."
+      "reason": "While two Mediterranean peers are included, the figure for Cyprus is incorrect according to the database (actual is 27.8%)."
     },
     {
       "id": "R4",
-      "status": "covered",
+      "status": "partial",
       "evidence": "Total generation grew to 92.1 TWh in 2025 from 64.2 TWh in 2015.",
-      "reason": "The report states total electricity generation figures for both 2015 and 2025."
+      "reason": "The report addresses total electricity generation growth, but the 2025 generation figure (92.1 TWh) is contradicted by the database (82.1 TWh)."
     },
     {
       "id": "R5",
       "status": "covered",
       "evidence": "The key risk is concentration: gas supplied 79.7% of Israel's electricity in 2025.",
-      "reason": "The report identifies fuel concentration risk grounded in the high 2025 natural gas share."
+      "reason": "The report identifies a key risk grounded directly in the high gas generation share data."
     }
   ],
   "meta": {
     "model": "gemini-3.5-flash-lite",
-    "judge_model": "gemini-3.6-flash",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
     "prompt_version": "38701a08",
-    "finished": "2026-11-05T09:37:00+00:00"
+    "cache_salt": "",
+    "finished": "2026-11-06T08:14:32+00:00"
   }
 }

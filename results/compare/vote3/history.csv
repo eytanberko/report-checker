@@ -1,0 +1,2 @@
+timestamp,mode,model,judge_model,judge_votes,prompt_version,reports_scored,reports_total,recall,precision,false_alarms,cascade,query_mismatches,api_calls,cache_hits,seconds,status
+2026-11-05 23:57 UTC,live,gemini-3.5-flash-lite,gemini-3.5-flash-lite,3,38701a08,10,10,0.875,1.0,0,8,3,36,10,1209.7,complete

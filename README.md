@@ -39,18 +39,18 @@ flowchart LR
 | Judge | LLM checks conclusions against the verified facts and a data table built in Python (every column for the countries/years the report mentions) | ✅ `supported` / ⚠️ `unsupported` |
 | Coverage | LLM checks each client requirement; a wrong scope (period, comparison group, metric) is `partial` | ✅ / ⚠️ / ❌ |
 
-**Two models, by design.** The LLM stages need different things, so they run on different models:
-- **Extraction** (`GEMINI_MODEL`, default `gemini-3.5-flash-lite`) is mechanical: split text into claims and
-  translate each number into SQL. Every query is checked by guardrails and the database, so a cheap, fast model
-  with a high free daily quota (~500 requests) is enough.
-- **Judge + coverage** (`JUDGE_MODEL`, default `gemini-3.6-flash`) needs reasoning: weigh a cause against the
-  data context, notice an answer to the wrong question. Flash-lite missed both kinds on the benchmark while
-  quoting the very evidence it needed. It is one call per report, so the stronger model's low free quota
-  (~20 requests/day) still covers the 10-report benchmark.
+**One model that can finish (v1.1).** Every LLM step runs on `gemini-3.5-flash-lite` (`GEMINI_MODEL` for
+extraction, `JUDGE_MODEL` for the judge; both default to it).
+- **v1.0** used a stronger judge (`gemini-3.6-flash`), because flash-lite had missed two reasoning cases on the
+  benchmark. Its free tier allows about 20 calls a day, and server overloads used up those calls with retries.
+  The benchmark never finished: 6 of 10 reports were scored. That partial result stays in the run history.
+- **v1.1** uses the fast model for every step. Its free tier (about 500 calls a day) can finish the benchmark,
+  the held-out test and repeat runs. The prompts are the same as v1.0's (`38701a08`).
 
-Spend where it changes the answer: the cheap model does the high-volume, verifiable work; the expensive one
-does the low-volume work that nothing downstream can verify. Both models are recorded with every result,
-in `metrics.md` and in `history.csv`.
+Extraction is mechanical and checked downstream: every query goes through guardrails and the database. The
+judge's work is not checked downstream, so the judge setup was chosen on the benchmark (see "Frozen
+configuration: v1.1"). Both models and the number of judge votes are recorded with every result, in
+`metrics.md` and in `history.csv`.
 
 Anything the checker can't use (malformed LLM output, a claim without a number) becomes ❔ `unverifiable`
 with the reason, never a crash. Data verdicts take precedence: a number the data contradicts stays
@@ -119,25 +119,52 @@ The re-run with the data context (recall 14/16, 1 false alarm) led to the last c
   cited solar +14.4 / coal -42.0 but ignored gas +28.0, and it noted "2020 instead of 2015" yet marked the
   requirement covered.
 
-### Frozen configuration: `v1.0-frozen`
+### v1.0: a stronger judge that couldn't finish (history)
+`v1.0-frozen` used the same prompts (`38701a08`) with `gemini-3.6-flash` as the judge. Its free tier allows
+about 20 calls a day, and server overloads used them up on retries. It scored reports 01-06 only: 10/10
+planted errors caught, 0 false alarms. Reports 07-10 never ran. That partial result stays in
+`results/history.csv` and in the site's run history.
+
+### Choosing the judge for v1.1 (decided before the run)
+v1.1 runs every step on `gemini-3.5-flash-lite`, which the free tier can finish. Two judge setups were run on
+the full benchmark, with a rule written down beforehand: *a majority vote of 3 replaces a single call only if
+its F1 is higher; a tie keeps the single call, the cheaper setup.*
+
+| Judge setup | Recall | Precision | False alarms | Results |
+|---|---|---|---|---|
+| (a) one call | 14/16 (88%) | 100% | 0 | `results/compare/single/` |
+| (b) majority of 3 votes | 14/16 (88%) | 100% | 0 | `results/compare/vote3/` |
+
+Both missed the same two errors, so the tie keeps (a).
+
+### Frozen configuration: `v1.1-frozen`
 | | |
 |---|---|
-| Prompt version | `38701a08` (hash of both prompt templates and the judge's fact wording) |
+| Prompt version | `38701a08` (hash of both prompt templates and the judge's fact wording; same as v1.0) |
 | Extraction model | `gemini-3.5-flash-lite` |
-| Judge model | `gemini-3.6-flash` |
-| Frozen on | 2026-11-05 |
+| Judge model | `gemini-3.5-flash-lite`, one call per report (`JUDGE_VOTES=1`) |
+| Frozen on | 2026-11-06 |
 
-From this tag on there are no prompt, scoring-rule or model changes until the held-out test. Everything
-above was tuned on this benchmark, so only a held-out set can show how well it generalises.
+**Benchmark result (10 reports, 16 planted errors):** recall 14/16 (88%), precision 100%, 0 false alarms
+([`results/metrics.md`](results/metrics.md)). The two misses are the judge reasoning cases that v1.0's
+stronger judge was brought in for:
+- **report_06, "driven mainly by the growth of solar":** an unsupported cause. Gas rose more than solar. The
+  judge noted gas "also expanded" yet called solar a key driver and marked the claim supported.
+- **report_09, R1:** the report measured change since 2020 when the client asked for change since 2015. The
+  judge's own reason says "2020 as the starting point rather than 2015", yet it marked the requirement covered.
 
-**Status: the benchmark run is incomplete.** Reports 01-06 are scored with this configuration (see
-`results/metrics.md`). The free daily quota of the judge model (~20 requests) ran out, mostly on retries
-during server overloads. **Reports 07-10 are pending** and will run with the same frozen configuration once
-the quota resets (`python evaluate.py` resumes where it stopped).
+The same two weaknesses are why v1.0 used a stronger judge. v1.1 trades them for a configuration that can
+finish on the free tier.
 
-Infrastructure changes after the freeze (no effect on prompts, rules, models or scores):
-- **Overload retries:** on 500/503 the client waits 2, 4, then 8 minutes, at most 3 retries per call, then
-  stops cleanly. Every retry counts against the daily quota, so fewer, longer-spaced retries protect it.
+From this tag on there are no prompt, scoring-rule or model changes. Everything above was tuned on this
+benchmark, so only the held-out set can show how well it generalises.
+
+### Held-out test (run once, after the freeze)
+Pending: `benchmark/holdout.yaml` (4 reports, 7 planted errors) runs once with this configuration, after this tag.
+
+Infrastructure changes after the v1.0 freeze (no effect on prompts, rules or scores):
+- **Overload retries:** on 500/503 the client waits 2, 4, then 8 minutes, at most 3 retries per report, then
+  stops cleanly. Cached answers never count. A later run resumes from the cache.
 
 Each run records the prompt version (a hash of both prompt templates); `legacy` marks results made with the
 first-run prompts. Scores for different prompt versions are not directly comparable.
@@ -160,7 +187,8 @@ python evaluate.py
 python evaluate.py --offline           # score saved results only, no API calls
 ```
 - **LLM provider:** Gemini by default: extraction on `GEMINI_MODEL` (default `gemini-3.5-flash-lite`), judge on
-  `JUDGE_MODEL` (default `gemini-3.6-flash`); see "Two models, by design". Check your free-tier limits at
+  `JUDGE_MODEL` (default also `gemini-3.5-flash-lite`), judge votes `JUDGE_VOTES` (default 1); see "One
+  model that can finish". Check your free-tier limits at
   aistudio.google.com/rate-limit. Groq is optional:
   `LLM_PROVIDER=groq`, `GROQ_API_KEY` (free key at console.groq.com), `GROQ_MODEL`.
 - **Cache:** LLM answers are cached in `.llm_cache/` (committed), so re-runs are free and reproducible.

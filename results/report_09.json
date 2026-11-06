@@ -108,7 +108,7 @@
       "sql": null,
       "status": "supported",
       "actual": null,
-      "note": "The data context confirms that gas supplies 79.6% (rounded to 79.7%) of Israel's electricity in 2025, making high reliance on a single fossil fuel a grounded risk."
+      "note": "The data context confirms that gas supplied 79.7% of Israel's electricity in 2025, making high gas dependence a valid, data-grounded risk."
     }
   ],
   "requirements": [
@@ -116,36 +116,39 @@
       "id": "R1",
       "status": "covered",
       "evidence": "Since 2020, renewables in Israel rose from 6.1% to 16.9% of electricity in 2025, an increase of about 11 percentage points.",
-      "reason": "The report states the 2025 renewables share and its change, though it references 2020 instead of 2015 as the starting point for the specific figures."
+      "reason": "The report provides Israel's 2025 renewables share and its change over time, though it references 2020 as the starting point rather than 2015."
     },
     {
       "id": "R2",
       "status": "covered",
       "evidence": "Coal fell to 3.4% in 2025.",
-      "reason": "The report provides the exact status and share of coal in Israel's electricity mix for 2025."
+      "reason": "The report clearly states the status and share of coal in Israel's electricity mix for 2025."
     },
     {
       "id": "R3",
       "status": "covered",
       "evidence": "Israel trails Greece (49.7%) and Italy (48.8%) on renewables in 2025.",
-      "reason": "The report compares Israel's renewables share with two Mediterranean peers (Greece and Italy) for the latest available year (2025)."
+      "reason": "The report compares Israel's renewables share with two Mediterranean peers for the latest available year (2025)."
     },
     {
       "id": "R4",
       "status": "partial",
       "evidence": "Generation grew by 2.8% per year on average between 2015 and 2025, reaching 82.1 TWh.",
-      "reason": "The report provides the growth rate and final volume, but the growth rate of 2.8% per year was checked against the data and found to be contradicted (actual is 2.49%)."
+      "reason": "While the report addresses total generation growth between 2015 and 2025, the checked facts show the average annual growth rate of 2.8% is contradicted by the actual data (2.49%)."
     },
     {
       "id": "R5",
       "status": "covered",
       "evidence": "Key risk: gas supplies 79.7% of Israel's electricity.",
-      "reason": "The report identifies a key risk for the coming years that is directly grounded in the 2025 electricity mix data."
+      "reason": "The report identifies a key risk for the coming years that is directly grounded in the 2025 database figures."
     }
   ],
   "meta": {
     "model": "gemini-3.5-flash-lite",
-    "prompt_version": "1f18b8c3",
-    "finished": "2026-11-05T09:19:42+00:00"
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
+    "prompt_version": "38701a08",
+    "cache_salt": "",
+    "finished": "2026-11-06T08:14:32+00:00"
   }
 }

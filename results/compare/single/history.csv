@@ -1,0 +1,4 @@
+timestamp,mode,model,judge_model,judge_votes,prompt_version,reports_scored,reports_total,recall,precision,false_alarms,cascade,query_mismatches,api_calls,cache_hits,seconds,status
+2026-11-05 21:16 UTC,live,gemini-3.5-flash-lite,gemini-3.5-flash-lite,1,38701a08,6,10,0.9,1.0,0,4,2,14,7,3938.6,stopped: gemini-3.5-flash-lite still overloaded after 3 retries; stopping to save quota (a later run resumes from the cache).
+2026-11-05 22:29 UTC,live,gemini-3.5-flash-lite,gemini-3.5-flash-lite,1,38701a08,6,10,0.9,1.0,0,4,2,4,1,1109.2,stopped: gemini-3.5-flash-lite still overloaded after 3 retries; stopping to save quota (a later run resumes from the cache).
+2026-11-05 23:57 UTC,live,gemini-3.5-flash-lite,gemini-3.5-flash-lite,1,38701a08,10,10,0.875,1.0,0,6,3,4,4,24.3,complete

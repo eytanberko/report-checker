@@ -77,7 +77,9 @@ def test_earlier_run_label_clears_itself_when_a_report_is_rerun_frozen(tmp_path,
     saved = json.loads((tmp_path / "report_07.json").read_text(encoding="utf-8"))
     monkeypatch.setattr(build_site, "RESULTS", tmp_path)
     cfg = build_site.frozen_config()
-    assert build_site.report_entry(rep, cfg)["run"]["frozen"] is False          # today: earlier run
+    saved["meta"] = {**cfg, "judge_model": "an-earlier-judge"}                   # a run with earlier settings
+    (tmp_path / "report_07.json").write_text(json.dumps(saved), encoding="utf-8")
+    assert build_site.report_entry(rep, cfg)["run"]["frozen"] is False          # labelled an earlier run
     saved["meta"] = {**cfg, "finished": "tomorrow"}                              # what evaluate.py writes
     (tmp_path / "report_07.json").write_text(json.dumps(saved), encoding="utf-8")
     assert build_site.report_entry(rep, cfg)["run"]["frozen"] is True           # label gone, no manual edit
