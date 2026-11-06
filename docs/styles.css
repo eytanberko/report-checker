@@ -304,6 +304,11 @@ tr.untested td { color: var(--print-3); }
 .ho-report h4 { margin: 0 0 .4rem; font: 700 .98rem var(--f-form); font-stretch: 88%; }
 .ho-report .key-list li { font-size: .92rem; }
 .ho-fa { margin: .4rem 0 0; font-size: .9rem; color: var(--print-2); }
+.ho-note { margin: 1rem 0 0; padding: .8rem 1rem; border-left: 3px solid var(--ochre); background: var(--ochre-wash); max-width: 52rem; }
+.ho-note p { margin: 0 0 .5rem; font-size: .98rem; }
+.ho-note .ho-note-title { font: 700 1rem var(--f-form); font-stretch: 88%; color: var(--ochre); }
+.ho-note .ho-note-counts { margin: 0; display: flex; flex-wrap: wrap; gap: .3rem 1.5rem; }
+.miss-why { display: block; margin-top: .35rem; padding-left: .7rem; border-left: 2px solid var(--ochre); color: var(--print-2); }
 .repeats-block { margin: 0 0 2.5rem; }
 .repeats-block .wp-sub { margin-bottom: .7rem; }
 .history tr.figures td:first-child { white-space: nowrap; }

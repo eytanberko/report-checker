@@ -44,6 +44,11 @@ def test_heldout_result_is_the_frozen_run_on_all_four_reports(data):
     assert all(r["run"]["frozen"] for r in held["reports"])
     caught = sum(p["caught"] for r in held["reports"] for p in r["answer_key"]["planted"])
     assert caught == held["metrics"]["caught"] and held["metrics"]["run"]["status"] == "complete"
+    # The Jordan error is shown beside the answer-key result, not folded into it; every miss is explained.
+    assert held["real_errors"] == {"total": held["metrics"]["planted"] + 1, "caught": held["metrics"]["caught"]}
+    assert "Jordan" in held["extra_errors"][0]["note"]
+    missed = [p for r in held["reports"] for p in r["answer_key"]["planted"] if not p["caught"]]
+    assert missed and all(p["miss_reason"] for p in missed)
 
 
 def test_profile_links(data):
@@ -133,10 +138,11 @@ def test_heldout_and_repeat_blocks_read_their_own_folders(tmp_path, monkeypatch)
 
     held = tmp_path / "heldout"
     held.mkdir()
-    (held / "metrics.json").write_text(json.dumps({"recall": 0.5}), encoding="utf-8")
+    (held / "metrics.json").write_text(json.dumps({"recall": 0.5, "caught": 3, "planted": 7}), encoding="utf-8")
     (held / "holdout_02.json").write_text(json.dumps({"claims": [], "requirements": []}), encoding="utf-8")
     block = build_site.heldout_block(build_site.frozen_config(), con, catalog, ds)
-    assert block["metrics"] == {"recall": 0.5}
+    assert block["metrics"]["recall"] == 0.5
+    assert block["real_errors"] == {"total": 7, "caught": 3}  # no holdout_04 result, so no Jordan note
     assert [r["id"] for r in block["reports"]] == ["holdout_02"]   # reports without a result are left out
     planted = block["reports"][0]["answer_key"]["planted"]
     assert len(planted) == 3 and not any(p["caught"] for p in planted) and all(p["why"] for p in planted)

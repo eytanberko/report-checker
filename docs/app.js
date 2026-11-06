@@ -365,7 +365,7 @@
     const items = h.reports.map((r) => {
       const k = r.answer_key;
       const planted = k.planted.length
-        ? k.planted.map((p) => `<li>${p.caught ? tick("t-agreed", "key-hit") : tick("t-unverified", "key-miss")}<span><span class="key-type">${esc(labels[p.type] || p.type)}</span>${p.caught ? ": caught." : ": <strong>missed.</strong>"} ${esc(p.why || "")}</span></li>`).join("")
+        ? k.planted.map((p) => `<li>${p.caught ? tick("t-agreed", "key-hit") : tick("t-unverified", "key-miss")}<span><span class="key-type">${esc(labels[p.type] || p.type)}</span>${p.caught ? ": caught." : ": <strong>missed.</strong>"} ${esc(p.why || "")}${p.miss_reason ? `<span class="miss-why"><strong>Why it was missed:</strong> ${esc(p.miss_reason)}</span>` : ""}</span></li>`).join("")
         : `<li>${tick("t-agreed", "key-hit")}<span>Clean report: nothing planted.</span></li>`;
       const fa = k.false_alarms.length ? `<p class="ho-fa">${k.false_alarms.length} false alarm${k.false_alarms.length > 1 ? "s" : ""}: ${k.false_alarms.map((a) => esc(a.quote)).join("; ")}</p>` : "";
       return `<div class="ho-report"><h4>${esc(r.id.replace("holdout_", "Held-out report "))}</h4><ul class="key-list">${planted}</ul>${fa}</div>`;
@@ -373,7 +373,19 @@
     $("#heldout").innerHTML = `<span class="stamp">Run once</span><div><h3>Held-out test</h3>
       <p>Four reports the checker had never seen, scored once with the frozen ${esc(cfg.label)} settings (tag ${esc(cfg.tag)}), published as they came.
       <strong>Recall ${pct(hm.recall)}</strong> (${hm.caught} of ${hm.planted} planted mistakes caught), <strong>precision ${pct(hm.precision)}</strong>, ${hm.false_alarms} false alarm${hm.false_alarms === 1 ? "" : "s"}.</p>
+      ${extraNote(h)}
       <div class="ho-grid">${items}</div></div>`;
+  }
+
+  // Real errors found after the run, outside the answer key: shown next to the answer-key result, never folded into it.
+  function extraNote(h) {
+    const extra = h.extra_errors || [];
+    if (!extra.length) return "";
+    const re = h.real_errors;
+    const notes = extra.map((x) => `<p>${esc(x.note)}</p>`).join("");
+    return `<div class="ho-note" role="note"><p class="ho-note-title">Found after the run: an error the answer key missed</p>${notes}
+      <p class="ho-note-counts"><span>Against the answer key: <strong>${h.metrics.caught} of ${h.metrics.planted}</strong> planted mistakes caught.</span>
+      <span>Counting it: <strong>${re.caught} of ${re.total}</strong> real errors caught (${pct(re.caught / re.total)}).</span></p></div>`;
   }
 
   function renderRepeats() {

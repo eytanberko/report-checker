@@ -166,10 +166,21 @@ afterwards ([`results/heldout/metrics.md`](results/heldout/metrics.md)):
 
 - **Recall 6/7 (86%), precision 100%, 0 false alarms.** 2 cascade flags (holdout_03: R3 and R4 marked partial
   because their figures were wrong).
-- **The miss: holdout_02, renewables "16.8%"** (data: 16.93%). It passed the numeric tolerance: the rounding
-  allowance is 0.05, but the 1% relative slack allows up to 0.17 here, and the gap is 0.13. For shares the
-  relative slack is too loose. This is a rule weakness in the deterministic check, not an LLM error.
-  It stays as measured; any fix would be a new version, scored on new held-out data.
+- **The miss: holdout_02, "Israel's renewables share reached 16.8% in 2025"** (data: 16.93%). Not bad SQL
+  and not a missed extraction: the claim was extracted on its own (C1) with the right query
+  (`renewables_share_elec`, Israel, 2025). It passed the number tolerance, which allows the larger of the
+  report's rounding (0.05 for one decimal) and 1% of the data value (0.17 here). The gap is 0.13, so it was
+  marked verified. For percentages the 1% allowance is too loose. It stays as measured; any fix belongs to a
+  later version, scored on new held-out data.
+
+> **Found after the run: an error the answer key missed.** holdout_04 uses Jordan as a Mediterranean peer
+> (Jordan has no Mediterranean coast). This real error was missing from the GPT-written answer key and the
+> checker did not flag it either. Counting it, the checker caught 6 of 8 real errors.
+>
+> | Counted against | Caught |
+> |---|---|
+> | The answer key (unchanged) | **6 of 7** planted mistakes (86%) |
+> | All real errors, including Jordan | **6 of 8** (75%) |
 - With 4 reports, one mistake more or less moves the result a lot.
 
 

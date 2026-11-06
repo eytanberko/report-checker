@@ -51,6 +51,21 @@ LINKS = {
 }
 DATA_SOURCE = "Our World in Data, energy dataset"
 MAX_ROWS = 30  # rows shown under "Show the data" for one claim
+# Found after the held-out run. The answer key stays unchanged; the site shows both counts.
+HELDOUT_EXTRA_ERRORS: list[dict] = [
+    {"report": "holdout_04", "caught": False,
+     "note": "holdout_04 uses Jordan as a Mediterranean peer (Jordan has no Mediterranean coast). This real error "
+             "was missing from the GPT-written answer key and the checker did not flag it either."},
+]
+# Why each held-out miss happened: written after reading the saved result; nothing in v1.1 was changed.
+HELDOUT_MISSES = {
+    ("holdout_02", "16.8%"):
+        "Not bad SQL and not a missed extraction. The claim was extracted on its own with the right query "
+        "(Israel's renewables share in 2025), and the data returned 16.93%. It passed the number tolerance: the "
+        "check allows the larger of the report's rounding (0.05 for one decimal) and 1% of the data value (0.17 "
+        "here). The gap is 0.13, so 16.8% was marked verified. For percentages the 1% allowance is too loose. "
+        "Left as measured; any fix belongs to a later version, scored on new held-out data.",
+}
 
 
 def _clean(text: str) -> str:
@@ -212,9 +227,17 @@ def heldout_block(config: dict, con: duckdb.DuckDBPyConnection, catalog: Catalog
     if metrics is None:
         return None
     reps = yaml.safe_load((BENCH / "holdout.yaml").read_text(encoding="utf-8"))["reports"]
-    entries = [report_entry(r, config, con, catalog, ds, RESULTS / "heldout") for r in reps]
+    entries = [e for e in (report_entry(r, config, con, catalog, ds, RESULTS / "heldout") for r in reps) if e]
+    for e in entries:
+        for p in e["answer_key"]["planted"]:
+            if not p["caught"]:
+                p["miss_reason"] = HELDOUT_MISSES.get((e["id"], p["target"]))
+    extra = [x for x in HELDOUT_EXTRA_ERRORS if any(e["id"] == x["report"] for e in entries)]
     return {"metrics": metrics,
-            "reports": [{"id": e["id"], "answer_key": e["answer_key"], "run": e["run"]} for e in entries if e]}
+            "reports": [{"id": e["id"], "answer_key": e["answer_key"], "run": e["run"]} for e in entries],
+            "extra_errors": extra,
+            "real_errors": {"total": metrics["planted"] + len(extra),
+                            "caught": metrics["caught"] + sum(x["caught"] for x in extra)}}
 
 
 def repeats_block() -> list[dict]:
