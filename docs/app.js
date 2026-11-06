@@ -388,6 +388,17 @@
       <span>Counting it: <strong>${re.caught} of ${re.total}</strong> real errors caught (${pct(re.caught / re.total)}).</span></p></div>`;
   }
 
+  // Min and max over the finished repeat runs; unfinished runs are listed but not counted.
+  function repeatSpread(reps) {
+    const done = reps.filter((r) => r.complete);
+    if (!done.length) return "";
+    const range = (k, f) => {
+      const lo = Math.min(...done.map((r) => r[k])), hi = Math.max(...done.map((r) => r[k]));
+      return lo === hi ? `<strong>${f(lo)}</strong> in every run` : `<strong>${f(lo)}</strong> to <strong>${f(hi)}</strong>`;
+    };
+    return `<p class="repeat-spread">Across ${done.length} complete run${done.length > 1 ? "s" : ""}: recall ${range("recall", pct)}, precision ${range("precision", pct)}, false alarms ${range("false_alarms", String)}.</p>`;
+  }
+
   function renderRepeats() {
     const reps = SITE.repeats;
     const box = $("#repeats");
@@ -397,6 +408,7 @@
       <td class="num">${pct(r.recall)}</td><td class="num">${pct(r.precision)}</td><td class="num">${r.false_alarms}</td></tr>`).join("");
     box.innerHTML = `<h3 class="schedule-title" id="repeats-title">How much the results vary between runs</h3>
       <p class="wp-sub">The frozen settings, run again on the benchmark without the cache. Same reports, same prompts; only the model's answers change.</p>
+      ${repeatSpread(reps)}
       <div class="table-wrap"><table class="schedule repeats stack" aria-labelledby="repeats-title">
       <thead><tr><th scope="col">Run</th><th scope="col" class="num">Reports</th><th scope="col" class="num">Recall</th><th scope="col" class="num">Precision</th><th scope="col" class="num">False alarms</th></tr></thead>
       <tbody id="repeats-body">${rows}</tbody></table></div>`;

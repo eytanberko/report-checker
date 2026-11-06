@@ -1,0 +1,74 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "In 2025 renewables provided 16.9% of Israel's electricity",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C2",
+      "quote": "compared with 1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C3",
+      "quote": "Coal has almost disappeared but still accounts for 13.4% of generation in 2025.",
+      "kind": "numeric",
+      "stated_value": 13.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C4",
+      "quote": "Gas now supplies 79.7% of electricity.",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C5",
+      "quote": "Generation rose from 64.2 TWh in 2015",
+      "kind": "numeric",
+      "stated_value": 64.2,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C6",
+      "quote": "to 82.1 TWh in 2025.",
+      "kind": "numeric",
+      "stated_value": 82.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C7",
+      "quote": "Israel remains far behind Spain (55.9%)",
+      "kind": "numeric",
+      "stated_value": 55.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Spain' AND year = 2025"
+    },
+    {
+      "id": "C8",
+      "quote": "and Italy (48.8%) on renewables in 2025.",
+      "kind": "numeric",
+      "stated_value": 48.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Italy' AND year = 2025"
+    },
+    {
+      "id": "C9",
+      "quote": "At this pace, renewables will exceed 50% of Israel's electricity by 2030.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C10",
+      "quote": "The main risk is dependence on gas, which supplies four out of five kilowatt-hours.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    }
+  ]
+}

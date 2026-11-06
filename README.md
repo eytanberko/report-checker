@@ -184,6 +184,26 @@ afterwards ([`results/heldout/metrics.md`](results/heldout/metrics.md)):
 - With 4 reports, one mistake more or less moves the result a lot.
 
 
+### Repeat runs: how much the results vary
+The frozen v1.1 settings, run 3 more times on the benchmark with the cache bypassed (`--salt repeat-1/2/3`,
+`results/repeats/`), so extraction and judge answer afresh each time (62 API calls in all).
+
+| Run | Recall | Precision | False alarms |
+|---|---|---|---|
+| Frozen run | 14/16 (88%) | 100% | 0 |
+| Repeat 1 | 14/16 (88%) | 93% | 1 |
+| Repeat 2 | 14/16 (88%) | 100% | 0 |
+| Repeat 3 | 14/16 (88%) | 93% | 1 |
+
+**Across the 3 repeats: recall 88% in every run; precision 93% to 100%; 0 to 1 false alarms.**
+- Recall did not move: every run caught the same 14 and missed the same two judge cases (report_06 solar,
+  report_09 R1).
+- Both false alarms came from extraction writing a wrong SQL formula for a correct "+28% generation" claim:
+  a missing pair of parentheses (repeat 1, report_05: computed 8209 instead of 27.8) and a misplaced one
+  (repeat 3, report_01: the year filter swallowed the subtraction, so no row matched). The frozen run wrote
+  both queries correctly. Guardrails check countries, years and columns, not formulas; this is the known
+  limitation below, now measured: 2 wrong formulas in about 280 numeric claims over the 3 repeats.
+
 Infrastructure changes after the v1.0 freeze (no effect on prompts, rules or scores):
 - **Overload retries:** on 500/503 the client waits 2, 4, then 8 minutes, at most 3 retries per report, then
   stops cleanly. Cached answers never count. A later run resumes from the cache.

@@ -1,0 +1,95 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Israel generated 16.9% of its electricity from renewables in 2025",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C2",
+      "quote": "up from 1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C3",
+      "quote": "an increase of 15 percentage points",
+      "kind": "numeric",
+      "stated_value": 15.0,
+      "sql": "SELECT (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C4",
+      "quote": "solar, which supplied 16.2% of electricity in 2025",
+      "kind": "numeric",
+      "stated_value": 16.2,
+      "sql": "SELECT solar_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C5",
+      "quote": "Coal fell from 45.4% of generation in 2015",
+      "kind": "numeric",
+      "stated_value": 45.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C6",
+      "quote": "to just 3.4% in 2025",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C7",
+      "quote": "natural gas filled the gap and reached 79.7%",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C8",
+      "quote": "Total generation grew from 64.2 TWh",
+      "kind": "numeric",
+      "stated_value": 64.2,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C9",
+      "quote": "to 82.1 TWh",
+      "kind": "numeric",
+      "stated_value": 82.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C10",
+      "quote": "about 28%",
+      "kind": "numeric",
+      "stated_value": 28.0,
+      "sql": "SELECT 100.0 * (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025 - (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)) / (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C11",
+      "quote": "Greece reached 49.7% renewables in 2025",
+      "kind": "numeric",
+      "stated_value": 49.7,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Greece' AND year = 2025"
+    },
+    {
+      "id": "C12",
+      "quote": "Cyprus 27.8%",
+      "kind": "numeric",
+      "stated_value": 27.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Cyprus' AND year = 2025"
+    },
+    {
+      "id": "C13",
+      "quote": "Key risk: with roughly 80% of electricity coming from gas, Israel depends heavily on a single fuel.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "judgments": [
+    {
+      "id": "C4",
+      "verdict": "unsupported",
+      "reason": "The claim states solar provided 13.1% in 2025, but the verified data shows the actual solar share was 16.18%."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Renewables provided 16.9% of Israel's electricity in 2025, up from 1.9% in 2015.",
+      "reason": "The report explicitly provides Israel's renewables share for 2025 and the 2015 baseline."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal fell to 3.4% in 2025.",
+      "reason": "The report provides the current status and share of coal in Israel's electricity mix for 2025."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "In the region, Egypt reached 24.0% renewables in 2025, ahead of Israel, while Greece reached 49.7%.",
+      "reason": "The report compares Israel with two Mediterranean peers, Egypt and Greece, using 2025 data."
+    },
+    {
+      "id": "R4",
+      "status": "covered",
+      "evidence": "Generation grew from 64.2 TWh to 82.1 TWh.",
+      "reason": "The report provides the exact absolute growth of Israel's total electricity generation between 2015 and 2025."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "The key risk is that 79.7% of Israel's electricity comes from gas.",
+      "reason": "The report identifies a data-grounded key risk regarding the high reliance on natural gas in the electricity mix."
+    }
+  ]
+}

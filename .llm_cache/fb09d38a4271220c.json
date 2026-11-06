@@ -1,0 +1,74 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Renewables reached 16.9% of Israel's electricity in 2025",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C2",
+      "quote": "up from 1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C3",
+      "quote": "so renewables grew by 891%",
+      "kind": "numeric",
+      "stated_value": 891.0,
+      "sql": "SELECT 100.0 * ( (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015) ) / (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C4",
+      "quote": "Coal is down to 3.4% in 2025",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C5",
+      "quote": "Generation grew about 28% to 82.1 TWh",
+      "kind": "numeric",
+      "stated_value": 28.0,
+      "sql": "SELECT 100.0 * ((SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)) / (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)"
+    },
+    {
+      "id": "C6",
+      "quote": "to 82.1 TWh",
+      "kind": "numeric",
+      "stated_value": 82.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C7",
+      "quote": "Germany (59.1%)",
+      "kind": "numeric",
+      "stated_value": 59.1,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Germany' AND year = 2025"
+    },
+    {
+      "id": "C8",
+      "quote": "the Netherlands (51.2%) in 2025",
+      "kind": "numeric",
+      "stated_value": 51.2,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Netherlands' AND year = 2025"
+    },
+    {
+      "id": "C9",
+      "quote": "Israel is far behind on renewables",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C10",
+      "quote": "Key risk: 79.7% of Israel's electricity comes from gas.",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    }
+  ]
+}

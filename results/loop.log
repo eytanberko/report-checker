@@ -1,0 +1,165 @@
+[2026-11-06 08:58:21 UTC] stage [--out results/repeats/r1 --salt repeat-1] attempt 1
+extraction gemini-3.5-flash-lite, judge gemini-3.5-flash-lite x1, prompt version 38701a08, mode live, cache salt repeat-1
+report_01: checking ...
+report_02: checking ...
+report_03: checking ...
+report_04: checking ...
+report_05: checking ...
+report_06: checking ...
+report_07: checking ...
+report_08: checking ...
+report_09: checking ...
+report_10: checking ...
+
+# Benchmark results
+
+Models: extraction `gemini-3.5-flash-lite`, judge `gemini-3.5-flash-lite`; prompt version(s) `38701a08`; run 6 Nov 2026, 08:58 UTC (live).
+
+- **Recall** (planted errors caught): 14/16 = 88%
+- **Precision** (flags that were real errors): 93%
+- **False alarms**: 1 across 10 reports
+- **Cascade errors caught** (downstream of a planted error; not in recall or precision): 3
+- **Query mismatches** (checker-side, the claim was not checked; not counted): 2
+
+## By error type
+
+| type | caught | planted |
+|---|---|---|
+| wrong_number | 2 | 2 |
+| unsupported_conclusion | 1 | 2 |
+| wrong_calculation | 2 | 2 |
+| wrong_period | 2 | 2 |
+| missing_requirement | 2 | 2 |
+| wrong_entity | 2 | 2 |
+| misread_requirement | 1 | 2 |
+| plausible_calculation | 2 | 2 |
+
+## By report
+
+| report | planted | caught | cascade | false alarms | false-alarm details |
+|---|---|---|---|---|---|
+| report_01 | 0 | 0 | 0 | 0 |  |
+| report_02 | 2 | 2 | 0 | 0 |  |
+| report_03 | 3 | 3 | 0 | 0 |  |
+| report_04 | 2 | 2 | 1 | 0 |  |
+| report_05 | 0 | 0 | 0 | 1 | Generation increased
+by roughly 28%, from 64.2 TWh to 82.1 T |
+| report_06 | 3 | 2 | 1 | 0 |  |
+| report_07 | 2 | 2 | 0 | 0 |  |
+| report_08 | 0 | 0 | 0 | 0 |  |
+| report_09 | 2 | 1 | 1 | 0 |  |
+| report_10 | 2 | 2 | 0 | 0 |  |
+
+21 API calls, 0 cache hits, 258.5s, complete
+wrote docs\data\site.js: 10 reports, 105 claims (0 unlocated), held-out: yes
+[2026-11-06 09:02:42 UTC] stage [--out results/repeats/r1 --salt repeat-1] exit 0: complete
+[2026-11-06 09:02:42 UTC] stage [--out results/repeats/r2 --salt repeat-2] attempt 1
+extraction gemini-3.5-flash-lite, judge gemini-3.5-flash-lite x1, prompt version 38701a08, mode live, cache salt repeat-2
+report_01: checking ...
+report_02: checking ...
+report_03: checking ...
+report_04: checking ...
+report_05: checking ...
+report_06: checking ...
+report_07: checking ...
+report_08: checking ...
+report_09: checking ...
+report_10: checking ...
+
+# Benchmark results
+
+Models: extraction `gemini-3.5-flash-lite`, judge `gemini-3.5-flash-lite`; prompt version(s) `38701a08`; run 6 Nov 2026, 09:02 UTC (live).
+
+- **Recall** (planted errors caught): 14/16 = 88%
+- **Precision** (flags that were real errors): 100%
+- **False alarms**: 0 across 10 reports
+- **Cascade errors caught** (downstream of a planted error; not in recall or precision): 5
+- **Query mismatches** (checker-side, the claim was not checked; not counted): 1
+
+## By error type
+
+| type | caught | planted |
+|---|---|---|
+| wrong_number | 2 | 2 |
+| unsupported_conclusion | 1 | 2 |
+| wrong_calculation | 2 | 2 |
+| wrong_period | 2 | 2 |
+| missing_requirement | 2 | 2 |
+| wrong_entity | 2 | 2 |
+| misread_requirement | 1 | 2 |
+| plausible_calculation | 2 | 2 |
+
+## By report
+
+| report | planted | caught | cascade | false alarms | false-alarm details |
+|---|---|---|---|---|---|
+| report_01 | 0 | 0 | 0 | 0 |  |
+| report_02 | 2 | 2 | 0 | 0 |  |
+| report_03 | 3 | 3 | 0 | 0 |  |
+| report_04 | 2 | 2 | 2 | 0 |  |
+| report_05 | 0 | 0 | 0 | 0 |  |
+| report_06 | 3 | 2 | 1 | 0 |  |
+| report_07 | 2 | 2 | 1 | 0 |  |
+| report_08 | 0 | 0 | 0 | 0 |  |
+| report_09 | 2 | 1 | 1 | 0 |  |
+| report_10 | 2 | 2 | 0 | 0 |  |
+
+21 API calls, 0 cache hits, 258.8s, complete
+wrote docs\data\site.js: 10 reports, 105 claims (0 unlocated), held-out: yes
+[2026-11-06 09:07:03 UTC] stage [--out results/repeats/r2 --salt repeat-2] exit 0: complete
+[2026-11-06 09:07:03 UTC] stage [--out results/repeats/r3 --salt repeat-3] attempt 1
+extraction gemini-3.5-flash-lite, judge gemini-3.5-flash-lite x1, prompt version 38701a08, mode live, cache salt repeat-3
+report_01: checking ...
+report_02: checking ...
+report_03: checking ...
+report_04: checking ...
+report_05: checking ...
+report_06: checking ...
+report_07: checking ...
+report_08: checking ...
+report_09: checking ...
+report_10: checking ...
+
+# Benchmark results
+
+Models: extraction `gemini-3.5-flash-lite`, judge `gemini-3.5-flash-lite`; prompt version(s) `38701a08`; run 6 Nov 2026, 09:07 UTC (live).
+
+- **Recall** (planted errors caught): 14/16 = 88%
+- **Precision** (flags that were real errors): 93%
+- **False alarms**: 1 across 10 reports
+- **Cascade errors caught** (downstream of a planted error; not in recall or precision): 5
+- **Query mismatches** (checker-side, the claim was not checked; not counted): 2
+
+## By error type
+
+| type | caught | planted |
+|---|---|---|
+| wrong_number | 2 | 2 |
+| unsupported_conclusion | 1 | 2 |
+| wrong_calculation | 2 | 2 |
+| wrong_period | 2 | 2 |
+| missing_requirement | 2 | 2 |
+| wrong_entity | 2 | 2 |
+| misread_requirement | 1 | 2 |
+| plausible_calculation | 2 | 2 |
+
+## By report
+
+| report | planted | caught | cascade | false alarms | false-alarm details |
+|---|---|---|---|---|---|
+| report_01 | 0 | 0 | 0 | 1 | about 28% |
+| report_02 | 2 | 2 | 1 | 0 |  |
+| report_03 | 3 | 3 | 1 | 0 |  |
+| report_04 | 2 | 2 | 0 | 0 |  |
+| report_05 | 0 | 0 | 0 | 0 |  |
+| report_06 | 3 | 2 | 1 | 0 |  |
+| report_07 | 2 | 2 | 1 | 0 |  |
+| report_08 | 0 | 0 | 0 | 0 |  |
+| report_09 | 2 | 1 | 1 | 0 |  |
+| report_10 | 2 | 2 | 0 | 0 |  |
+
+20 API calls, 0 cache hits, 135.4s, complete
+wrote docs\data\site.js: 10 reports, 105 claims (0 unlocated), held-out: yes
+[2026-11-06 09:09:21 UTC] stage [--out results/repeats/r3 --salt repeat-3] exit 0: complete
+[2026-11-06 09:09:21 UTC] all stages complete
+retry.py exited with code 0

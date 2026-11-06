@@ -1,0 +1,41 @@
+{
+  "judgments": [
+    {
+      "id": "C11",
+      "verdict": "supported",
+      "reason": "The data confirms that gas generation reached 79.7% in 2025, which grounds the assessment of low supply diversity."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Renewables supplied 16.9% of Israel's electricity in 2025, about 15 percentage points more than in 2015 (1.9%).",
+      "reason": "The report explicitly states Israel's 2025 renewables share and quantifies the change since 2015."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal dropped to 3.4% in 2025 from 45.4% ten years earlier.",
+      "reason": "The report provides the exact 2025 status and historical drop for coal in the electricity mix."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "Israel still lags Italy (48.8%) and Spain (55.9%), both of which generate around half of their electricity from renewables.",
+      "reason": "The report compares Israel's renewables share with two Mediterranean peers using latest available data."
+    },
+    {
+      "id": "R4",
+      "status": "covered",
+      "evidence": "Generation increased by roughly 28%, from 64.2 TWh to 82.1 TWh.",
+      "reason": "The report clearly states the growth rate and absolute figures for Israel's total electricity generation between 2015 and 2025."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "The main risk: gas reached 79.7% of generation, leaving little diversity in supply.",
+      "reason": "The report identifies high reliance on gas as a key risk and grounds it directly in the generation data."
+    }
+  ]
+}

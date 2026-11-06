@@ -1,0 +1,67 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Israel's renewables share went from 1.9% in 2015 to 16.9% in 2025.",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C2",
+      "quote": "Israel's renewables share went from 1.9% in 2015 to 16.9% in 2025.",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C3",
+      "quote": "Coal fell from 45.4% to 3.4% over the same period.",
+      "kind": "numeric",
+      "stated_value": 45.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C4",
+      "quote": "Coal fell from 45.4% to 3.4% over the same period.",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C5",
+      "quote": "The coal phase-out was driven mainly by the growth of solar.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C6",
+      "quote": "Total generation grew by 17.9% between 2015 and 2025",
+      "kind": "numeric",
+      "stated_value": 17.9,
+      "sql": "SELECT 100.0 * (t2.electricity_generation - t1.electricity_generation) / t1.electricity_generation FROM energy t1 JOIN energy t2 ON t1.country = t2.country AND t1.year = 2015 AND t2.year = 2025 WHERE t1.country = 'Israel'"
+    },
+    {
+      "id": "C7",
+      "quote": "reaching 82.1 TWh",
+      "kind": "numeric",
+      "stated_value": 82.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C8",
+      "quote": "Greece (49.7%) are well ahead on renewables in 2025.",
+      "kind": "numeric",
+      "stated_value": 49.7,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Greece' AND year = 2025"
+    },
+    {
+      "id": "C9",
+      "quote": "Cyprus (27.8%) are well ahead on renewables in 2025.",
+      "kind": "numeric",
+      "stated_value": 27.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Cyprus' AND year = 2025"
+    }
+  ]
+}

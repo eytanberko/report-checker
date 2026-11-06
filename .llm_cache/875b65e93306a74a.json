@@ -1,0 +1,41 @@
+{
+  "judgments": [
+    {
+      "id": "C10",
+      "verdict": "supported",
+      "reason": "The data context confirms that gas supplied 79.7% of Israel's electricity in 2025, validating this high reliance as a structural energy security risk."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Since 2020, renewables in Israel rose from 6.1% to 16.9% of electricity in 2025, an increase of about 11 percentage points.",
+      "reason": "The report provides Israel's 2025 renewables share and its change since the base period."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal fell to 3.4% in 2025.",
+      "reason": "The report clearly states the status and share of coal in the electricity mix for 2025."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "Israel trails Greece (49.7%) and Italy (48.8%) on renewables in 2025.",
+      "reason": "The report compares Israel's renewables share with two Mediterranean peers using the latest available year."
+    },
+    {
+      "id": "R4",
+      "status": "partial",
+      "evidence": "Generation grew by 2.8% per year on average between 2015 and 2025, reaching 82.1 TWh.",
+      "reason": "The report provides the growth rate and final volume, but the growth rate of 2.8% per year has been contradicted by the verified data which shows an actual average of 2.49%."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "Key risk: gas supplies 79.7% of Israel's electricity.",
+      "reason": "The report identifies one key risk that is directly grounded in the database values."
+    }
+  ]
+}

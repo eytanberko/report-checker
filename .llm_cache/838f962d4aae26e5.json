@@ -1,0 +1,81 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Renewables provided 16.9% of Israel's electricity in 2025",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C2",
+      "quote": "up from 1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C3",
+      "quote": "Solar provided 13.1% of electricity in 2025",
+      "kind": "numeric",
+      "stated_value": 13.1,
+      "sql": "SELECT solar_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C4",
+      "quote": "Solar provided 13.1% of electricity in 2025 and is the main renewable source.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    },
+    {
+      "id": "C5",
+      "quote": "Coal fell to 3.4% in 2025.",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C6",
+      "quote": "Generation grew from 64.2 TWh",
+      "kind": "numeric",
+      "stated_value": 64.2,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C7",
+      "quote": "to 82.1 TWh.",
+      "kind": "numeric",
+      "stated_value": 82.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C8",
+      "quote": "Egypt reached 24.0% renewables in 2025",
+      "kind": "numeric",
+      "stated_value": 24.0,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Egypt' AND year = 2025"
+    },
+    {
+      "id": "C9",
+      "quote": "Egypt reached 24.0% renewables in 2025, ahead of Israel",
+      "kind": "numeric",
+      "stated_value": 1,
+      "sql": "SELECT CASE WHEN (SELECT renewables_share_elec FROM energy WHERE country = 'Egypt' AND year = 2025) > (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) THEN 1 ELSE 0 END"
+    },
+    {
+      "id": "C10",
+      "quote": "Greece reached 49.7%.",
+      "kind": "numeric",
+      "stated_value": 49.7,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Greece' AND year = 2025"
+    },
+    {
+      "id": "C11",
+      "quote": "The key risk is that 79.7% of Israel's electricity comes from gas.",
+      "kind": "numeric",
+      "stated_value": 79.7,
+      "sql": "SELECT gas_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    }
+  ]
+}

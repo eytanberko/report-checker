@@ -1,0 +1,67 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Israel's renewables share reached 16.9% in 2025",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C2",
+      "quote": "1.9% in 2015",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C3",
+      "quote": "Coal is nearly gone at 3.4% of electricity in 2025",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C4",
+      "quote": "down from 45.4% in 2015",
+      "kind": "numeric",
+      "stated_value": 45.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C5",
+      "quote": "Total generation grew to 92.1 TWh in 2025",
+      "kind": "numeric",
+      "stated_value": 92.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025"
+    },
+    {
+      "id": "C6",
+      "quote": "from 64.2 TWh in 2015",
+      "kind": "numeric",
+      "stated_value": 64.2,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015"
+    },
+    {
+      "id": "C7",
+      "quote": "Cyprus reached 49.7% renewables in 2025",
+      "kind": "numeric",
+      "stated_value": 49.7,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Cyprus' AND year = 2025"
+    },
+    {
+      "id": "C8",
+      "quote": "and Egypt 13.0%",
+      "kind": "numeric",
+      "stated_value": 13.0,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Egypt' AND year = 2025"
+    },
+    {
+      "id": "C9",
+      "quote": "The key risk is concentration: gas supplied 79.7% of Israel's electricity in 2025.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null
+    }
+  ]
+}

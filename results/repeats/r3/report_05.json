@@ -1,0 +1,174 @@
+{
+  "claims": [
+    {
+      "id": "C1",
+      "quote": "Renewables supplied 16.9% of Israel's electricity in 2025",
+      "kind": "numeric",
+      "stated_value": 16.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 16.93,
+      "note": ""
+    },
+    {
+      "id": "C2",
+      "quote": "about 15 percentage points more than in 2015 (1.9%)",
+      "kind": "numeric",
+      "stated_value": 15.0,
+      "sql": "SELECT (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015)",
+      "status": "verified",
+      "actual": 15.03,
+      "note": ""
+    },
+    {
+      "id": "C3",
+      "quote": "1.9%",
+      "kind": "numeric",
+      "stated_value": 1.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Israel' AND year = 2015",
+      "status": "verified",
+      "actual": 1.9,
+      "note": ""
+    },
+    {
+      "id": "C4",
+      "quote": "Coal dropped to 3.4% in 2025",
+      "kind": "numeric",
+      "stated_value": 3.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 3.41,
+      "note": ""
+    },
+    {
+      "id": "C5",
+      "quote": "from 45.4% ten years earlier",
+      "kind": "numeric",
+      "stated_value": 45.4,
+      "sql": "SELECT coal_share_elec FROM energy WHERE country = 'Israel' AND year = 2015",
+      "status": "verified",
+      "actual": 45.4,
+      "note": ""
+    },
+    {
+      "id": "C6",
+      "quote": "Generation increased by roughly 28%, from 64.2 TWh to 82.1 TWh",
+      "kind": "numeric",
+      "stated_value": 28.0,
+      "sql": "SELECT 100.0 * ((SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025) - (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)) / (SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015)",
+      "status": "verified",
+      "actual": 27.82,
+      "note": ""
+    },
+    {
+      "id": "C7",
+      "quote": "from 64.2 TWh",
+      "kind": "numeric",
+      "stated_value": 64.2,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2015",
+      "status": "verified",
+      "actual": 64.23,
+      "note": ""
+    },
+    {
+      "id": "C8",
+      "quote": "to 82.1 TWh",
+      "kind": "numeric",
+      "stated_value": 82.1,
+      "sql": "SELECT electricity_generation FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 82.1,
+      "note": ""
+    },
+    {
+      "id": "C9",
+      "quote": "Israel still lags Italy (48.8%)",
+      "kind": "numeric",
+      "stated_value": 48.8,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Italy' AND year = 2025",
+      "status": "verified",
+      "actual": 48.78,
+      "note": ""
+    },
+    {
+      "id": "C10",
+      "quote": "and Spain (55.9%)",
+      "kind": "numeric",
+      "stated_value": 55.9,
+      "sql": "SELECT renewables_share_elec FROM energy WHERE country = 'Spain' AND year = 2025",
+      "status": "verified",
+      "actual": 55.86,
+      "note": ""
+    },
+    {
+      "id": "C11",
+      "quote": "Carbon intensity fell from 693",
+      "kind": "numeric",
+      "stated_value": 693.0,
+      "sql": "SELECT carbon_intensity_elec FROM energy WHERE country = 'Israel' AND year = 2015",
+      "status": "verified",
+      "actual": 692.67,
+      "note": ""
+    },
+    {
+      "id": "C12",
+      "quote": "to 493 grams of CO2 per kWh between 2015 and 2025",
+      "kind": "numeric",
+      "stated_value": 493.0,
+      "sql": "SELECT carbon_intensity_elec FROM energy WHERE country = 'Israel' AND year = 2025",
+      "status": "verified",
+      "actual": 492.69,
+      "note": ""
+    },
+    {
+      "id": "C13",
+      "quote": "The main risk: gas reached 79.7% of generation, leaving little diversity in supply.",
+      "kind": "judgment",
+      "stated_value": null,
+      "sql": null,
+      "status": "supported",
+      "actual": null,
+      "note": "The data context confirms that gas share reached 79.7% in 2025, validating the identified risk of low supply diversity."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "covered",
+      "evidence": "Renewables supplied 16.9% of Israel's electricity in 2025, about 15 percentage points more than in 2015 (1.9%).",
+      "reason": "The report explicitly states Israel's 2025 renewables share and the change since 2015."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Coal dropped to 3.4% in 2025 from 45.4% ten years earlier.",
+      "reason": "The report fully details the status and evolution of coal in Israel's electricity mix."
+    },
+    {
+      "id": "R3",
+      "status": "covered",
+      "evidence": "Israel still lags Italy (48.8%) and Spain (55.9%), both of which generate around half of their electricity from renewables.",
+      "reason": "The report compares Israel with two Mediterranean peers using their latest available year (2025)."
+    },
+    {
+      "id": "R4",
+      "status": "covered",
+      "evidence": "Generation increased by roughly 28%, from 64.2 TWh to 82.1 TWh.",
+      "reason": "The report provides the growth rate and absolute figures for Israel's total electricity generation between 2015 and 2025."
+    },
+    {
+      "id": "R5",
+      "status": "covered",
+      "evidence": "The main risk: gas reached 79.7% of generation, leaving little diversity in supply.",
+      "reason": "The report identifies a key risk for the coming years that is directly grounded in the data context."
+    }
+  ],
+  "meta": {
+    "model": "gemini-3.5-flash-lite",
+    "judge_model": "gemini-3.5-flash-lite",
+    "judge_votes": 1,
+    "prompt_version": "38701a08",
+    "cache_salt": "repeat-3",
+    "finished": "2026-11-06T09:08:09+00:00"
+  }
+}

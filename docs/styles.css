@@ -311,6 +311,7 @@ tr.untested td { color: var(--print-3); }
 .miss-why { display: block; margin-top: .35rem; padding-left: .7rem; border-left: 2px solid var(--ochre); color: var(--print-2); }
 .repeats-block { margin: 0 0 2.5rem; }
 .repeats-block .wp-sub { margin-bottom: .7rem; }
+.repeat-spread { margin: 0 0 .8rem; font-size: 1.02rem; }
 .history tr.figures td:first-child { white-space: nowrap; }
 .history .models { font: 400 .82rem var(--f-data); color: var(--print-2); }
 .history tr.figures td { border-bottom: 0; padding-bottom: .25rem; }
