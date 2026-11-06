@@ -135,3 +135,11 @@ def test_failed_live_check_in_the_first_tab_offers_a_saved_example(monkeypatch):
     assert any("The API quota for today is used up." in e.value for e in at.error)
     at.button(key="saved_check").click().run()
     assert any(i.value.startswith("Saved example: the energy example") for i in at.info)
+
+
+@pytest.mark.parametrize("example,stem", [("cafes", "cafes"), ("energy", "energy")])
+def test_examples_offer_their_data_report_and_requirements_as_downloads(monkeypatch, example, stem):
+    at = own_tab(monkeypatch, example=example)
+    labels = [d.label for d in at.get("download_button")][-4:]            # after the first tab's memo button
+    assert labels == ["Download data (Excel)", "CSV", "Report (.txt)", "Requirements (.txt)"]
+    assert not any(stem + ".csv`" in c.value for c in at.caption)          # the plain path is gone

@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))  # find `checker` howev
 from checker import llm  # noqa: E402
 from checker.core import FLAGGED, check_report, recheck  # noqa: E402
 from checker.dataset import BadCSV, Dataset, default_dataset, load_upload  # noqa: E402
+from checker.export import csv_to_xlsx  # noqa: E402
 from checker.highlight import render_html, verdict  # noqa: E402
 from checker.memo import review_memo  # noqa: E402
 
@@ -34,11 +35,12 @@ OWN_NOTE = ("Live checks are disabled in the public demo, so this tab cannot run
 
 @dataclass
 class Example:
-    """What one "Try your own" toggle fills in; csv None means the benchmark's energy data."""
+    """What one "Try your own" toggle fills in. `builtin`: the benchmark's energy data, with its hand-written schema."""
     label: str
     report: Path
     requirements: Path
-    csv: Path | None = None
+    csv: Path
+    builtin: bool = False
 
 
 EXAMPLES = {
@@ -46,7 +48,8 @@ EXAMPLES = {
                      ROOT / "examples" / "cafes" / "report.md", ROOT / "examples" / "cafes" / "requirements.md",
                      ROOT / "examples" / "cafes" / "cafes.csv"),
     "energy": Example("Fill in the energy example (the benchmark's data, a correct report)",
-                      ROOT / "examples" / "energy" / "report.md", ROOT / "benchmark" / "requirements.md"),
+                      ROOT / "examples" / "energy" / "report.md", ROOT / "benchmark" / "requirements.md",
+                      ROOT / "data" / "energy.csv", builtin=True),
 }
 UPLOADS = Path(tempfile.gettempdir()) / "report-checker-uploads"
 # Someone is waiting at the screen: on 500/503 retry twice after a short wait, then say so (the CLI waits minutes).
@@ -128,6 +131,20 @@ def offer_saved(where: str, key: tuple, example: str) -> None:
         failed["show"] = True
     if failed["show"]:
         show_saved_example(example)
+
+
+@st.cache_data
+def xlsx_of(path: str) -> bytes:
+    return csv_to_xlsx(Path(path))
+
+
+def download_data(ex: Example) -> None:
+    """The example's data as Excel (bold header, columns sized to fit), with the CSV as a smaller second option."""
+    xlsx, csv, _ = st.columns([3, 1, 3])
+    xlsx.download_button("Download data (Excel)", xlsx_of(str(ex.csv)), file_name=ex.csv.stem + ".xlsx",
+                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                         key="own_data_xlsx", icon=":material/download:")
+    csv.download_button("CSV", ex.csv.read_bytes(), file_name=ex.csv.name, mime="text/csv", key="own_data_csv")
 
 
 def show_saved_example(name: str) -> None:
@@ -239,12 +256,9 @@ def try_your_own() -> None:
     ex = EXAMPLES.get(example)
     left, right = st.columns(2)
     with left:
-        if ex and ex.csv is None:
-            name, data = "energy", b""
-            st.caption("Data: `data/energy.csv` (Our World in Data), the benchmark's data")
-        elif ex and ex.csv:
-            name, data = ex.csv.name, ex.csv.read_bytes()
-            st.caption(f"Data: `{ex.csv.relative_to(ROOT).as_posix()}`")
+        if ex:
+            name, data = ("energy", b"") if ex.builtin else (ex.csv.name, ex.csv.read_bytes())
+            download_data(ex)
         else:
             upload = st.file_uploader("Data (CSV)", type="csv", key="own_csv")
             name, data = (upload.name, upload.getvalue()) if upload else ("", b"")
@@ -255,11 +269,17 @@ def try_your_own() -> None:
                                     ex.requirements.read_text(encoding="utf-8") if ex else "",
                                     height=200, key=f"own_reqs_{example}")
     if ex:
-        st.button("Reset example", key="own_reset", on_click=reset_example, args=(example,),
-                  help="Put the example's report and requirements back as they were")
+        reset, rep_txt, req_txt, _ = st.columns([2, 2, 2, 3])
+        reset.button("Reset example", key="own_reset", on_click=reset_example, args=(example,),
+                     help="Put the example's report and requirements back as they were")
+        # The text as it is now, edits included.
+        rep_txt.download_button("Report (.txt)", report, file_name=f"{example}_report.txt", mime="text/plain",
+                                key="own_report_txt")
+        req_txt.download_button("Requirements (.txt)", requirements, file_name=f"{example}_requirements.txt",
+                                mime="text/plain", key="own_reqs_txt")
 
     ds = None
-    if ex and ex.csv is None:
+    if ex and ex.builtin:
         ds = default_dataset()
         with st.expander("Schema of the energy data (hand-written; what the model is told about the data)"):
             st.code(ds.description, language="markdown")
