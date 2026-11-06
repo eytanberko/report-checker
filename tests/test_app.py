@@ -1,6 +1,10 @@
 """Smoke test of the Streamlit demo, headless and offline (saved results only, no API calls)."""
+from pathlib import Path
+
 import pytest
 from streamlit.testing.v1 import AppTest
+
+APP = str(Path(__file__).resolve().parent.parent / "app.py")  # newer Streamlit resolves relative paths from here
 
 DEMO_NOTE = "Live checks are disabled in the public demo; saved runs are shown."
 
@@ -8,7 +12,7 @@ DEMO_NOTE = "Live checks are disabled in the public demo; saved runs are shown."
 def run_app(choice: str, monkeypatch, key: str | None = None) -> AppTest:
     if key:
         monkeypatch.setenv("GEMINI_API_KEY", key)    # live mode; nothing here clicks a button, so no API call
-    at = AppTest.from_file("app.py", default_timeout=30).run()
+    at = AppTest.from_file(APP, default_timeout=30).run()
     at.selectbox[0].select(choice).run()
     assert not at.exception
     return at
@@ -38,7 +42,7 @@ def test_public_demo_without_key_hides_live_checks(monkeypatch, choice):
 
 
 def test_benchmark_tab_shows_metrics_chart_and_history(monkeypatch):
-    at = AppTest.from_file("app.py", default_timeout=30).run()
+    at = AppTest.from_file(APP, default_timeout=30).run()
     assert not at.exception
     labels = [m.label for m in at.metric]
     assert {"Recall", "Precision", "False alarms", "Cascade errors caught"} <= set(labels)
