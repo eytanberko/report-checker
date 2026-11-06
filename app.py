@@ -119,7 +119,7 @@ with tab_check:
 
     # A saved run is only valid for the unedited benchmark report and requirements.
     unedited = rep is not None and report == rep["text"] and requirements == default_reqs
-    saved = saved_result(rep) if unedited else None
+    saved = saved_result(rep) if rep is not None and unedited else None
     live = st.session_state.get("live", {})
 
     label = "Run live check" if saved else "Run check"
@@ -139,7 +139,7 @@ with tab_check:
         st.success("Live run")
         show_result(run["result"], report, choice)
     elif saved:
-        st.info("Saved run — loaded from `results/" + rep["id"] + ".json` (no API call)")
+        st.info(f"Saved run — loaded from `results/{rep['id'] if rep else ''}.json` (no API call)")
         show_result(saved, report, choice)
     elif rep and not unedited:
         st.caption("Text edited — the saved run no longer applies." + (" Run a live check." if LIVE else ""))
@@ -189,7 +189,7 @@ def show_benchmark() -> None:
         hist = pd.read_csv(hist_path)
         if len(hist) >= 2:
             trend = hist.set_index("timestamp")[["recall", "precision"]] * 100
-            st.line_chart(trend, color=SERIES[:2], height=240, y_label="%")
+            st.line_chart(trend, color=SERIES[:2], height=240, y_label="%")  # type: ignore[arg-type]  # stub too narrow
         st.dataframe(hist, use_container_width=True, hide_index=True)
 
 

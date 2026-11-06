@@ -44,7 +44,7 @@ def verify_claim(con: duckdb.DuckDBPyConnection, claim: dict) -> dict:
         out.update(status="unverifiable", actual=None, note="no query could be written")
         return out
     actual, err = run_sql(con, claim["sql"])
-    if err:
+    if err or actual is None:
         out.update(status="unverifiable", actual=None, note=err)
         return out
     stated = float(claim["stated_value"])

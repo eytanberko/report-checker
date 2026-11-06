@@ -108,14 +108,14 @@ def _quota_info(r: requests.Response) -> tuple[bool, float | None]:
         details = r.json()["error"].get("details", [])
     except (ValueError, KeyError, AttributeError):
         return False, None
-    per_day, delay = False, None
+    per_day, retry_in = False, None
     for d in details:
         for v in d.get("violations", []):
             per_day = per_day or "PerDay" in v.get("quotaId", "")
         if "retryDelay" in d:
             m = re.match(r"([\d.]+)s", d["retryDelay"])
-            delay = float(m.group(1)) if m else None
-    return per_day, delay
+            retry_in = float(m.group(1)) if m else None
+    return per_day, retry_in
 
 
 def cache_path(prompt: str, model: str | None = None, salt: str = "") -> Path:

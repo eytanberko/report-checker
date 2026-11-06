@@ -56,3 +56,11 @@ def test_suggested_correction_uses_the_reports_precision():
     memo = review_memo({"claims": claims, "requirements": []})
     assert "The data says **3.41**." in memo and "Correct it to 3.4 (check" in memo       # 14.3 has one decimal
     assert "Correct it to 792, or reword it" in memo                                       # 15 has none
+
+
+def test_suggested_value_without_a_usable_stated_value_is_exact():
+    from checker.memo import _as_written
+    assert _as_written(3.41, None) == "3.41"
+    assert _as_written(3.41, "about three") == "3.41"
+    assert _as_written(3.41, "14.30") == "3.4"     # trailing zeros are not precision
+    assert _as_written(1234.5, 1000) == "1,234"    # stays an integer, with a thousands separator

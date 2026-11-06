@@ -83,7 +83,9 @@ def score(report: dict, result: dict) -> dict:
     """Match a result's flags to the report's planted errors: caught, missed, cascade, false alarms."""
     flagged = [c for c in result["claims"] if c["status"] in FLAGGED]
     not_covered = {r["id"] for r in result["requirements"] if r["status"] != "covered"}
-    caught, missed, used = [], [], set()
+    caught: list[dict] = []
+    missed: list[dict] = []
+    used: set[str] = set()
 
     for err in report["planted"]:
         if err["type"] in ("missing_requirement", "misread_requirement") and err.get("requirement"):
@@ -150,7 +152,9 @@ def load_result(rep: dict) -> tuple[dict | None, bool]:
 
 def metrics(reports: list[dict], scored: dict[str, tuple[dict, dict]]) -> dict:
     """Aggregate scores over the reports that have a result."""
-    by_type_total, by_type_caught, rows = Counter(), Counter(), []
+    by_type_total: Counter[str] = Counter()
+    by_type_caught: Counter[str] = Counter()
+    rows = []
     alarms = cascade = mismatches = 0
     for rep in reports:
         if rep["id"] not in scored:

@@ -6,6 +6,7 @@ description (units, coverage caveats) beats an automatic one when you have it.
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import duckdb
 
@@ -53,10 +54,17 @@ def _fmt(x: float) -> str:
     return f"{x:,.0f}" if x.is_integer() or abs(x) >= 1000 else f"{x:.4g}"
 
 
+def _one(con: duckdb.DuckDBPyConnection, sql: str) -> Any:
+    """The first value of the first row of an aggregate query (which always returns one row)."""
+    row = con.execute(sql).fetchone()
+    assert row is not None
+    return row[0]
+
+
 def describe(con: duckdb.DuckDBPyConnection, table: str, source: str = "") -> tuple[str, str | None, str | None]:
     """Schema description for the LLM, plus the detected entity and time columns."""
     cat = Catalog.from_connection(con, table, entity_col=None, time_col=None)
-    n_rows = con.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0]
+    n_rows = _one(con, f'SELECT COUNT(*) FROM "{table}"')
     time_col = next((c for c, t in cat.columns.items() if TIME_NAMES.match(c) and "INT" in t), None)
     entity_col = next((c for c in cat.categories if c != time_col), None)
 
@@ -75,16 +83,16 @@ def describe(con: duckdb.DuckDBPyConnection, table: str, source: str = "") -> tu
             if col == time_col:
                 lines.append(f"- {col} ({kind}): {lo:.0f} to {hi:.0f}")
                 continue
-            example = con.execute(f'SELECT {q} FROM "{table}" WHERE {q} IS NOT NULL LIMIT 1').fetchone()[0]
-            nulls = con.execute(f'SELECT COUNT(*) FROM "{table}" WHERE {q} IS NULL').fetchone()[0]
+            example = _one(con, f'SELECT {q} FROM "{table}" WHERE {q} IS NOT NULL LIMIT 1')
+            nulls = _one(con, f'SELECT COUNT(*) FROM "{table}" WHERE {q} IS NULL')
             lines.append(f"- {col} ({kind}): {_fmt(lo)} to {_fmt(hi)}, e.g. {_fmt(example)}"
                          + (f"; {nulls} missing" if nulls else ""))
         else:
             example = con.execute(f'SELECT {q} FROM "{table}" WHERE {q} IS NOT NULL LIMIT 1').fetchone()
             lines.append(f"- {col} ({typ.lower()})" + (f", e.g. {example[0]}" if example else ""))
     if time_col and entity_col:
-        latest = con.execute(f'SELECT COUNT(DISTINCT "{entity_col}") FROM "{table}" '
-                             f'WHERE "{time_col}" = (SELECT MAX("{time_col}") FROM "{table}")').fetchone()[0]
+        latest = _one(con, f'SELECT COUNT(DISTINCT "{entity_col}") FROM "{table}" '
+                           f'WHERE "{time_col}" = (SELECT MAX("{time_col}") FROM "{table}")')
         total = len(cat.categories[entity_col])
         if latest < total:
             lines.append(f"\n{total - latest} of {total} {entity_col} values have no row for the latest {time_col}.")

@@ -126,3 +126,22 @@ def test_sentence_long_planted_errors_are_scored():
     assert len(s["caught"]) == 2 and not s["false_alarms"]
     s = score(report, {"claims": claims, "requirements": [{"id": "R4", "status": "covered", "evidence": None}]})
     assert [e["type"] for e in s["missed"]] == ["misread_requirement"]
+
+
+def test_a_failed_judge_is_recorded_and_the_rest_of_the_result_kept():
+    from checker import llm
+
+    def broken(prompt, vote=0):
+        raise llm.BadOutput("garbled")
+    rep = REPORTS["report_04"]
+    single = check_report(rep["text"], "reqs", ask=fake_llm, judge_ask=broken)
+    assert any(e.startswith("judge failed") for e in single["errors"])
+    assert {c["id"] for c in single["claims"]} == {"C1", "C2", "C3", "C4"}
+
+    def flaky(prompt, vote=0):
+        if vote == 2:
+            raise llm.BadOutput("garbled")
+        return fake_llm(prompt)
+    voted = check_report(rep["text"], "reqs", ask=fake_llm, judge_ask=flaky, judge_votes=3)
+    assert voted["errors"] == ["judge vote 2 failed: garbled"]
+    assert {c["id"]: c["status"] for c in voted["claims"]}["C4"] == "supported"   # the two good votes agree

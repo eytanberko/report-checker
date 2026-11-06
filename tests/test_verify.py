@@ -48,3 +48,15 @@ def test_missing_year_is_unverifiable(con):
                                  "SELECT * FROM read_csv_auto('x'); COPY energy TO 'y'"])
 def test_only_select_allowed(con, bad):
     assert run_sql(con, bad)[1].startswith("rejected")
+
+
+def test_sql_errors_and_text_results_are_reported_not_raised(con):
+    value, err = run_sql(con, "SELECT no_such_column FROM energy")
+    assert value is None and err.startswith("sql error:")
+    value, err = run_sql(con, "SELECT country FROM energy WHERE country='Israel' LIMIT 1")
+    assert value is None and err == "non-numeric result: 'Israel'"
+
+
+def test_a_failing_query_makes_the_claim_unverifiable(con):
+    out = verify_claim(con, claim("SELECT no_such_column FROM energy", 16.9))
+    assert out["status"] == "unverifiable" and out["actual"] is None and out["note"].startswith("sql error:")

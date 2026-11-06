@@ -12,8 +12,10 @@ def _fmt(x: float) -> str:
     return f"{x:,.2f}".rstrip("0").rstrip(".")
 
 
-def _as_written(actual: float, stated: object) -> str:
+def _as_written(actual: float, stated: float | str | None) -> str:
     """The data's value at the report's own precision: stated 13.4 and data 3.41 give "3.4"."""
+    if stated is None:
+        return _fmt(actual)
     try:
         text = f"{float(stated)}"
     except (TypeError, ValueError):

@@ -157,17 +157,20 @@ def _share_issues(points: dict[tuple, list[dict]], known: dict[tuple, tuple[floa
     def val(col: str) -> tuple[float, float] | None:
         return known.get((col, entity, year))
 
-    issues, total_lo, used = [], 0.0, []
+    issues: list[Issue] = []
+    total_lo, used = 0.0, []
     for whole, parts in shares.items():
-        part_cols = [p for p in parts if val(p)]
-        parts_lo = sum(val(p)[0] for p in part_cols)
-        if val(whole):
-            if part_cols and parts_lo > val(whole)[1]:
+        part_vals = {p: v for p in parts if (v := val(p))}
+        part_cols = list(part_vals)
+        parts_lo = sum(v[0] for v in part_vals.values())
+        whole_val = val(whole)
+        if whole_val:
+            if part_cols and parts_lo > whole_val[1]:
                 involved = [c for p in part_cols for c in points[(p, entity, year)]]
                 issues.append(Issue("parts", f"for {entity} {year}, {' + '.join(part_cols)} add up to more than "
-                                             f"{whole} ({val(whole)[0]:g}-{val(whole)[1]:g})",
+                                             f"{whole} ({whole_val[0]:g}-{whole_val[1]:g})",
                                     suspects=involved + points[(whole, entity, year)]))
-            total_lo += val(whole)[0]
+            total_lo += whole_val[0]
             used.append(whole)
         elif part_cols:
             total_lo += parts_lo

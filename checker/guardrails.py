@@ -44,7 +44,7 @@ class Catalog:
                 if len(values) <= max_categories:
                     cat.categories[name] = {v[0] for v in values}
             elif any(t in typ for t in ("INT", "DOUBLE", "FLOAT", "DECIMAL")):
-                lo, hi = con.execute(f"SELECT MIN({q}), MAX({q}) FROM {table}").fetchone()
+                lo, hi = con.execute(f"SELECT MIN({q}), MAX({q}) FROM {table}").fetchone() or (None, None)
                 if lo is not None:
                     cat.ranges[name] = (float(lo), float(hi))
         return cat

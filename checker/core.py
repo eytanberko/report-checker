@@ -77,7 +77,7 @@ def check_report(report: str, requirements: str, ask: Callable[[str], dict] | No
     if ask is None:
         ask, judge_ask = llm.ask_json, judge_ask or llm.ask_judge
         judge_votes = judge_votes or llm.JUDGE_VOTES
-    judge_ask = judge_ask or ask
+    judge: Callable[..., dict] = judge_ask or ask
     judge_votes = judge_votes or 1
     ds = dataset or default_dataset()
     con = ds.connect()
@@ -96,14 +96,14 @@ def check_report(report: str, requirements: str, ask: Callable[[str], dict] | No
     ids = [c["id"] for c in judgments]
     if judge_votes == 1:
         try:
-            review = judge_ask(prompt)
+            review = judge(prompt)
         except llm.BadOutput as e:
             review, errors = None, errors + [f"judge failed: {e}"]
     else:
         reviews = []
         for vote in range(1, judge_votes + 1):
             try:
-                reviews.append(judge_ask(prompt, vote=vote))
+                reviews.append(judge(prompt, vote=vote))
             except llm.BadOutput as e:
                 errors = errors + [f"judge vote {vote} failed: {e}"]
         review, vote_errors = majority_review(reviews, ids) if reviews else (None, [])
@@ -112,7 +112,7 @@ def check_report(report: str, requirements: str, ask: Callable[[str], dict] | No
     judged = [apply_verdict(c, verdicts.get(c["id"])) for c in judgments]
 
     all_claims = sorted(numeric + judged, key=lambda c: int(c["id"].lstrip("C")))
-    result = {"claims": all_claims, "requirements": reqs}
+    result: dict = {"claims": all_claims, "requirements": reqs}
     if errors + review_errors:
         result["errors"] = errors + review_errors
     return result

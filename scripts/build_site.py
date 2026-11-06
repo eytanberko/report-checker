@@ -34,7 +34,7 @@ BENCH = ROOT / "benchmark"
 OUT = ROOT / "docs" / "data" / "site.js"
 FROZEN_TAG = "v1.1-frozen"
 # Every frozen configuration so far, so the run history can label its rows. Same prompts; different judges.
-VERSIONS = [
+VERSIONS: list[dict] = [
     {"label": "v1.0", "prompt_version": "38701a08", "model": "gemini-3.5-flash-lite",
      "judge_model": "gemini-3.6-flash", "judge_votes": 1,
      "note": "A stronger judge model (gemini-3.6-flash). Its free tier allows about 20 calls a day, so the "
@@ -60,7 +60,8 @@ def _clean(text: str) -> str:
 
 def segments(text: str, claims: list[dict]) -> tuple[list[dict], list[str]]:
     """Report text as nested segments: {"t": text} or {"c": claim id, "k": [children]}; plus unlocated ids."""
-    spans, missing = [], []
+    spans: list[_Span] = []
+    missing: list[str] = []
     for c in claims:
         loc = locate(text, c.get("quote", ""))
         if loc:
@@ -69,7 +70,8 @@ def segments(text: str, claims: list[dict]) -> tuple[list[dict], list[str]]:
             missing.append(c["id"])
 
     def walk(start: int, end: int, nodes: list[_Span]) -> list[dict]:
-        out, pos = [], start
+        out: list[dict] = []
+        pos = start
         for n in nodes:
             if n.start > pos:
                 out.append({"t": text[pos:n.start]})
@@ -112,7 +114,8 @@ def claim_rows(con: duckdb.DuckDBPyConnection, catalog: Catalog, ds: Dataset, sq
     years = sorted({int(v) for v in _numbers(sql, ds.time_col)})
     if not cols or not (entities or years):
         return None
-    where, params = [], []
+    where: list[str] = []
+    params: list[object] = []
     if entities:
         where.append(f'"{ds.entity_col}" IN ({", ".join("?" * len(entities))})')
         params += entities
@@ -157,7 +160,7 @@ def report_entry(rep: dict, config: dict, con: duckdb.DuckDBPyConnection | None 
     meta = result.get("meta", {})
     segs, missing = segments(text, result["claims"])
     flagged_ids = {c["id"] for c in result["claims"] if c["status"] in FLAGGED}
-    if ds is None:
+    if ds is None or con is None or catalog is None:
         ds = default_dataset()
         con = ds.connect()
         catalog = ds.catalog(con)
@@ -219,6 +222,8 @@ def repeats_block() -> list[dict]:
     out = []
     for path in sorted((RESULTS / "repeats").glob("r*/metrics.json")):
         m = _load(path)
+        if m is None:
+            continue
         out.append({"run": path.parent.name, "complete": m["reports_scored"] == m["reports_total"],
                     **{k: m.get(k) for k in ("recall", "precision", "caught", "planted", "false_alarms",
                                              "reports_scored", "reports_total")}})

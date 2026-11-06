@@ -120,7 +120,7 @@ def _tooltip(c: dict) -> str:
 def _render(text: str, start: int, end: int, nodes: list[_Span]) -> str:
     out, pos = [], start
     for n in nodes:
-        color = STATUS_COLOR.get(n.claim.get("status"), "grey")
+        color = STATUS_COLOR.get(n.claim.get("status") or "", "grey")
         out.append(_esc(text[pos:n.start]))
         out.append(f'<span class="rc-claim rc-{color}" title="{_tooltip(n.claim)}">')
         out.append(_render(text, n.start, n.end, n.children))

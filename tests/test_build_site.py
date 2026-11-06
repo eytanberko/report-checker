@@ -114,3 +114,31 @@ def test_show_the_data_examples(data):
     assert 2010 in wrong["data"]["filters"]["years"]                              # the rows the wrong query read
     assert data["data_source"] == "Our World in Data, energy dataset"
     assert data["links"]["data_source"].startswith("https://")
+
+
+def test_heldout_and_repeat_blocks_read_their_own_folders(tmp_path, monkeypatch):
+    """Held-out results show per-report answer keys; repeat runs show whether each one finished."""
+    monkeypatch.setattr(build_site, "RESULTS", tmp_path)
+    ds = build_site.default_dataset()
+    con = ds.connect()
+    catalog = ds.catalog(con)
+    assert build_site.heldout_block(build_site.frozen_config(), con, catalog, ds) is None
+    assert build_site.repeats_block() == []
+
+    held = tmp_path / "heldout"
+    held.mkdir()
+    (held / "metrics.json").write_text(json.dumps({"recall": 0.5}), encoding="utf-8")
+    (held / "holdout_02.json").write_text(json.dumps({"claims": [], "requirements": []}), encoding="utf-8")
+    block = build_site.heldout_block(build_site.frozen_config(), con, catalog, ds)
+    assert block["metrics"] == {"recall": 0.5}
+    assert [r["id"] for r in block["reports"]] == ["holdout_02"]   # reports without a result are left out
+    planted = block["reports"][0]["answer_key"]["planted"]
+    assert len(planted) == 3 and not any(p["caught"] for p in planted) and all(p["why"] for p in planted)
+
+    for name, scored in (("r1", 10), ("r2", 7)):
+        (tmp_path / "repeats" / name).mkdir(parents=True)
+        (tmp_path / "repeats" / name / "metrics.json").write_text(json.dumps(
+            {"recall": 0.9, "precision": 1.0, "caught": 14, "planted": 16, "false_alarms": 0,
+             "reports_scored": scored, "reports_total": 10}), encoding="utf-8")
+    (tmp_path / "repeats" / "r3").mkdir()                          # started, nothing finished yet
+    assert [(r["run"], r["complete"]) for r in build_site.repeats_block()] == [("r1", True), ("r2", False)]

@@ -175,3 +175,20 @@ def test_votes_and_salts_get_their_own_cache_entries(http, monkeypatch):
     llm.ask_judge("p", vote=1)
     temps = [kw["json"]["generationConfig"]["temperature"] for _, kw in http["requests"]]
     assert temps == [0.0, llm.VOTE_TEMPERATURE]
+
+
+def test_answers_that_are_not_a_json_object_are_bad_output_and_not_cached(http):
+    def text(t):
+        return Resp(200, {"candidates": [{"content": {"parts": [{"text": t}]}}]})
+    http["responses"] = [text("not json"), text("[1, 2]"), OK]
+    with pytest.raises(llm.BadOutput, match="usable JSON"):
+        llm.ask_json("p")
+    with pytest.raises(llm.BadOutput, match="expected an object"):
+        llm.ask_json("p")
+    assert llm.ask_json("p") == {"answer": 42}     # nothing bad was cached: the third call reaches the API
+
+
+def test_a_429_without_details_is_treated_as_a_short_wait(http):
+    http["responses"] = [Resp(429, {"unexpected": "body"}), OK]
+    assert llm.ask_json("p") == {"answer": 42}
+    assert 15 in http["sleeps"] and len(http["requests"]) == 2
