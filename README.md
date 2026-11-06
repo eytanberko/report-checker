@@ -238,6 +238,25 @@ python evaluate.py --offline           # score saved results only, no API calls
 - **Your own data:** `--data any.csv`. The schema description for the LLM (columns, types, ranges, example
   values, categories) is built from the file. `examples/cafes/` is a tiny synthetic example.
 
+### Check your own report
+The public site and the public demo have no API key, so they only show saved runs. To check your own data, run
+the app on your machine with a free Gemini key (aistudio.google.com):
+```bash
+git clone https://github.com/eytanberko/report-checker && cd report-checker
+pip install -r requirements.txt
+set GEMINI_API_KEY=your_key            # Windows (mac/linux: export GEMINI_API_KEY=your_key)
+streamlit run app.py
+```
+Open the **Try your own** tab, upload a CSV, paste the report and the client's requirements, and press **Run
+check**. The description of the data that the model sees (columns, types, ranges, categories) is built from the
+file; open "Schema built from ..." to see it. The result is the same as for the benchmark: the highlighted
+report, the claim details with their SQL, requirement coverage and a review memo to download. The toggle "Fill in
+the café example" loads `examples/cafes/` (invented numbers; the check flags the wrong growth and revenue
+figures). A CSV that cannot be used (empty, no data rows, no numeric columns, not a CSV) gets a plain error, as do
+a used-up daily quota and an overloaded server (two short retries, then a message). One check is 2 API calls.
+The same check from the command line: `python -m checker check --report r.md --requirements req.md --data
+data.csv`.
+
 ### Showcase site (GitHub Pages, `/docs`)
 A static site (plain HTML/CSS/JS, no build step) generated from the saved results. After every benchmark run:
 ```bash

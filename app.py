@@ -1,7 +1,9 @@
 """Demo UI.  Run:  streamlit run app.py"""
+import hashlib
 import json
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 import pandas as pd
@@ -11,6 +13,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # find `checker` however the app is launched
 from checker import llm  # noqa: E402
 from checker.core import FLAGGED, check_report, recheck  # noqa: E402
+from checker.dataset import BadCSV, Dataset, load_upload  # noqa: E402
 from checker.highlight import render_html, verdict  # noqa: E402
 from checker.memo import review_memo  # noqa: E402
 
@@ -24,6 +27,12 @@ PASTE = "Paste my own"
 SERIES = ["#2a78d6", "#eb6834"]  # categorical slots 1-2 (blue, orange) of the validated reference palette
 ROOT = Path(__file__).resolve().parent  # repo root: works from any working directory (e.g. Streamlit Cloud)
 DEMO_NOTE = "Live checks are disabled in the public demo; saved runs are shown."
+OWN_NOTE = ("Live checks are disabled in the public demo, so this tab cannot run here. "
+            "Run the app locally with your own free API key (README, \"Check your own report\").")
+EXAMPLE = ROOT / "examples" / "cafes"
+UPLOADS = Path(tempfile.gettempdir()) / "report-checker-uploads"
+# Someone is waiting at the screen: on 500/503 retry twice after a short wait, then say so (the CLI waits minutes).
+APP_OVERLOAD_WAITS = (10, 30)
 
 
 def live_enabled() -> bool:
@@ -68,6 +77,27 @@ def show_answer_key(rep: dict) -> None:
         st.markdown(line)
 
 
+def run_live(report: str, requirements: str, dataset: Dataset | None = None) -> dict | None:
+    """One live check; on failure, a plain error message on the page and None."""
+    waits, llm.OVERLOAD_WAITS = llm.OVERLOAD_WAITS, APP_OVERLOAD_WAITS
+    with st.spinner("Extracting claims, running SQL, reviewing conclusions..."):
+        try:
+            return check_report(report, requirements, dataset=dataset)
+        except llm.QuotaExhausted as e:
+            st.error(f"**The API quota for today is used up.** {e} "
+                     "Try again after the daily reset, or use another key.")
+        except llm.Overloaded:
+            st.error("**The model's server is overloaded (503)** and stayed so through two retries. "
+                     "This is on the provider's side; try again in a few minutes.")
+        except llm.LLMError as e:
+            st.error(f"**Live check failed:** {e}")
+        except Exception as e:  # network errors and the like: say what happened rather than show a traceback
+            st.error(f"**Live check failed:** {type(e).__name__}: {e}")
+        finally:
+            llm.OVERLOAD_WAITS = waits
+    return None
+
+
 def show_result(result: dict, report: str, name: str) -> None:
     """Verdict banner, memo download, highlighted report, claim details and requirement coverage."""
     level, text = verdict(result, FLAGGED)
@@ -104,7 +134,7 @@ def show_result(result: dict, report: str, name: str) -> None:
 st.title("🔎 Report Checker")
 st.caption("Checks an analyst's report against the data and the client's requirements, before it ships.")
 
-tab_check, tab_bench = st.tabs(["Check a report", "Benchmark results"])
+tab_check, tab_own, tab_bench = st.tabs(["Check a report", "Try your own", "Benchmark results"])
 
 with tab_check:
     left, right = st.columns(2)
@@ -126,13 +156,10 @@ with tab_check:
     if not LIVE:
         st.info(DEMO_NOTE)
     elif st.button(label, type="primary", disabled=not report.strip()):
-        with st.spinner("Extracting claims, running SQL, reviewing conclusions..."):
-            try:
-                live[choice] = {"report": report, "requirements": requirements,
-                                "result": check_report(report, requirements)}
-                st.session_state["live"] = live
-            except Exception as e:
-                st.error(f"Live check failed: {e}")
+        result = run_live(report, requirements)
+        if result is not None:
+            live[choice] = {"report": report, "requirements": requirements, "result": result}
+            st.session_state["live"] = live
 
     run = live.get(choice)
     if run and run["report"] == report and run["requirements"] == requirements:
@@ -145,6 +172,58 @@ with tab_check:
         st.caption("Text edited — the saved run no longer applies." + (" Run a live check." if LIVE else ""))
     elif rep:
         st.caption("No saved run for this report yet." + (" Run a live check." if LIVE else ""))
+
+
+def try_your_own() -> None:
+    """Your own CSV, report and requirements: the schema is built from the file, then one live check."""
+    st.caption("Upload a CSV, paste a report written from it and the client's requirements. The description of the "
+               "data that the model sees (columns, types, ranges, categories) is built from the file.")
+    example = st.toggle("Fill in the café example (examples/cafes, invented numbers)", key="own_example")
+    left, right = st.columns(2)
+    with left:
+        if example:
+            name, data = "cafes.csv", (EXAMPLE / "cafes.csv").read_bytes()
+            st.caption("Data: `examples/cafes/cafes.csv`")
+        else:
+            upload = st.file_uploader("Data (CSV)", type="csv", key="own_csv")
+            name, data = (upload.name, upload.getvalue()) if upload else ("", b"")
+        report = st.text_area("Report text", (EXAMPLE / "report.md").read_text(encoding="utf-8") if example else "",
+                              height=200, key=f"own_report_{example}")
+    with right:
+        requirements = st.text_area("Client requirements",
+                                    (EXAMPLE / "requirements.md").read_text(encoding="utf-8") if example else "",
+                                    height=200, key=f"own_reqs_{example}")
+
+    ds = None
+    if name:
+        try:
+            ds = load_upload(name, data, UPLOADS)
+        except BadCSV as e:
+            st.error(f"**This CSV cannot be used.** {e}")
+        else:
+            with st.expander(f"Schema built from {name} (what the model is told about the data)"):
+                st.code(ds.description, language="markdown")
+
+    if not LIVE:
+        st.info(OWN_NOTE)
+        return
+    missing = [what for what, ok in (("a CSV", ds), ("the report", report.strip()),
+                                     ("the requirements", requirements.strip())) if not ok]
+    if missing:
+        st.caption("Still needed: " + ", ".join(missing) + ".")
+    key = (hashlib.sha256(data).hexdigest(), report, requirements)
+    if st.button("Run check", type="primary", disabled=bool(missing), key="own_run") and ds is not None:
+        result = run_live(report, requirements, ds)
+        if result is not None:
+            st.session_state["own"] = {"key": key, "result": result}
+    run = st.session_state.get("own")
+    if run and run["key"] == key:
+        st.success("Live run")
+        show_result(run["result"], report, Path(name).stem)
+
+
+with tab_own:
+    try_your_own()
 
 
 def pct(x: float | None) -> str:

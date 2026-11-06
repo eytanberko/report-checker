@@ -3,6 +3,7 @@
 The hand-written energy description (schema.py) is kept as an optional override, because a human
 description (units, coverage caveats) beats an automatic one when you have it.
 """
+import hashlib
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -15,6 +16,7 @@ from .guardrails import Catalog
 from .schema import DATA_PATH, SCHEMA, TABLE
 
 TIME_NAMES = re.compile(r"^(year|yr|fiscal_year|period)$", re.I)
+RESERVED = {k for (k,) in duckdb.connect().execute("SELECT keyword_name FROM duckdb_keywords()").fetchall()}
 MAX_LISTED = 30  # list every category value up to this many distinct values
 ENERGY_CONTEXT = ["renewables_share_elec", "solar_share_elec", "wind_share_elec", "gas_share_elec",
                   "coal_share_elec", "oil_share_elec", "fossil_share_elec", "electricity_generation"]
@@ -44,9 +46,9 @@ class Dataset:
 
 
 def table_name(path: str) -> str:
-    """SQL-friendly table name from a file name: 'Cafe sales-2024.csv' -> 'cafe_sales_2024'."""
+    """SQL-friendly table name from a file name: 'Cafe sales-2024.csv' -> 'cafe_sales_2024'; keywords get a prefix."""
     name = re.sub(r"\W+", "_", Path(path).stem).strip("_").lower() or "data"
-    return name if not name[0].isdigit() else "t_" + name
+    return "t_" + name if name[0].isdigit() or name in RESERVED else name
 
 
 def _fmt(x: float) -> str:
@@ -113,3 +115,33 @@ def load_dataset(path: str, description: str | None = None, table: str | None = 
 def default_dataset() -> Dataset:
     """The benchmark's energy dataset."""
     return load_dataset(DATA_PATH)
+
+
+MAX_UPLOAD_MB = 50
+
+
+class BadCSV(ValueError):
+    """An uploaded file the checker cannot use; the message says why, in plain words."""
+
+
+def load_upload(name: str, data: bytes, folder: Path) -> Dataset:
+    """Save uploaded CSV bytes under `folder` (one subfolder per file content) and load it with an auto-built schema."""
+    if not data.strip():
+        raise BadCSV("The file is empty.")
+    if len(data) > MAX_UPLOAD_MB * 1024 * 1024:
+        raise BadCSV(f"The file is larger than {MAX_UPLOAD_MB} MB.")
+    path = folder / hashlib.sha256(data).hexdigest()[:16] / (table_name(name) + ".csv")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(data)
+    probe = Dataset(str(path), table_name(name), "", None, None)
+    try:
+        con = probe.connect()
+    except duckdb.Error as e:
+        raise BadCSV(f"Could not read the file as a CSV: {str(e).splitlines()[0][:200]}") from e
+    if _one(con, f'SELECT COUNT(*) FROM "{probe.table}"') == 0:
+        raise BadCSV("The file has a header row but no data rows.")
+    cat = Catalog.from_connection(con, probe.table, entity_col=None, time_col=None)
+    if not cat.ranges:
+        raise BadCSV("The file has no numeric columns, so there are no numbers to check a report against. "
+                     f"Columns read: {', '.join(cat.columns) or 'none'}.")
+    return load_dataset(str(path), table=probe.table)

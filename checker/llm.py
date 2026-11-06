@@ -37,7 +37,7 @@ JUDGE_MODEL = os.getenv("JUDGE_MODEL", PROVIDERS[PROVIDER].get("judge_model", MO
 CACHE = Path(__file__).resolve().parent.parent / ".llm_cache"
 OFFLINE = os.getenv("LLM_OFFLINE") == "1"
 MIN_INTERVAL = float(os.getenv("LLM_MIN_INTERVAL", "7"))
-OVERLOAD_WAITS = (120, 240, 480)  # seconds to wait before each retry on 500/503; then stop
+OVERLOAD_WAITS: tuple[int, ...] = (120, 240, 480)  # seconds to wait before each retry on 500/503; then stop
 JUDGE_VOTES = int(os.getenv("JUDGE_VOTES", "1"))  # >1: the judge answers that many times, majority wins
 VOTE_TEMPERATURE = 0.7  # votes need some variation to be worth taking; a single judge call stays at 0
 SALT = os.getenv("LLM_CACHE_SALT", "")  # a separate cache namespace, e.g. for repeat runs that bypass the cache

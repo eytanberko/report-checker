@@ -1,8 +1,10 @@
 """Bring your own data: auto-built schema + the deterministic pipeline on a second dataset (fake LLM)."""
 from pathlib import Path
 
+import pytest
+
 from checker.core import check_report
-from checker.dataset import load_dataset, table_name
+from checker.dataset import BadCSV, load_dataset, load_upload, table_name
 from checker.schema import SCHEMA
 
 CAFES = "examples/cafes/cafes.csv"
@@ -12,6 +14,24 @@ REPORT = Path("examples/cafes/report.md").read_text(encoding="utf-8")
 def test_table_name():
     assert table_name("data/Cafe sales-2024.csv") == "cafe_sales_2024"
     assert table_name("2024.csv") == "t_2024"
+    assert table_name("select.csv") == "t_select"          # an SQL keyword would break the model's queries
+
+
+@pytest.mark.parametrize("name,data,message", [
+    ("a.csv", b"  \n", "The file is empty."),
+    ("a.csv", b"city,year\n", "header row but no data rows"),
+    ("a.csv", b"city,name\nHaifa,Dana\n", "no numeric columns"),
+    ("a.csv", bytes(range(256)) * 20, "Could not read the file as a CSV"),
+])
+def test_uploaded_csv_that_cannot_be_used_says_why(tmp_path, name, data, message):
+    with pytest.raises(BadCSV, match=message):
+        load_upload(name, data, tmp_path)
+
+
+def test_uploaded_csv_gets_the_same_auto_schema(tmp_path):
+    ds = load_upload("cafes.csv", Path(CAFES).read_bytes(), tmp_path)
+    assert ds.description == load_dataset(CAFES).description and ds.table == "cafes"
+    assert load_upload("Select.csv", b"city;year;v\nA;2020;1\n", tmp_path).table == "t_select"
 
 
 def test_auto_schema_describes_columns_types_ranges_and_categories():

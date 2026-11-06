@@ -157,6 +157,7 @@ main { padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem); display: grid; grid-temp
 
 .narrow-only { display: none; }
 .byline-compact { display: none; }
+.own-check { margin: .8rem 0 0; font: 600 .98rem var(--f-form); color: var(--print-2); }
 
 .paper-instruction { margin: 0 0 1rem; color: var(--print-2); font-size: .98rem; max-width: 62ch; }
 .report-text {

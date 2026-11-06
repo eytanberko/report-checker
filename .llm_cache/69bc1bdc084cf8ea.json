@@ -1,0 +1,17 @@
+{
+  "judgments": [],
+  "requirements": [
+    {
+      "id": "R1",
+      "status": "partial",
+      "evidence": "Haifa sold 412 thousand cups in 2024... Tel Aviv sold 610 thousand cups in 2024... Jerusalem sold 345 thousand cups in 2024.",
+      "reason": "The report provides cups sold for the latest year for multiple cities, but misses Jerusalem's 2024 data since it is incomplete or unverifiable."
+    },
+    {
+      "id": "R2",
+      "status": "covered",
+      "evidence": "Haifa sold 412 thousand cups in 2024, up from 350 thousand in 2022, an increase of 25%.",
+      "reason": "The report explicitly states the growth of Haifa between 2022 and 2024, although the stated 25% percentage increase is factually contradicted by the database."
+    }
+  ]
+}

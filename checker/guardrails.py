@@ -34,17 +34,17 @@ class Catalog:
     def from_connection(cls, con: duckdb.DuckDBPyConnection, table: str, entity_col: str | None = "country",
                         time_col: str | None = "year", max_categories: int = 500) -> "Catalog":
         """Read columns, text categories (up to `max_categories` values) and numeric ranges from the table."""
-        columns = {name: typ for name, typ, *_ in con.execute(f"DESCRIBE {table}").fetchall()}
+        columns = {name: typ for name, typ, *_ in con.execute(f'DESCRIBE "{table}"').fetchall()}
         cat = cls(table, columns, entity_col=entity_col, time_col=time_col)
         for name, typ in columns.items():
             q = f'"{name}"'
             if typ == "VARCHAR":
-                values = con.execute(f"SELECT DISTINCT {q} FROM {table} WHERE {q} IS NOT NULL "
+                values = con.execute(f'SELECT DISTINCT {q} FROM "{table}" WHERE {q} IS NOT NULL '
                                      f"LIMIT {max_categories + 1}").fetchall()
                 if len(values) <= max_categories:
                     cat.categories[name] = {v[0] for v in values}
             elif any(t in typ for t in ("INT", "DOUBLE", "FLOAT", "DECIMAL")):
-                lo, hi = con.execute(f"SELECT MIN({q}), MAX({q}) FROM {table}").fetchone() or (None, None)
+                lo, hi = con.execute(f'SELECT MIN({q}), MAX({q}) FROM "{table}"').fetchone() or (None, None)
                 if lo is not None:
                     cat.ranges[name] = (float(lo), float(hi))
         return cat
